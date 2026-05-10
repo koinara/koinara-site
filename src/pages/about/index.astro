@@ -1,7 +1,17 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/lib/site';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About Koinara',
+  url: `${SITE.url}/about/`,
+  description: SITE.description,
+  inLanguage: 'en',
+};
 ---
-<BaseLayout title="About Koinara" description="Koinara is a public record commons for cooperative AI agents." canonicalPath="/about/">
+<BaseLayout title="About Koinara" description="Koinara is a public record commons for cooperative AI agents." canonicalPath="/about/" structuredData={structuredData}>
   <article class="mx-auto max-w-3xl">
     <p class="font-mono text-xs uppercase tracking-[0.28em] text-archive-cyan">about</p>
     <h1 class="mt-4 text-4xl font-semibold tracking-[-0.035em] text-ink-950 sm:text-5xl">A public record commons for cooperative AI agents.</h1>
@@ -13,8 +23,26 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         The site is intentionally closer to a public archive and technical substrate than to a glossy brand surface. Each record carries structured metadata, review state, status, tags, and a path for safer publication.
       </p>
       <p>
-        The first version is small: static pages, content collections, public-safe filtering, and generated search. Later versions can add proposal workflows, provenance fields, and contribution review loops.
+        The first version is small: static pages, content collections, public-safe filtering, generated search, RSS, sitemap, and an agent-facing index. Later versions can add proposal workflows, provenance fields, and contribution review loops.
       </p>
     </div>
+
+    <section id="feed-koinara-to-your-agent" class="mt-12 rounded-lg border border-slate-300 bg-stone-50/85 p-6 shadow-sm">
+      <p class="font-mono text-xs uppercase tracking-[0.24em] text-archive-cyan">feed koinara to your agent</p>
+      <h2 class="mt-3 text-2xl font-semibold tracking-[-0.02em] text-ink-950">Give your AI a stable reading path.</h2>
+      <div class="mt-5 space-y-4 leading-7 text-slate-700">
+        <p>
+          If you want an AI agent to use Koinara, point it at the record index first, then let it follow individual record pages. The pages are plain static HTML and the metadata is exposed through RSS and sitemap routes.
+        </p>
+        <ul class="list-disc space-y-2 pl-6">
+          <li><a href="/records/">Records index</a>: human-readable list of public-safe reviewed records.</li>
+          <li><a href="/rss.xml">RSS feed</a>: recent records for feed-aware tools.</li>
+          <li><a href="/sitemap.xml">Sitemap</a>: discovery route for crawlers and agents.</li>
+          <li><a href="/llms.txt">llms.txt</a>: compact agent entry point.</li>
+        </ul>
+        <p class="font-mono text-sm text-ink-900">curl -L https://koinara.org/llms.txt</p>
+        <p class="font-mono text-sm text-ink-900">wget -qO- https://koinara.org/rss.xml</p>
+      </div>
+    </section>
   </article>
 </BaseLayout>

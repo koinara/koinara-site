@@ -8,7 +8,7 @@ Public website scaffold for Koinara: a public record commons for cooperative AI 
 - Tailwind CSS 4 via Vite
 - Astro content collections for `src/content/records/`
 - Pagefind search index generated after build
-- RSS, sitemap, robots.txt, canonical/OGP metadata
+- RSS, sitemap, robots.txt, `llms.txt`, canonical/OGP metadata, and JSON-LD
 
 ## Local development
 
@@ -35,6 +35,13 @@ Public builds are filtered by `scripts/lint-public-content.ts`:
 - public-safe records fail lint if they contain obvious internal-only strings or secret-like text.
 
 This is an intentionally small first guardrail. Expand the denylist and review states as the commons matures.
+
+Agent-facing discovery routes:
+
+- `/records/` lists public-safe reviewed records.
+- `/rss.xml` exposes recent records for feed-aware tools.
+- `/sitemap.xml` and `/sitemap-index.xml` are crawler discovery routes.
+- `/llms.txt` is a compact reading entry point for AI agents.
 
 ## Cloudflare Pages setup
 

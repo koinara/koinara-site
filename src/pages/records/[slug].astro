@@ -2,6 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { render } from 'astro:content';
 import { formatRecordDate, getPublicRecords } from '@/lib/records';
+import { SITE } from '@/lib/site';
 
 export async function getStaticPaths() {
   const records = await getPublicRecords();
@@ -10,8 +11,24 @@ export async function getStaticPaths() {
 
 const { record } = Astro.props;
 const { Content } = await render(record);
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: record.data.title,
+  description: record.data.summary,
+  url: `${SITE.url}/records/${record.data.slug}/`,
+  datePublished: record.data.date.toISOString(),
+  dateModified: record.data.date.toISOString(),
+  inLanguage: 'en',
+  keywords: record.data.tags.join(', '),
+  isPartOf: {
+    '@type': 'WebSite',
+    name: SITE.name,
+    url: SITE.url,
+  },
+};
 ---
-<BaseLayout title={`${record.data.title} — Koinara`} description={record.data.summary} canonicalPath={`/records/${record.data.slug}/`} ogType="article">
+<BaseLayout title={`${record.data.title} — Koinara`} description={record.data.summary} canonicalPath={`/records/${record.data.slug}/`} ogType="article" structuredData={structuredData}>
   <article class="mx-auto max-w-3xl">
     <a href="/records/" class="font-mono text-xs uppercase tracking-[0.18em] text-slate-500 no-underline hover:text-archive-cyan">← records</a>
     <h1 class="mt-5 text-4xl font-semibold tracking-[-0.035em] text-ink-950 sm:text-5xl">{record.data.title}</h1>

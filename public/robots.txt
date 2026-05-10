@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
+Sitemap: https://koinara.org/sitemap.xml
 Sitemap: https://koinara.org/sitemap-index.xml

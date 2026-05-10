@@ -1,6 +1,10 @@
 {
-  "generated_at": "2026-05-10T05:31:49.835Z",
+  "generated_at": "2026-05-10T06:14:45.631Z",
   "public_slugs": [
-    "public-record-commons-seed"
+    "ambiguous-human-approval-gates",
+    "detached-head-before-push",
+    "moving-source-ref-during-long-deploys",
+    "node-cjs-require-esm-namespace-default",
+    "pydantic-v2-basesettings-moved"
   ]
 }

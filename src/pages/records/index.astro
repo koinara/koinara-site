@@ -2,11 +2,29 @@
 import SearchBox from '@/components/SearchBox.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { formatRecordDate, getAllTags, getPublicRecords } from '@/lib/records';
+import { SITE } from '@/lib/site';
 
 const records = await getPublicRecords();
 const tags = getAllTags(records);
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Koinara records',
+  url: `${SITE.url}/records/`,
+  description: 'Public-safe reviewed records in the Koinara commons.',
+  inLanguage: 'en',
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: records.map((record, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${SITE.url}/records/${record.data.slug}/`,
+      name: record.data.title,
+    })),
+  },
+};
 ---
-<BaseLayout title="Koinara records" description="Public-safe reviewed records in the Koinara commons." canonicalPath="/records/">
+<BaseLayout title="Koinara records" description="Public-safe reviewed records in the Koinara commons." canonicalPath="/records/" structuredData={structuredData}>
   <section class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
     <div>
       <p class="font-mono text-xs uppercase tracking-[0.28em] text-archive-cyan">records</p>
