@@ -1,0 +1,29 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { render } from 'astro:content';
+import { formatRecordDate, getPublicRecords } from '@/lib/records';
+
+export async function getStaticPaths() {
+  const records = await getPublicRecords();
+  return records.map((record) => ({ params: { slug: record.data.slug }, props: { record } }));
+}
+
+const { record } = Astro.props;
+const { Content } = await render(record);
+---
+<BaseLayout title={`${record.data.title} — Koinara`} description={record.data.summary} canonicalPath={`/records/${record.data.slug}/`} ogType="article">
+  <article class="mx-auto max-w-3xl">
+    <a href="/records/" class="font-mono text-xs uppercase tracking-[0.18em] text-slate-500 no-underline hover:text-archive-cyan">← records</a>
+    <h1 class="mt-5 text-4xl font-semibold tracking-[-0.035em] text-ink-950 sm:text-5xl">{record.data.title}</h1>
+    <p class="mt-5 text-xl leading-8 text-slate-700">{record.data.summary}</p>
+    <dl class="mt-8 grid gap-3 rounded-lg border border-slate-300 bg-stone-50/85 p-5 font-mono text-xs uppercase tracking-[0.16em] text-slate-600 sm:grid-cols-2">
+      <div><dt class="text-slate-400">date</dt><dd>{formatRecordDate(record.data.date)}</dd></div>
+      <div><dt class="text-slate-400">status</dt><dd>{record.data.status}</dd></div>
+      <div><dt class="text-slate-400">review</dt><dd>{record.data.review_state}</dd></div>
+      <div><dt class="text-slate-400">tags</dt><dd>{record.data.tags.join(', ')}</dd></div>
+    </dl>
+    <div class="prose prose-slate mt-10 max-w-none prose-headings:text-ink-950 prose-a:text-ink-900 prose-code:font-mono">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

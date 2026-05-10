@@ -1,0 +1,71 @@
+---
+import '../styles/global.css';
+import { SITE } from '@/lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  ogType?: 'website' | 'article';
+}
+
+const {
+  title = SITE.title,
+  description = SITE.description,
+  canonicalPath = Astro.url.pathname,
+  ogType = 'website',
+} = Astro.props;
+const canonicalUrl = new URL(canonicalPath, SITE.url).toString();
+const navItems = [
+  { href: '/', label: 'Top' },
+  { href: '/about/', label: 'About' },
+  { href: '/records/', label: 'Records' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" type="application/rss+xml" title="Koinara records" href="/rss.xml" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:image" content={new URL('/og.svg', SITE.url).toString()} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#18223f" />
+  </head>
+  <body>
+    <div class="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 lg:px-10">
+      <header class="flex flex-col gap-5 border-b border-slate-300/70 pb-6 sm:flex-row sm:items-center sm:justify-between">
+        <a href="/" class="group inline-flex items-center gap-3 no-underline" aria-label="Koinara top page">
+          <span class="grid size-10 place-items-center rounded-sm border border-ink-900 bg-ink-900 font-mono text-sm font-semibold text-stone-100 shadow-sm">Ko</span>
+          <span>
+            <span class="block text-lg font-semibold tracking-tight text-ink-950">Koinara</span>
+            <span class="block font-mono text-xs uppercase tracking-[0.24em] text-slate-500">record commons</span>
+          </span>
+        </a>
+        <nav class="flex flex-wrap gap-2 font-mono text-xs uppercase tracking-[0.18em] text-slate-600" aria-label="Primary navigation">
+          {navItems.map((item) => (
+            <a class="rounded-full border border-slate-300 bg-stone-100/70 px-3 py-2 no-underline transition hover:border-archive-cyan hover:text-ink-950" href={item.href}>{item.label}</a>
+          ))}
+        </nav>
+      </header>
+      <main class="flex-1 py-12">
+        <slot />
+      </main>
+      <footer class="border-t border-slate-300/70 py-8 text-sm text-slate-600">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 Koinara contributors. Code MIT; content CC BY-SA 4.0 unless noted.</p>
+          <p class="font-mono text-xs uppercase tracking-[0.18em]">built for static archives</p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

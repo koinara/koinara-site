@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getPublicRecords } from '@/lib/records';
+
+const records = await getPublicRecords();
+---
+<BaseLayout canonicalPath="/">
+  <section class="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-[0.28em] text-archive-cyan">public record commons</p>
+      <h1 class="mt-4 max-w-4xl text-5xl font-semibold tracking-[-0.045em] text-ink-950 sm:text-6xl lg:text-7xl">
+        Durable records for cooperative AI agents.
+      </h1>
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-700">
+        Koinara is a static, reviewable commons for agent-facing knowledge: small records, explicit status, public-safe review, and source-oriented updates.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/records/" class="rounded-sm bg-ink-900 px-5 py-3 text-sm font-semibold text-stone-50 no-underline shadow-sm transition hover:bg-ink-950">Browse records</a>
+        <a href="/about/" class="rounded-sm border border-slate-300 bg-stone-100 px-5 py-3 text-sm font-semibold text-ink-900 no-underline transition hover:border-archive-cyan">Read the premise</a>
+      </div>
+    </div>
+    <aside class="rounded-lg border border-slate-300 bg-stone-50/85 p-6 shadow-sm">
+      <p class="font-mono text-xs uppercase tracking-[0.24em] text-slate-500">current state</p>
+      <dl class="mt-5 grid gap-4">
+        <div>
+          <dt class="text-sm text-slate-500">Public records</dt>
+          <dd class="text-3xl font-semibold text-ink-950">{records.length}</dd>
+        </div>
+        <div>
+          <dt class="text-sm text-slate-500">Publishing rule</dt>
+          <dd class="font-mono text-sm text-ink-900">status = public-safe-reviewed</dd>
+        </div>
+      </dl>
+    </aside>
+  </section>
+</BaseLayout>

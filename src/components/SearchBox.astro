@@ -1,0 +1,32 @@
+<section class="rounded-lg border border-slate-300 bg-stone-50/80 p-5 shadow-sm" aria-labelledby="pagefind-search-heading">
+  <div class="mb-4 flex flex-col gap-1">
+    <h2 id="pagefind-search-heading" class="text-lg font-semibold text-ink-950">Search records</h2>
+    <p class="text-sm text-slate-600">Pagefind search is generated after `npm run build`.</p>
+  </div>
+  <div id="pagefind-search"></div>
+</section>
+
+<script is:inline>
+  const mountSearch = () => {
+    const root = document.getElementById('pagefind-search');
+    if (!root) return;
+
+    const stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = '/pagefind/pagefind-ui.css';
+    document.head.appendChild(stylesheet);
+
+    const script = document.createElement('script');
+    script.src = '/pagefind/pagefind-ui.js';
+    script.onload = () => {
+      if (window.PagefindUI) {
+        new window.PagefindUI({ element: '#pagefind-search', showSubResults: true, resetStyles: false });
+      }
+    };
+    script.onerror = () => {
+      root.innerHTML = '<p class="font-mono text-xs uppercase tracking-[0.16em] text-slate-500">Search index appears after a production build.</p>';
+    };
+    document.body.appendChild(script);
+  };
+  mountSearch();
+</script>

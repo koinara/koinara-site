@@ -1,0 +1,65 @@
+---
+import SearchBox from '@/components/SearchBox.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { formatRecordDate, getAllTags, getPublicRecords } from '@/lib/records';
+
+const records = await getPublicRecords();
+const tags = getAllTags(records);
+---
+<BaseLayout title="Koinara records" description="Public-safe reviewed records in the Koinara commons." canonicalPath="/records/">
+  <section class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-[0.28em] text-archive-cyan">records</p>
+      <h1 class="mt-4 text-4xl font-semibold tracking-[-0.035em] text-ink-950 sm:text-5xl">Reviewed public records.</h1>
+      <p class="mt-5 max-w-2xl text-lg leading-8 text-slate-700">Only records that pass the public-safe status filter are listed here.</p>
+
+      <div class="mt-8 flex flex-wrap gap-2" data-tag-filter>
+        <a href="/records/" data-tag-link="all" class="rounded-full border border-slate-300 bg-stone-100 px-3 py-1.5 font-mono text-xs uppercase tracking-[0.16em] text-slate-700 no-underline">all</a>
+        {tags.map((tag) => (
+          <a href={`/records/?tag=${tag}`} data-tag-link={tag} class="rounded-full border border-slate-300 bg-stone-100 px-3 py-1.5 font-mono text-xs uppercase tracking-[0.16em] text-slate-700 no-underline">{tag}</a>
+        ))}
+      </div>
+
+      <div class="mt-8 grid gap-4" data-record-list>
+        {records.map((record) => (
+          <article class="rounded-lg border border-slate-300 bg-stone-50/85 p-5 shadow-sm" data-record-card data-tags={record.data.tags.join(' ')}>
+            <div class="flex flex-wrap items-center gap-3 font-mono text-xs uppercase tracking-[0.16em] text-slate-500">
+              <time datetime={record.data.date.toISOString()}>{formatRecordDate(record.data.date)}</time>
+              <span>{record.data.review_state}</span>
+            </div>
+            <h2 class="mt-3 text-2xl font-semibold tracking-[-0.02em] text-ink-950"><a class="no-underline hover:underline" href={`/records/${record.data.slug}/`}>{record.data.title}</a></h2>
+            <p class="mt-3 leading-7 text-slate-700">{record.data.summary}</p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {record.data.tags.map((tag) => <span class="rounded-full bg-slate-200/70 px-2.5 py-1 font-mono text-xs text-slate-700">#{tag}</span>)}
+            </div>
+          </article>
+        ))}
+        {records.length === 0 && <p class="rounded-lg border border-slate-300 bg-stone-50/85 p-5 text-slate-600">No public-safe records yet.</p>}
+      </div>
+    </div>
+    <aside class="lg:sticky lg:top-8 lg:self-start">
+      <SearchBox />
+    </aside>
+  </section>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const selectedTag = params.get('tag');
+    const cards = Array.from(document.querySelectorAll('[data-record-card]'));
+    const links = Array.from(document.querySelectorAll('[data-tag-link]'));
+
+    if (selectedTag) {
+      cards.forEach((card) => {
+        const tags = String(card.getAttribute('data-tags') || '').split(' ');
+        card.classList.toggle('hidden', !tags.includes(selectedTag));
+      });
+    }
+
+    links.forEach((link) => {
+      const tag = link.getAttribute('data-tag-link');
+      const active = selectedTag ? tag === selectedTag : tag === 'all';
+      link.classList.toggle('border-archive-cyan', active);
+      link.classList.toggle('text-ink-950', active);
+    });
+  </script>
+</BaseLayout>
