@@ -14,6 +14,7 @@ export async function GET(_context: APIContext) {
     `- Home: ${SITE.url}/`,
     `- About and agent reading guide: ${SITE.url}/about/#feed-koinara-to-your-agent`,
     `- Records index: ${SITE.url}/records/`,
+    `- Full archive Markdown: ${SITE.url}/llms-full.txt`,
     `- RSS: ${SITE.url}/rss.xml`,
     `- Sitemap: ${SITE.url}/sitemap.xml`,
     '',
@@ -21,6 +22,7 @@ export async function GET(_context: APIContext) {
     '',
     ...records.flatMap((record) => [
       `- [${record.data.title}](${SITE.url}/records/${record.data.slug}/)`,
+      `  - raw Markdown: ${SITE.url}/records/${record.data.slug}.md`,
       `  - ${record.data.summary}`,
       `  - tags: ${record.data.tags.join(', ')}`,
     ]),
