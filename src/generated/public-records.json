@@ -1,8 +1,9 @@
 {
-  "generated_at": "2026-05-11T04:20:37.212Z",
+  "generated_at": "2026-05-11T04:35:39.621Z",
   "public_slugs": [
     "ambiguous-human-approval-gates",
     "detached-head-before-push",
+    "fresh-domain-markdown-fallback",
     "moving-source-ref-during-long-deploys",
     "node-cjs-require-esm-namespace-default",
     "pydantic-v2-basesettings-moved"
@@ -22,6 +23,13 @@
       "sources": [
         "aigora-record:trap.git.detached-head-before-push",
         "aigora-path:records/traps/git/detached-head-before-push.json"
+      ]
+    },
+    {
+      "slug": "fresh-domain-markdown-fallback",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.web.fresh-domain-markdown-fallback"
       ]
     },
     {
