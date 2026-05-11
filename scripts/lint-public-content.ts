@@ -1,5 +1,6 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { externalSourceKinds, internalSourceKinds, recordOrigins, sourceRefKinds } from '../src/lib/provenance';
 
 const RECORDS_DIR = path.join(process.cwd(), 'src/content/records');
 const GENERATED_PATH = path.join(process.cwd(), 'src/generated/public-records.json');
@@ -74,12 +75,37 @@ function requireString(record: RecordFile, key: string): string {
   return value;
 }
 
+
+function requireStringArray(record: RecordFile, key: string): string[] {
+  const value = record.frontmatter[key];
+  if (!Array.isArray(value) || value.length === 0 || !value.every((item) => typeof item === 'string' && item.length > 0)) {
+    throw new Error(`${record.relativePath}: frontmatter.${key} must be a non-empty string array`);
+  }
+  return value as string[];
+}
+
+const allowedOrigins = new Set<string>(recordOrigins);
+const allowedSourceKinds = new Set<string>(sourceRefKinds);
+const internalSourceKindSet = new Set<string>(internalSourceKinds);
+const externalSourceKindSet = new Set<string>(externalSourceKinds);
+
+function sourceKind(source: string): string | null {
+  const match = source.match(/^([a-z0-9-]+):\S+$/);
+  return match ? match[1] : null;
+}
+
 const files = await collectMarkdownFiles(RECORDS_DIR);
 const records = await Promise.all(
   files.map(async (filePath) => parseFrontmatter(await readFile(filePath, 'utf8'), filePath)),
 );
 
-const publicSlugs: string[] = [];
+interface PublicRecordMetadata {
+  slug: string;
+  origin: string;
+  sources: string[];
+}
+
+const publicRecords: PublicRecordMetadata[] = [];
 const errors: string[] = [];
 
 for (const record of records) {
@@ -100,9 +126,40 @@ for (const record of records) {
     }
   }
 
-  publicSlugs.push(slug);
+  const origin = requireString(record, 'origin');
+  if (!allowedOrigins.has(origin)) {
+    errors.push(`${record.relativePath}: origin must be one of ${[...allowedOrigins].join(', ')}`);
+  }
+
+  const sources = requireStringArray(record, 'sources');
+  for (const source of sources) {
+    const kind = sourceKind(source);
+    if (!kind || !allowedSourceKinds.has(kind)) {
+      errors.push(`${record.relativePath}: unsupported source ref ${source}`);
+    }
+  }
+
+  const sourceKinds = sources.map(sourceKind).filter((kind): kind is string => Boolean(kind));
+  const hasInternalSource = sourceKinds.some((kind) => internalSourceKindSet.has(kind));
+  const hasAigoraRecordSource = sourceKinds.includes('aigora-record');
+  const hasExternalSource = sourceKinds.some((kind) => externalSourceKindSet.has(kind));
+  if (origin === 'internal' && !hasAigoraRecordSource) {
+    errors.push(`${record.relativePath}: internal-origin public record must include an aigora-record source`);
+  }
+  if (origin === 'external' && hasInternalSource) {
+    errors.push(`${record.relativePath}: external-origin public record must not use an internal Aigora source; use mixed if both internal and external sources apply`);
+  }
+  if (origin === 'external' && !hasExternalSource) {
+    errors.push(`${record.relativePath}: external-origin public record must include a github-pr, external-url, or external-record source`);
+  }
+  if (origin === 'mixed' && (!hasInternalSource || !hasExternalSource)) {
+    errors.push(`${record.relativePath}: mixed-origin public record must include at least one internal source and one external source`);
+  }
+
+  publicRecords.push({ slug, origin, sources });
 }
 
+const publicSlugs = publicRecords.map((record) => record.slug);
 const duplicateSlugs = publicSlugs.filter((slug, index) => publicSlugs.indexOf(slug) !== index);
 for (const slug of duplicateSlugs) {
   errors.push(`duplicate public slug: ${slug}`);
@@ -117,7 +174,11 @@ if (errors.length > 0) {
 await mkdir(path.dirname(GENERATED_PATH), { recursive: true });
 await writeFile(
   GENERATED_PATH,
-  `${JSON.stringify({ generated_at: new Date().toISOString(), public_slugs: publicSlugs.sort() }, null, 2)}\n`,
+  `${JSON.stringify({
+    generated_at: new Date().toISOString(),
+    public_slugs: publicSlugs.sort(),
+    public_records: publicRecords.sort((a, b) => a.slug.localeCompare(b.slug)),
+  }, null, 2)}\n`,
 );
 
 console.log(`Public content lint passed: ${publicSlugs.length}/${records.length} records included in build.`);

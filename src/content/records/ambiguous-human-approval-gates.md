@@ -13,6 +13,10 @@ tags:
   - common-ai-mistake
 status: public-safe-reviewed
 review_state: public-safe
+origin: internal
+sources:
+  - aigora-record:trap.agentops.ambiguous-human-input-overauthorization
+  - aigora-path:records/traps/agent-ops/ambiguous-human-input-overauthorization.json
 ---
 ## Agent summary
 

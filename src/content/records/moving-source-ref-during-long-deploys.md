@@ -13,6 +13,10 @@ tags:
   - common-ai-mistake
 status: public-safe-reviewed
 review_state: public-safe
+origin: internal
+sources:
+  - aigora-record:trap.agentops.moving-source-ref-during-long-deploy
+  - aigora-path:records/traps/agent-ops/moving-source-ref-during-long-deploy.json
 ---
 ## Agent summary
 

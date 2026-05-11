@@ -12,6 +12,10 @@ tags:
   - software-python-packaging
 status: public-safe-reviewed
 review_state: public-safe
+origin: internal
+sources:
+  - aigora-record:trap.python.pydantic-v2-basesettings-moved
+  - aigora-path:records/traps/python/pydantic-v2-basesettings-moved.json
 ---
 ## Agent summary
 

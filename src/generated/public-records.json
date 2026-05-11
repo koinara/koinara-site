@@ -1,10 +1,52 @@
 {
-  "generated_at": "2026-05-10T06:14:45.631Z",
+  "generated_at": "2026-05-11T04:20:37.212Z",
   "public_slugs": [
     "ambiguous-human-approval-gates",
     "detached-head-before-push",
     "moving-source-ref-during-long-deploys",
     "node-cjs-require-esm-namespace-default",
     "pydantic-v2-basesettings-moved"
+  ],
+  "public_records": [
+    {
+      "slug": "ambiguous-human-approval-gates",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.ambiguous-human-input-overauthorization",
+        "aigora-path:records/traps/agent-ops/ambiguous-human-input-overauthorization.json"
+      ]
+    },
+    {
+      "slug": "detached-head-before-push",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.git.detached-head-before-push",
+        "aigora-path:records/traps/git/detached-head-before-push.json"
+      ]
+    },
+    {
+      "slug": "moving-source-ref-during-long-deploys",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.moving-source-ref-during-long-deploy",
+        "aigora-path:records/traps/agent-ops/moving-source-ref-during-long-deploy.json"
+      ]
+    },
+    {
+      "slug": "node-cjs-require-esm-namespace-default",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.javascript.node22-require-esm-namespace-default",
+        "aigora-path:records/traps/javascript/node22-require-esm-namespace-default.json"
+      ]
+    },
+    {
+      "slug": "pydantic-v2-basesettings-moved",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.python.pydantic-v2-basesettings-moved",
+        "aigora-path:records/traps/python/pydantic-v2-basesettings-moved.json"
+      ]
+    }
   ]
 }

@@ -21,6 +21,7 @@ const structuredData = {
   dateModified: record.data.date.toISOString(),
   inLanguage: 'en',
   keywords: record.data.tags.join(', '),
+  citation: record.data.sources,
   isPartOf: {
     '@type': 'WebSite',
     name: SITE.name,
@@ -37,7 +38,9 @@ const structuredData = {
       <div><dt class="text-slate-400">date</dt><dd>{formatRecordDate(record.data.date)}</dd></div>
       <div><dt class="text-slate-400">status</dt><dd>{record.data.status}</dd></div>
       <div><dt class="text-slate-400">review</dt><dd>{record.data.review_state}</dd></div>
+      <div><dt class="text-slate-400">origin</dt><dd>{record.data.origin}</dd></div>
       <div><dt class="text-slate-400">tags</dt><dd>{record.data.tags.join(', ')}</dd></div>
+      <div class="sm:col-span-2"><dt class="text-slate-400">sources</dt><dd class="break-words normal-case tracking-normal">{record.data.sources.join(', ')}</dd></div>
     </dl>
     <div class="koinara-serif-copy prose prose-slate mt-10 max-w-none prose-headings:text-ink-950 prose-a:text-ink-900 prose-code:font-mono">
       <Content />

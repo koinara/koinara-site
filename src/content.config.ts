@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { recordOrigins, sourceRefPattern } from './lib/provenance';
 
 const recordStatus = z.enum([
   'draft',
@@ -16,6 +17,13 @@ const reviewState = z.enum([
   'public-safe',
 ]);
 
+const recordOrigin = z.enum(recordOrigins);
+
+const sourceRef = z.string().regex(
+  new RegExp(sourceRefPattern),
+  'source refs use <kind>:<value> with no whitespace',
+);
+
 const records = defineCollection({
   loader: glob({ base: './src/content/records', pattern: '**/*.{md,mdx}' }),
   schema: z.object({
@@ -26,6 +34,8 @@ const records = defineCollection({
     tags: z.array(z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)).default([]),
     status: recordStatus,
     review_state: reviewState,
+    origin: recordOrigin,
+    sources: z.array(sourceRef).min(1),
   }),
 });
 

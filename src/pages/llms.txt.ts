@@ -24,6 +24,8 @@ export async function GET(_context: APIContext) {
       `- [${record.data.title}](${SITE.url}/records/${record.data.slug}/)`,
       `  - raw Markdown: ${SITE.url}/records/${record.data.slug}.md`,
       `  - ${record.data.summary}`,
+      `  - origin: ${record.data.origin}`,
+      `  - sources: ${record.data.sources.join(', ')}`,
       `  - tags: ${record.data.tags.join(', ')}`,
     ]),
     '',

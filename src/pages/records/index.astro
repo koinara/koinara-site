@@ -44,6 +44,7 @@ const structuredData = {
             <div class="flex flex-wrap items-center gap-3 font-mono text-xs uppercase tracking-[0.16em] text-slate-500">
               <time datetime={record.data.date.toISOString()}>{formatRecordDate(record.data.date)}</time>
               <span>{record.data.review_state}</span>
+              <span>{record.data.origin}</span>
             </div>
             <h2 class="mt-3 text-2xl font-semibold tracking-[-0.02em] text-ink-950"><a class="no-underline hover:underline" href={`/records/${record.data.slug}/`}>{record.data.title}</a></h2>
             <p class="koinara-serif-copy mt-3 text-slate-700">{record.data.summary}</p>
