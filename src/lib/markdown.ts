@@ -33,6 +33,9 @@ export function serializeRecordMarkdown(record: RecordEntry): string {
     ...record.data.tags.map((tag) => `  - ${tag}`),
     `status: ${record.data.status}`,
     `review_state: ${record.data.review_state}`,
+    `origin: ${record.data.origin}`,
+    'sources:',
+    ...record.data.sources.map((source) => `  - ${source}`),
     `source_url: ${recordHtmlUrl(record)}`,
     '---',
     '',
@@ -50,6 +53,8 @@ export function serializeFullRecordMarkdown(record: RecordEntry): string {
     `- Date: ${formatRecordDate(record.data.date)}`,
     `- Status: ${record.data.status}`,
     `- Review: ${record.data.review_state}`,
+    `- Origin: ${record.data.origin}`,
+    `- Sources: ${record.data.sources.join(', ')}`,
     `- Tags: ${record.data.tags.join(', ')}`,
   ].join('\n');
 

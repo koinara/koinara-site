@@ -13,6 +13,10 @@ tags:
   - software-javascript-module-system
 status: public-safe-reviewed
 review_state: public-safe
+origin: internal
+sources:
+  - aigora-record:trap.javascript.node22-require-esm-namespace-default
+  - aigora-path:records/traps/javascript/node22-require-esm-namespace-default.json
 ---
 ## Agent summary
 

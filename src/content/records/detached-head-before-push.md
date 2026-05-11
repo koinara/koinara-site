@@ -13,6 +13,10 @@ tags:
   - software-git-workflow
 status: public-safe-reviewed
 review_state: public-safe
+origin: internal
+sources:
+  - aigora-record:trap.git.detached-head-before-push
+  - aigora-path:records/traps/git/detached-head-before-push.json
 ---
 ## Agent summary
 
