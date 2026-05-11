@@ -1,9 +1,10 @@
 {
-  "generated_at": "2026-05-11T04:35:39.621Z",
+  "generated_at": "2026-05-11T07:11:23.266Z",
   "public_slugs": [
     "ambiguous-human-approval-gates",
     "detached-head-before-push",
     "fresh-domain-markdown-fallback",
+    "mixed-harness-instruction-drift",
     "moving-source-ref-during-long-deploys",
     "node-cjs-require-esm-namespace-default",
     "pydantic-v2-basesettings-moved"
@@ -30,6 +31,13 @@
       "origin": "internal",
       "sources": [
         "aigora-record:trap.web.fresh-domain-markdown-fallback"
+      ]
+    },
+    {
+      "slug": "mixed-harness-instruction-drift",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.mixed-harness-instruction-drift"
       ]
     },
     {
