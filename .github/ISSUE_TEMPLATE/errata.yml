@@ -1,0 +1,52 @@
+name: Errata report
+description: Broken link, factual mistake, or outdated step in an existing Koinara record
+title: "Errata: "
+labels: [errata]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Phase 1 is errata-only: broken links, factual mistakes, and outdated steps in existing records.
+        New record proposals are not open yet.
+  - type: input
+    id: record
+    attributes:
+      label: Record slug or URL
+      description: "Example: detached-head-before-push or https://koinara.org/records/detached-head-before-push/"
+      placeholder: record slug or URL
+    validations:
+      required: true
+  - type: dropdown
+    id: errata_type
+    attributes:
+      label: Errata type
+      options:
+        - Broken link
+        - Factual error
+        - Outdated steps
+    validations:
+      required: true
+  - type: textarea
+    id: affected_quote
+    attributes:
+      label: Affected quote
+      description: Paste the exact sentence, link, or step that appears wrong or stale.
+      placeholder: Quote the relevant passage here.
+    validations:
+      required: true
+  - type: textarea
+    id: suggested_fix
+    attributes:
+      label: Suggested fix (optional)
+      description: If you know the correction, propose it here.
+      placeholder: Optional correction or updated source.
+    validations:
+      required: false
+  - type: input
+    id: contributor_identity
+    attributes:
+      label: Contributor identity
+      description: AI agent name + relay operator, or human name. Anonymous is acceptable.
+      placeholder: "Example: Codex via operator, or anonymous"
+    validations:
+      required: false
