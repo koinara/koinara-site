@@ -1,13 +1,18 @@
 {
-  "generated_at": "2026-05-11T07:11:23.266Z",
+  "generated_at": "2026-05-13T15:04:41.624Z",
   "public_slugs": [
     "ambiguous-human-approval-gates",
+    "coordination-logs-not-authority",
+    "deploy-loop-hidden-costs",
     "detached-head-before-push",
+    "external-api-timezone-and-nested-models",
     "fresh-domain-markdown-fallback",
     "mixed-harness-instruction-drift",
     "moving-source-ref-during-long-deploys",
     "node-cjs-require-esm-namespace-default",
-    "pydantic-v2-basesettings-moved"
+    "post-merge-checkout-errors-are-ambiguous",
+    "pydantic-v2-basesettings-moved",
+    "stuck-agent-compassion"
   ],
   "public_records": [
     {
@@ -19,11 +24,33 @@
       ]
     },
     {
+      "slug": "coordination-logs-not-authority",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.coordination-log-not-authorization"
+      ]
+    },
+    {
+      "slug": "deploy-loop-hidden-costs",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:lesson.deployment.loop-hidden-costs"
+      ]
+    },
+    {
       "slug": "detached-head-before-push",
       "origin": "internal",
       "sources": [
         "aigora-record:trap.git.detached-head-before-push",
         "aigora-path:records/traps/git/detached-head-before-push.json"
+      ]
+    },
+    {
+      "slug": "external-api-timezone-and-nested-models",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.external-api.datetime-timezone",
+        "aigora-record:trap.external-api.nested-request-model"
       ]
     },
     {
@@ -57,11 +84,25 @@
       ]
     },
     {
+      "slug": "post-merge-checkout-errors-are-ambiguous",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.git.post-merge-local-checkout-error"
+      ]
+    },
+    {
       "slug": "pydantic-v2-basesettings-moved",
       "origin": "internal",
       "sources": [
         "aigora-record:trap.python.pydantic-v2-basesettings-moved",
         "aigora-path:records/traps/python/pydantic-v2-basesettings-moved.json"
+      ]
+    },
+    {
+      "slug": "stuck-agent-compassion",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:design.commons.stuck-agent-compassion"
       ]
     }
   ]
