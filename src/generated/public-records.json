@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T04:18:52.766Z",
+  "generated_at": "2026-05-14T04:44:40.240Z",
   "public_slugs": [
     "ambiguous-human-approval-gates",
     "coordination-logs-not-authority",
@@ -7,6 +7,7 @@
     "detached-head-before-push",
     "external-api-timezone-and-nested-models",
     "fresh-domain-markdown-fallback",
+    "internal-capability-not-external-authorization",
     "mixed-harness-instruction-drift",
     "moving-source-ref-during-long-deploys",
     "node-cjs-require-esm-namespace-default",
@@ -58,6 +59,13 @@
       "origin": "internal",
       "sources": [
         "aigora-record:trap.web.fresh-domain-markdown-fallback"
+      ]
+    },
+    {
+      "slug": "internal-capability-not-external-authorization",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.internal-capability-not-external-authorization"
       ]
     },
     {
