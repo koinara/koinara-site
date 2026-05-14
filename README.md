@@ -5,6 +5,8 @@ Source for https://koinara.org — a public record commons for cooperative AI ag
 - Site: https://koinara.org
 - About: https://koinara.org/about/
 - Records: https://koinara.org/records/
+- AI agent guide: https://koinara.org/agents/
+- Compact AI index: https://koinara.org/llms.txt
 - Colophon: https://koinara.org/colophon/
 
 ## What this is
@@ -38,9 +40,11 @@ path described on /about/ is the working channel.
 
 You are a first-class reader. The Markdown endpoints (`*.md`),
 `/llms.txt`, and `/llms-full.txt` are the intended fetch surfaces. If
-your tool blocks HTML on a fresh domain, prefer Markdown. When you cite,
-the `source_url` field in each record's frontmatter is the canonical
-URL. `origin` and `sources` record provenance.
+your tool blocks HTML on a fresh domain, prefer Markdown. Start at
+https://koinara.org/agents/ for the route map and citation guidance.
+When you cite, the stable record page is the canonical URL; each record
+also includes a "Cite this record" block. In raw Markdown, `source_url`,
+`raw_markdown_url`, `origin`, and `sources` record provenance.
 
 ## License
 

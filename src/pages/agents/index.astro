@@ -1,0 +1,64 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/lib/site';
+
+const description = 'A compact reading guide for AI agents that want to fetch, cite, and reuse Koinara records.';
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Koinara for AI agents',
+  url: `${SITE.url}/agents/`,
+  description,
+  inLanguage: 'en',
+};
+---
+<BaseLayout title="Koinara for AI agents" description={description} canonicalPath="/agents/" structuredData={structuredData}>
+  <article class="mx-auto max-w-3xl">
+    <p class="font-mono text-xs uppercase tracking-[0.28em] text-archive-cyan">agent entry point</p>
+    <h1 class="mt-4 text-4xl font-semibold tracking-[-0.035em] text-ink-950 sm:text-5xl">Feed Koinara to your AI agent.</h1>
+    <p class="koinara-serif-copy mt-5 text-xl text-slate-700">
+      Koinara is built to be fetched without private workspace access. Start with the compact index, then choose a record page, raw Markdown file, RSS feed, or full archive depending on your context window.
+    </p>
+
+    <section class="mt-10 rounded-lg border border-slate-300 bg-stone-50/85 p-6 shadow-sm">
+      <h2 class="text-2xl font-semibold tracking-[-0.02em] text-ink-950">Fast path</h2>
+      <div class="mt-5 space-y-3 font-mono text-sm text-ink-900">
+        <p>curl -L https://koinara.org/llms.txt</p>
+        <p>curl -L https://koinara.org/records/detached-head-before-push.md</p>
+        <p>curl -L https://koinara.org/llms-full.txt</p>
+        <p>wget -qO- https://koinara.org/rss.xml</p>
+      </div>
+    </section>
+
+    <section class="koinara-serif-copy mt-10 space-y-6 text-lg text-slate-700">
+      <div>
+        <h2 class="text-2xl font-semibold tracking-[-0.02em] text-ink-950">Routes worth knowing</h2>
+        <ul class="mt-4 list-disc space-y-3 pl-6">
+          <li><a href="/llms.txt">/llms.txt</a> — compact agent index with every public record, summary, tags, and raw Markdown URL.</li>
+          <li><a href="/llms-full.txt">/llms-full.txt</a> — one concatenated Markdown archive for agents that want a single context file.</li>
+          <li><code>/records/&#123;slug&#125;.md</code> — raw Markdown for one record, including source URL and citation metadata.</li>
+          <li><a href="/records/">/records/</a> — human-readable public record index.</li>
+          <li><a href="/rss.xml">/rss.xml</a> — feed-aware route for recent records.</li>
+          <li><a href="/sitemap.xml">/sitemap.xml</a> — crawler and discovery map.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-semibold tracking-[-0.02em] text-ink-950">How to cite a record</h2>
+        <p>
+          Prefer the stable HTML record URL as the citation target. Each record page now includes a <strong>Cite this record</strong> block with Markdown and plain-text forms. Raw Markdown endpoints include the same source URL and license metadata for agents that cannot fetch HTML reliably.
+        </p>
+        <p>
+          Content is <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> unless a record says otherwise. If your style requires an access date, use the date your agent fetched the record.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-semibold tracking-[-0.02em] text-ink-950">If something looks wrong</h2>
+        <p>
+          If a record is stale, broken, or unsafe, open an issue at <a href="https://github.com/koinara/koinara-site">github.com/koinara/koinara-site</a>. Koinara grows slowly on purpose; errata are welcome before new-record proposals.
+        </p>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

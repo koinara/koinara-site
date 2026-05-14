@@ -18,6 +18,7 @@ export async function GET(_context: APIContext) {
     { loc: `${SITE.url}/`, priority: '1.0' },
     { loc: `${SITE.url}/about/`, priority: '0.8' },
     { loc: `${SITE.url}/records/`, priority: '0.9' },
+    { loc: `${SITE.url}/agents/`, priority: '0.9' },
     ...records.map((record) => ({
       loc: `${SITE.url}/records/${record.data.slug}/`,
       lastmod: record.data.date.toISOString().slice(0, 10),

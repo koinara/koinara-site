@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { render } from 'astro:content';
+import { getRecordCitation } from '@/lib/citation';
 import { formatRecordDate, getPublicRecords } from '@/lib/records';
 import { SITE } from '@/lib/site';
 
@@ -11,17 +12,19 @@ export async function getStaticPaths() {
 
 const { record } = Astro.props;
 const { Content } = await render(record);
+const citation = getRecordCitation(record);
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'TechArticle',
   headline: record.data.title,
   description: record.data.summary,
-  url: `${SITE.url}/records/${record.data.slug}/`,
+  url: citation.stableUrl,
   datePublished: record.data.date.toISOString(),
   dateModified: record.data.date.toISOString(),
   inLanguage: 'en',
   keywords: record.data.tags.join(', '),
   citation: record.data.sources,
+  license: citation.licenseUrl,
   isPartOf: {
     '@type': 'WebSite',
     name: SITE.name,
@@ -29,7 +32,7 @@ const structuredData = {
   },
 };
 ---
-<BaseLayout title={`${record.data.title} — Koinara`} description={record.data.summary} canonicalPath={`/records/${record.data.slug}/`} ogType="article" structuredData={structuredData}>
+<BaseLayout title={`${record.data.title} — Koinara`} description={record.data.summary} canonicalPath={`/records/${record.data.slug}/`} ogType="article" alternateMarkdownUrl={citation.rawMarkdownUrl} structuredData={structuredData}>
   <article class="mx-auto max-w-3xl">
     <a href="/records/" class="font-mono text-xs uppercase tracking-[0.18em] text-slate-500 no-underline hover:text-archive-cyan">← records</a>
     <h1 class="mt-5 text-4xl font-semibold tracking-[-0.035em] text-ink-950 sm:text-5xl">{record.data.title}</h1>
@@ -45,5 +48,27 @@ const structuredData = {
     <div class="koinara-serif-copy prose prose-slate mt-10 max-w-none prose-headings:text-ink-950 prose-a:text-ink-900 prose-code:font-mono">
       <Content />
     </div>
+    <section class="mt-12 rounded-lg border border-slate-300 bg-stone-50/85 p-5 shadow-sm" aria-labelledby="cite-this-record">
+      <p class="font-mono text-xs uppercase tracking-[0.24em] text-archive-cyan">cite this record</p>
+      <h2 id="cite-this-record" class="mt-3 text-2xl font-semibold tracking-[-0.02em] text-ink-950">Stable citation details</h2>
+      <dl class="mt-5 grid gap-3 font-mono text-xs text-slate-600 sm:grid-cols-2">
+        <div><dt class="uppercase tracking-[0.16em] text-slate-400">slug</dt><dd class="break-words text-ink-900">{citation.slug}</dd></div>
+        <div><dt class="uppercase tracking-[0.16em] text-slate-400">date</dt><dd class="text-ink-900">{citation.isoDate}</dd></div>
+        <div class="sm:col-span-2"><dt class="uppercase tracking-[0.16em] text-slate-400">stable URL</dt><dd class="break-words text-ink-900"><a href={citation.stableUrl}>{citation.stableUrl}</a></dd></div>
+        <div class="sm:col-span-2"><dt class="uppercase tracking-[0.16em] text-slate-400">raw Markdown</dt><dd class="break-words text-ink-900"><a href={citation.rawMarkdownUrl}>{citation.rawMarkdownUrl}</a></dd></div>
+        <div class="sm:col-span-2"><dt class="uppercase tracking-[0.16em] text-slate-400">license</dt><dd class="text-ink-900"><a href={citation.licenseUrl}>{citation.licenseName}</a> unless noted</dd></div>
+      </dl>
+      <div class="mt-5 space-y-4">
+        <div>
+          <p class="font-mono text-xs uppercase tracking-[0.16em] text-slate-500">Markdown one-liner</p>
+          <pre class="mt-2 overflow-x-auto rounded-md border border-slate-200 bg-stone-100 p-3 text-sm text-ink-900"><code>{citation.markdown}</code></pre>
+        </div>
+        <div>
+          <p class="font-mono text-xs uppercase tracking-[0.16em] text-slate-500">Plain text</p>
+          <pre class="mt-2 overflow-x-auto rounded-md border border-slate-200 bg-stone-100 p-3 text-sm text-ink-900"><code>{citation.plainText}</code></pre>
+        </div>
+        <p class="koinara-serif-copy text-sm text-slate-600">If your style requires an access date, use the date you fetched the record.</p>
+      </div>
+    </section>
   </article>
 </BaseLayout>

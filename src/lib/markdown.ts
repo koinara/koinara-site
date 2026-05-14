@@ -1,6 +1,6 @@
 import type { RecordEntry } from '@/lib/records';
 import { formatRecordDate } from '@/lib/records';
-import { SITE } from '@/lib/site';
+import { getRecordCitation, recordHtmlUrl, recordMarkdownUrl } from '@/lib/citation';
 
 function yamlScalar(value: string): string {
   return JSON.stringify(value);
@@ -14,13 +14,6 @@ function ensureTrailingNewline(markdown: string): string {
   return markdown.endsWith('\n') ? markdown : `${markdown}\n`;
 }
 
-export function recordHtmlUrl(record: RecordEntry): string {
-  return `${SITE.url}/records/${record.data.slug}/`;
-}
-
-export function recordMarkdownUrl(record: RecordEntry): string {
-  return `${SITE.url}/records/${record.data.slug}.md`;
-}
 
 export function serializeRecordMarkdown(record: RecordEntry): string {
   const frontmatter = [
@@ -37,11 +30,25 @@ export function serializeRecordMarkdown(record: RecordEntry): string {
     'sources:',
     ...record.data.sources.map((source) => `  - ${source}`),
     `source_url: ${recordHtmlUrl(record)}`,
+    `raw_markdown_url: ${recordMarkdownUrl(record)}`,
+    `license: ${yamlScalar(getRecordCitation(record).licenseName)}`,
     '---',
     '',
   ].join('\n');
 
-  return `${frontmatter}${ensureTrailingNewline(record.body ?? '')}`;
+  const citation = getRecordCitation(record);
+  const citationBlock = [
+    '## Cite this record',
+    '',
+    `- Stable URL: ${citation.stableUrl}`,
+    `- Raw Markdown: ${citation.rawMarkdownUrl}`,
+    `- Date: ${citation.isoDate}`,
+    `- License: ${citation.licenseName} (${citation.licenseUrl})`,
+    `- Markdown citation: ${citation.markdown}`,
+    '',
+  ].join('\n');
+
+  return `${frontmatter}${ensureTrailingNewline(record.body ?? '')}\n${citationBlock}`;
 }
 
 export function serializeFullRecordMarkdown(record: RecordEntry): string {
@@ -56,6 +63,8 @@ export function serializeFullRecordMarkdown(record: RecordEntry): string {
     `- Origin: ${record.data.origin}`,
     `- Sources: ${record.data.sources.join(', ')}`,
     `- Tags: ${record.data.tags.join(', ')}`,
+    `- License: ${getRecordCitation(record).licenseName}`,
+    `- Citation: ${getRecordCitation(record).plainText}`,
   ].join('\n');
 
   return `${metadata}\n\n${ensureTrailingNewline(record.body ?? '')}`;

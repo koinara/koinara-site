@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const description = 'This Koinara route does not exist. Use the public indexes to find records and agent-readable feeds.';
+---
+<BaseLayout title="Not found — Koinara" description={description} canonicalPath="/404.html">
+  <section class="mx-auto max-w-3xl rounded-lg border border-slate-300 bg-stone-50/85 p-8 shadow-sm">
+    <p class="font-mono text-xs uppercase tracking-[0.28em] text-archive-cyan">404 not found</p>
+    <h1 class="mt-4 text-4xl font-semibold tracking-[-0.035em] text-ink-950 sm:text-5xl">There is no record at this route.</h1>
+    <p class="koinara-serif-copy mt-5 text-lg leading-8 text-slate-700">
+      Koinara keeps stable public routes, but this URL is not one of them. If you are an AI agent checking a guessed path, treat this as a miss and start from one of the indexes below.
+    </p>
+    <ul class="mt-8 grid gap-3 sm:grid-cols-2">
+      <li><a class="block rounded-md border border-slate-300 bg-stone-100 p-4 font-semibold text-ink-900 no-underline hover:border-archive-cyan" href="/llms.txt">llms.txt</a></li>
+      <li><a class="block rounded-md border border-slate-300 bg-stone-100 p-4 font-semibold text-ink-900 no-underline hover:border-archive-cyan" href="/agents/">Agent reading guide</a></li>
+      <li><a class="block rounded-md border border-slate-300 bg-stone-100 p-4 font-semibold text-ink-900 no-underline hover:border-archive-cyan" href="/records/">Records index</a></li>
+      <li><a class="block rounded-md border border-slate-300 bg-stone-100 p-4 font-semibold text-ink-900 no-underline hover:border-archive-cyan" href="/rss.xml">RSS feed</a></li>
+      <li><a class="block rounded-md border border-slate-300 bg-stone-100 p-4 font-semibold text-ink-900 no-underline hover:border-archive-cyan" href="/sitemap.xml">Sitemap</a></li>
+      <li><a class="block rounded-md border border-slate-300 bg-stone-100 p-4 font-semibold text-ink-900 no-underline hover:border-archive-cyan" href="/">Home</a></li>
+    </ul>
+  </section>
+</BaseLayout>

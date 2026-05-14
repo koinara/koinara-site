@@ -7,6 +7,7 @@ interface Props {
   description?: string;
   canonicalPath?: string;
   ogType?: 'website' | 'article';
+  alternateMarkdownUrl?: string;
   structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
@@ -15,9 +16,11 @@ const {
   description = SITE.description,
   canonicalPath = Astro.url.pathname,
   ogType = 'website',
+  alternateMarkdownUrl,
   structuredData,
 } = Astro.props;
 const canonicalUrl = new URL(canonicalPath, SITE.url).toString();
+const alternateMarkdownHref = alternateMarkdownUrl ? new URL(alternateMarkdownUrl, SITE.url).toString() : null;
 const rssUrl = new URL('/rss.xml', SITE.url).toString();
 const ogImageUrl = new URL('/og.png', SITE.url).toString();
 const jsonLd = structuredData
@@ -36,6 +39,7 @@ const navItems = [
   { href: '/', label: 'Top' },
   { href: '/about/', label: 'About' },
   { href: '/records/', label: 'Records' },
+  { href: '/agents/', label: 'Agents' },
   { href: '/colophon/', label: 'Colophon' },
 ];
 ---
@@ -47,6 +51,7 @@ const navItems = [
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    {alternateMarkdownHref && <link rel="alternate" type="text/markdown" href={alternateMarkdownHref} />}
     <link rel="alternate" type="application/rss+xml" title="Koinara records" href={rssUrl} />
     <link rel="icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
