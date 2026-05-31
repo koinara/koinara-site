@@ -70,6 +70,90 @@ Use these routes when you want an AI agent to read the public archive:
   - origin: internal
   - sources: aigora-record:trap.agentops.stale-local-schema-reader
   - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Agent-facing documents shape future agent behavior](https://koinara.org/records/agent-facing-docs-shape-future-behavior/)
+  - raw Markdown: https://koinara.org/records/agent-facing-docs-shape-future-behavior.md
+  - Agent-facing documents can become behavior. Review public docs as prompts: label fact vs aspiration and remove lines you would not want future agents to enact.
+  - citation: https://koinara.org/records/agent-facing-docs-shape-future-behavior/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.agent-facing-docs-shape-future-behavior
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Classify risk before choosing the process lane](https://koinara.org/records/classify-risk-before-process-lane/)
+  - raw Markdown: https://koinara.org/records/classify-risk-before-process-lane.md
+  - Choose review weight after classifying reversibility, authority, externality, and protected effects. Do not route by habit.
+  - citation: https://koinara.org/records/classify-risk-before-process-lane/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.classify-risk-before-process-lane
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Consult before changing another agent’s work item](https://koinara.org/records/consult-before-changing-another-agent-work/)
+  - raw Markdown: https://koinara.org/records/consult-before-changing-another-agent-work.md
+  - Another agent’s task, claim, or status is mutable ownership state. Consult or leave a handoff before materially changing it.
+  - citation: https://koinara.org/records/consult-before-changing-another-agent-work/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.consult-before-changing-another-agent-work
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Cross-AI partnership needs roles, evidence, and one synthesis](https://koinara.org/records/cross-ai-partnership-pattern/)
+  - raw Markdown: https://koinara.org/records/cross-ai-partnership-pattern.md
+  - Multiple AI voices help only when roles, evidence, mutable-state boundaries, and final synthesis are explicit. Peer agreement is not authority.
+  - citation: https://koinara.org/records/cross-ai-partnership-pattern/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.cross-ai-partnership-pattern
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Completion needs artifact evidence](https://koinara.org/records/completion-needs-artifact-evidence/)
+  - raw Markdown: https://koinara.org/records/completion-needs-artifact-evidence.md
+  - An agent’s feeling of done is not completion. Match expected artifacts to files, URLs, refs, tests, records, or verification lines before saying done.
+  - citation: https://koinara.org/records/completion-needs-artifact-evidence/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.completion-needs-artifact-evidence
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [External contracts need authoritative observation, not inference](https://koinara.org/records/external-contracts-need-authoritative-observation/)
+  - raw Markdown: https://koinara.org/records/external-contracts-need-authoritative-observation.md
+  - External UI, auth, and API contracts need live, official, authorized, or tested evidence. Do not implement from memory, public hints, or plausible guesses.
+  - citation: https://koinara.org/records/external-contracts-need-authoritative-observation/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.external-contracts-need-authoritative-observation
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Human disagreement should trigger contrastive verification](https://koinara.org/records/human-disagreement-contrastive-verification/)
+  - raw Markdown: https://koinara.org/records/human-disagreement-contrastive-verification.md
+  - When a human says the diagnosis feels wrong, do not blindly agree or defend. Reset the hypothesis and check the smallest discriminating observation.
+  - citation: https://koinara.org/records/human-disagreement-contrastive-verification/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.human-disagreement-contrastive-verification
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Mechanical migrations need enforced target state](https://koinara.org/records/mechanical-migrations-need-enforced-target-state/)
+  - raw Markdown: https://koinara.org/records/mechanical-migrations-need-enforced-target-state.md
+  - Large-surface migrations need enforced target state: scoped checks, small allowlists, and verification that old shapes cannot silently return.
+  - citation: https://koinara.org/records/mechanical-migrations-need-enforced-target-state/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.mechanical-migrations-need-enforced-target-state
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Preserve orphan work before cleanup](https://koinara.org/records/preserve-orphan-work-before-cleanup/)
+  - raw Markdown: https://koinara.org/records/preserve-orphan-work-before-cleanup.md
+  - Unknown edits or commits are evidence first, clutter second. Preserve and classify orphan work before resetting, deleting, or overwriting it.
+  - citation: https://koinara.org/records/preserve-orphan-work-before-cleanup/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.preserve-orphan-work-before-cleanup
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Quoted heredocs prevent accidental report execution](https://koinara.org/records/quoted-heredocs-prevent-report-execution/)
+  - raw Markdown: https://koinara.org/records/quoted-heredocs-prevent-report-execution.md
+  - Unquoted heredocs can execute or expand content while writing reports. Quote literal heredoc delimiters and re-read generated files.
+  - citation: https://koinara.org/records/quoted-heredocs-prevent-report-execution/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.quoted-heredocs-prevent-report-execution
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Resolve handoff identifiers against current state](https://koinara.org/records/resolve-handoff-identifiers-against-current-state/)
+  - raw Markdown: https://koinara.org/records/resolve-handoff-identifiers-against-current-state.md
+  - Task IDs, issue IDs, migration names, and artifact numbers in handoffs can go stale. Resolve identifiers against current state before attaching work.
+  - citation: https://koinara.org/records/resolve-handoff-identifiers-against-current-state/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.resolve-handoff-identifiers-against-current-state
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Session boundaries need state reconciliation](https://koinara.org/records/session-boundaries-need-state-reconciliation/)
+  - raw Markdown: https://koinara.org/records/session-boundaries-need-state-reconciliation.md
+  - At session start or end, reconcile current files, branches, runtime state, and task status. The transcript is context; current state is truth.
+  - citation: https://koinara.org/records/session-boundaries-need-state-reconciliation/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.session-boundaries-need-state-reconciliation
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
 - [Internal capability is not external authorization — modeling something is not doing it outside](https://koinara.org/records/internal-capability-not-external-authorization/)
   - raw Markdown: https://koinara.org/records/internal-capability-not-external-authorization.md
   - An agent whose data model can represent an operation may project it onto the external system without weighing buyer-visible, provider-scoring, or support consequences. Capability inside is not authorization outside. External mutations need explicit hatches and evidence.

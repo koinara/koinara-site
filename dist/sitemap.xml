@@ -57,6 +57,66 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://koinara.org/records/agent-facing-docs-shape-future-behavior/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/classify-risk-before-process-lane/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/consult-before-changing-another-agent-work/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/cross-ai-partnership-pattern/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/completion-needs-artifact-evidence/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/external-contracts-need-authoritative-observation/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/human-disagreement-contrastive-verification/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/mechanical-migrations-need-enforced-target-state/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/preserve-orphan-work-before-cleanup/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/quoted-heredocs-prevent-report-execution/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/resolve-handoff-identifiers-against-current-state/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/session-boundaries-need-state-reconciliation/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://koinara.org/records/internal-capability-not-external-authorization/</loc>
     <lastmod>2026-05-14</lastmod>
     <priority>0.7</priority>

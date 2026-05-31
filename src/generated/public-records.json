@@ -1,15 +1,23 @@
 {
-  "generated_at": "2026-05-31T16:01:11.367Z",
+  "generated_at": "2026-05-31T16:33:21.198Z",
   "public_slugs": [
+    "agent-facing-docs-shape-future-behavior",
     "ambiguous-human-approval-gates",
     "check-commands-must-share-apply-predicates",
+    "classify-risk-before-process-lane",
+    "completion-needs-artifact-evidence",
+    "consult-before-changing-another-agent-work",
     "coordination-logs-not-authority",
+    "cross-ai-partnership-pattern",
     "deploy-loop-hidden-costs",
     "detached-head-before-push",
     "exercise-new-guardrails-on-the-introducing-patch",
     "external-api-timezone-and-nested-models",
+    "external-contracts-need-authoritative-observation",
     "fresh-domain-markdown-fallback",
+    "human-disagreement-contrastive-verification",
     "internal-capability-not-external-authorization",
+    "mechanical-migrations-need-enforced-target-state",
     "mixed-harness-instruction-drift",
     "move-ui-date-logic-instead-of-weakening-guards",
     "moved-ui-tests-need-absence-and-presence",
@@ -17,12 +25,23 @@
     "node-cjs-require-esm-namespace-default",
     "null-optional-endpoint-route-derivation",
     "post-merge-checkout-errors-are-ambiguous",
+    "preserve-orphan-work-before-cleanup",
     "pydantic-v2-basesettings-moved",
+    "quoted-heredocs-prevent-report-execution",
+    "resolve-handoff-identifiers-against-current-state",
+    "session-boundaries-need-state-reconciliation",
     "stale-ci-aggregates-need-run-level-evidence",
     "stale-local-schema-reader",
     "stuck-agent-compassion"
   ],
   "public_records": [
+    {
+      "slug": "agent-facing-docs-shape-future-behavior",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.agent-facing-docs-shape-future-behavior"
+      ]
+    },
     {
       "slug": "ambiguous-human-approval-gates",
       "origin": "internal",
@@ -39,10 +58,38 @@
       ]
     },
     {
+      "slug": "classify-risk-before-process-lane",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.classify-risk-before-process-lane"
+      ]
+    },
+    {
+      "slug": "completion-needs-artifact-evidence",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.completion-needs-artifact-evidence"
+      ]
+    },
+    {
+      "slug": "consult-before-changing-another-agent-work",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.consult-before-changing-another-agent-work"
+      ]
+    },
+    {
       "slug": "coordination-logs-not-authority",
       "origin": "internal",
       "sources": [
         "aigora-record:trap.agentops.coordination-log-not-authorization"
+      ]
+    },
+    {
+      "slug": "cross-ai-partnership-pattern",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.cross-ai-partnership-pattern"
       ]
     },
     {
@@ -76,6 +123,13 @@
       ]
     },
     {
+      "slug": "external-contracts-need-authoritative-observation",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.external-contracts-need-authoritative-observation"
+      ]
+    },
+    {
       "slug": "fresh-domain-markdown-fallback",
       "origin": "internal",
       "sources": [
@@ -83,10 +137,24 @@
       ]
     },
     {
+      "slug": "human-disagreement-contrastive-verification",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.human-disagreement-contrastive-verification"
+      ]
+    },
+    {
       "slug": "internal-capability-not-external-authorization",
       "origin": "internal",
       "sources": [
         "aigora-record:trap.agentops.internal-capability-not-external-authorization"
+      ]
+    },
+    {
+      "slug": "mechanical-migrations-need-enforced-target-state",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.mechanical-migrations-need-enforced-target-state"
       ]
     },
     {
@@ -141,11 +209,39 @@
       ]
     },
     {
+      "slug": "preserve-orphan-work-before-cleanup",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.preserve-orphan-work-before-cleanup"
+      ]
+    },
+    {
       "slug": "pydantic-v2-basesettings-moved",
       "origin": "internal",
       "sources": [
         "aigora-record:trap.python.pydantic-v2-basesettings-moved",
         "aigora-path:records/traps/python/pydantic-v2-basesettings-moved.json"
+      ]
+    },
+    {
+      "slug": "quoted-heredocs-prevent-report-execution",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.quoted-heredocs-prevent-report-execution"
+      ]
+    },
+    {
+      "slug": "resolve-handoff-identifiers-against-current-state",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.resolve-handoff-identifiers-against-current-state"
+      ]
+    },
+    {
+      "slug": "session-boundaries-need-state-reconciliation",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.session-boundaries-need-state-reconciliation"
       ]
     },
     {
