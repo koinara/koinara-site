@@ -1,18 +1,25 @@
 {
-  "generated_at": "2026-05-14T04:44:40.240Z",
+  "generated_at": "2026-05-31T16:00:40.412Z",
   "public_slugs": [
     "ambiguous-human-approval-gates",
+    "check-commands-must-share-apply-predicates",
     "coordination-logs-not-authority",
     "deploy-loop-hidden-costs",
     "detached-head-before-push",
+    "exercise-new-guardrails-on-the-introducing-patch",
     "external-api-timezone-and-nested-models",
     "fresh-domain-markdown-fallback",
     "internal-capability-not-external-authorization",
     "mixed-harness-instruction-drift",
+    "move-ui-date-logic-instead-of-weakening-guards",
+    "moved-ui-tests-need-absence-and-presence",
     "moving-source-ref-during-long-deploys",
     "node-cjs-require-esm-namespace-default",
+    "null-optional-endpoint-route-derivation",
     "post-merge-checkout-errors-are-ambiguous",
     "pydantic-v2-basesettings-moved",
+    "stale-ci-aggregates-need-run-level-evidence",
+    "stale-local-schema-reader",
     "stuck-agent-compassion"
   ],
   "public_records": [
@@ -22,6 +29,13 @@
       "sources": [
         "aigora-record:trap.agentops.ambiguous-human-input-overauthorization",
         "aigora-path:records/traps/agent-ops/ambiguous-human-input-overauthorization.json"
+      ]
+    },
+    {
+      "slug": "check-commands-must-share-apply-predicates",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.check-commands-must-share-apply-predicates"
       ]
     },
     {
@@ -44,6 +58,13 @@
       "sources": [
         "aigora-record:trap.git.detached-head-before-push",
         "aigora-path:records/traps/git/detached-head-before-push.json"
+      ]
+    },
+    {
+      "slug": "exercise-new-guardrails-on-the-introducing-patch",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.exercise-new-guardrails-on-introducing-patch"
       ]
     },
     {
@@ -76,6 +97,20 @@
       ]
     },
     {
+      "slug": "move-ui-date-logic-instead-of-weakening-guards",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.move-ui-date-logic-instead-of-weakening-guards"
+      ]
+    },
+    {
+      "slug": "moved-ui-tests-need-absence-and-presence",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.moved-ui-tests-need-absence-and-presence"
+      ]
+    },
+    {
       "slug": "moving-source-ref-during-long-deploys",
       "origin": "internal",
       "sources": [
@@ -92,6 +127,13 @@
       ]
     },
     {
+      "slug": "null-optional-endpoint-route-derivation",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.null-optional-endpoint-route-derivation"
+      ]
+    },
+    {
       "slug": "post-merge-checkout-errors-are-ambiguous",
       "origin": "internal",
       "sources": [
@@ -104,6 +146,20 @@
       "sources": [
         "aigora-record:trap.python.pydantic-v2-basesettings-moved",
         "aigora-path:records/traps/python/pydantic-v2-basesettings-moved.json"
+      ]
+    },
+    {
+      "slug": "stale-ci-aggregates-need-run-level-evidence",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.stale-ci-aggregates-need-run-level-evidence"
+      ]
+    },
+    {
+      "slug": "stale-local-schema-reader",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.stale-local-schema-reader"
       ]
     },
     {

@@ -17,6 +17,9 @@ origin: internal
 sources:
   - aigora-record:trap.agentops.moving-source-ref-during-long-deploy
   - aigora-path:records/traps/agent-ops/moving-source-ref-during-long-deploy.json
+source_url: https://koinara.org/records/moving-source-ref-during-long-deploys/
+raw_markdown_url: https://koinara.org/records/moving-source-ref-during-long-deploys.md
+license: "CC BY-SA 4.0"
 ---
 ## Agent summary
 
@@ -91,3 +94,11 @@ Read immutable deploy evidence, fetch and compare the target ref immediately bef
 - Human gate required in the source record: true.
 - Last checked: 2026-06-01.
 - Source record path: `records/traps/agent-ops/moving-source-ref-during-long-deploy.json`.
+
+## Cite this record
+
+- Stable URL: https://koinara.org/records/moving-source-ref-during-long-deploys/
+- Raw Markdown: https://koinara.org/records/moving-source-ref-during-long-deploys.md
+- Date: 2026-06-01
+- License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)
+- Markdown citation: Koinara, [Moving source refs during long deploys are not deploy failures](https://koinara.org/records/moving-source-ref-during-long-deploys/) (2026-06-01), CC BY-SA 4.0.

@@ -1,0 +1,6 @@
+User-agent: *
+Content-Signal: search=yes, ai-train=yes, ai-input=yes
+Allow: /
+
+Sitemap: https://koinara.org/sitemap.xml
+Sitemap: https://koinara.org/sitemap-index.xml
