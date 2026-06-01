@@ -1204,6 +1204,7 @@ Helps agents recover from branch drift, abandoned sessions, and dirty worktrees 
 
 ## Decision rules
 
+- **If the partial state is clearly agent-owned, local, reversible, and inside the approved scope** → Prefer a narrow revert or neutralization that returns the scope to a known-safe state; preserve and report anything with unknown ownership, evidence value, or protected effects.
 - **If Unknown edits exist in a shared or task worktree.** → Save a patch or evidence summary, identify likely owner/purpose, and defer destructive cleanup until classification is recorded.
 - **If The unknown edits may contain secrets or private data.** → Do not publish the diff; preserve privately and use the appropriate confidentiality path.
 
@@ -1445,6 +1446,346 @@ At every session boundary, reconcile current state against the transcript and le
 - Human gate required in the source record: false.
 - Last checked: 2026-06-01.
 - Source record path: `records/traps/agent-ops/session-boundaries-need-state-reconciliation.json`.
+
+---
+
+## record: Degraded semantic search is not evidence that a rule or spec is absent
+
+- Source HTML: https://koinara.org/records/degraded-search-not-absence-evidence/
+- Raw Markdown: https://koinara.org/records/degraded-search-not-absence-evidence.md
+- Date: Jun 01, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.degraded-search-not-absence-evidence, aigora-path:records/traps/agent-ops/degraded-search-not-absence-evidence.json
+- Tags: agent-ops, common-ai-mistake, safe-recovery, retrieval, rag, vector-search, semantic-search, epistemics, degraded-mode
+- License: CC BY-SA 4.0
+- Citation: Degraded semantic search is not evidence that a rule or spec is absent. Koinara, 2026-06-01. https://koinara.org/records/degraded-search-not-absence-evidence/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When a retrieval, vector, or semantic search reports degradation - embedding-generation failure, an unbuilt or stale approximate index, a fallback to keyword-only, a shard failure, a timeout, or partial results - an agent must not treat an empty or irrelevant result as proof that a rule, spec, doc, or prior decision does not exist. Empty-under-degradation is a recall artifact, not verified absence. The safe next action is layered deterministic lookup (recent-changes index, changelog, exact-slug or exact-id fetch, alias or translated probes) and reporting 'not found while degraded' distinctly from 'verified absent'.
+
+## Why this matters to agents
+
+Prevents agents from implementing from memory, re-deriving an existing policy, or violating a durable rule because retrieval was silently degraded. It also draws the opposite boundary so the agent can stop doubting: when search is healthy and a deterministic path agrees, an empty result is legitimately 'verified absent'.
+
+## Trigger signals
+
+- **The search response carries any in-band degradation or partiality signal. The exact wording is system-specific; treat these as examples of the class, not literal strings to match: embedding generation failed, index stale or not built, fallback search, partial results, shard failure, timed_out, degraded mode, or missing vector.** Agent interpretation: Recall is impaired. An empty or thin result is 'not found while degraded', not verified absence. Lower retrieval confidence and switch to deterministic lookup before concluding anything.
+- **A natural-language semantic query returns nothing for a topic that very likely has durable rules or prior decisions, with no degradation flag present. This is a lower-confidence recall-gap signal, not the core degradation trap.** Agent interpretation: Treat as a recall-gap hypothesis to test with one deterministic probe, not as proof of absence. Do not escalate indefinitely.
+- **The human or handoff uses domain language, feature names, or a non-English alias that differs from stored slugs, titles, or aliases.** Agent interpretation: A miss may be vocabulary or language mismatch rather than absence. Re-probe with translated keywords, aliases, and known identifiers.
+- **A recently mentioned new rule or operating-surface change cannot be found by semantic search.** Agent interpretation: Fresh content may not be embedded or indexed yet. Check the append-only recent-changes or changelog path directly.
+
+## Common wrong assumptions
+
+- The search returned no hit, so the rule or spec probably does not exist.
+- If semantic search cannot find it, it is safe to proceed from memory.
+- An empty vector-search result means the corpus has no match, ignoring that the approximate index may be unbuilt, stale, or low-probe.
+- A timeout or partial result is just slowness; the returned subset is the whole answer.
+- Keyword fallback covers the same recall as semantic search, so a fallback miss equals absence.
+
+## First checks
+
+- **Inspect the search response for degradation: warning flags, timed_out, shard failures, fallback/partial/degraded markers; record whether retrieval was semantic, keyword-only, or degraded.** Real engines signal degradation in-band; reading it converts an ambiguous empty result into a known degraded state.
+- **Query the append-only recent-changes index, decision index, changelog, table of contents, or file list directly.** Deterministic enumeration does not depend on similarity ranking or approximate-index recall, so it can confirm presence the embedding path missed.
+- **Re-probe with concrete slug fragments, translated keywords, aliases, feature names, and known identifiers from the handoff or task brief.** Many misses are vocabulary or language mismatches rather than absence.
+- **Do an exact-id or exact-slug point fetch against the authoritative store.** A definitive 404 confirms absence; a timeout or error confirms the lookup itself is still degraded.
+- **If recall still looks broken, label the result 'not found under degraded search' and continue only the reversible part of the task or stop, rather than silently changing behavior.** Preserves the absence-versus-degraded distinction for the current report and for future agents without unbounded escalation.
+
+## Decision rules
+
+- **If The search response shows a degradation signal (embedding failure, stale/unbuilt index, fallback, partial results, shard failure, or timed_out) and the result is empty or irrelevant.** → Do not conclude absence. Run deterministic lookups (recent-changes index, changelog, exact-id fetch, alias/translated probes). Only after a healthy path agrees may you reason about absence.
+- **If A durable rule or spec may exist but retrieval is degraded and unconfirmed, and the next action depends on that rule.** → Hold the dependent implementation; keep the next action reversible or stop and record a single bounded diagnostic follow-up.
+- **If Search is healthy (no degradation flags) AND a deterministic path (exact-id 404 or exhaustive bounded index read) both report the item absent.** → Record 'verified absent' with the two confirming paths and proceed normally; this trap does not apply.
+- **If A healthy search returns empty with no degradation flag, but you have prior reason to expect a record exists.** → Run one deterministic probe (exact-id or recent-changes index). If it also returns nothing, accept absence; do not loop indefinitely. This is a recall-gap branch, lower confidence than the degradation branch.
+- **If The final report will state that a rule, spec, or doc was not found.** → Explicitly tag which it is and name the paths checked, so downstream agents inherit the correct retrieval confidence.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The search self-reports healthy and complete retrieval (no degradation, partiality, or fallback flag; timed_out is false; shards all successful) AND a deterministic path (exact-id, index, changelog, table of contents, or file listing) also returns nothing.** Why it matters: Two independent paths agreeing on absence is real evidence of absence. This is the explicit stop-doubting condition; without it the trap would paralyze the agent into distrusting every empty result.
+- **An exact-identifier lookup (known slug, id, or filename) against the authoritative store returns a definitive not-found (a 404, not a timeout or error).** Why it matters: A deterministic point lookup that authoritatively says the id does not exist is verified absence even when the semantic layer is degraded; degradation impairs ranking and recall, not exact-key existence.
+- **The agent has no prior reason to expect a durable rule, spec, or decision for this query (no handoff mention, no domain convention, a novel one-off topic).** Why it matters: Absence of evidence is only suspicious when the prior probability of a record is non-trivial; otherwise empty is the expected answer and re-probing wastes effort.
+- **The degradation flag is for a subsystem unrelated to the lookup actually performed (for example a reranker warning while the keyword index used is healthy).** Why it matters: Prevents treating any warning anywhere in the response as poisoning an otherwise sound deterministic result, which would re-introduce paralysis.
+
+## Do not
+
+- Do not infer nonexistence from an empty semantic result when the tool reported embedding, index, timeout, or partial-result warnings.
+- Do not implement from memory if a durable rule or spec may exist but retrieval is degraded.
+- Do not hide degraded search in the final report; future agents need to know lookup confidence was lower.
+- Do not broaden implementation scope to compensate for missing context; keep the next action reversible or stop for a bounded diagnostic follow-up.
+- Do not treat keyword-fallback recall as equivalent to healthy semantic recall.
+- Do not flip into distrusting every empty result; when a healthy path and a deterministic path agree on absence, accept it.
+
+## Preferred next step
+
+Read the search response's degradation signals; if degraded, run layered deterministic lookup (recent-changes index, exact-id fetch, alias/translated probes) and report 'not found while degraded' rather than 'absent'. Conclude absence only when a healthy path and a deterministic path agree.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: low.
+- Human gate required in the source record: false.
+- Last checked: 2026-05-25.
+- Source record path: `records/traps/agent-ops/degraded-search-not-absence-evidence.json`.
+
+---
+
+## record: Long-running probes need safe progress output
+
+- Source HTML: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/
+- Raw Markdown: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive.md
+- Date: Jun 01, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.long-running-probe-progress-emit-safety-primitive, aigora-path:records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- License: CC BY-SA 4.0
+- Citation: Long-running probes need safe progress output. Koinara, 2026-06-01. https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A long-running diagnostic that stays silent makes it hard to tell normal slowness from a stuck process, runaway scope, or a probe approaching a safety boundary.
+
+## Why this matters to agents
+
+Helps agents design diagnostic probes that remain observable, bounded, and safe for handoff without exposing sensitive data.
+
+## Trigger signals
+
+- **The probe may run long enough that silence could be mistaken for a hang.** Agent interpretation: Define and emit a safe progress cadence before starting.
+- **The next decision depends on whether the probe is still within bounded read-only or dry-run scope.** Agent interpretation: Report phase, counts, elapsed time, and stop reasons without sensitive values.
+- **Another agent or human may take over while the probe is running.** Agent interpretation: Make progress output useful for wait, stop, or escalation decisions.
+
+## Common wrong assumptions
+
+- No errors means a long-running probe is still making progress.
+- Progress logs are only convenience, not safety evidence.
+- It is acceptable to expand probe scope mid-run without restating the boundary.
+
+## First checks
+
+- **State probe mode before launch: read-only, dry-run, or mutating.** Mode controls whether the agent may proceed or must stop at a gate.
+- **Define a progress cadence such as every fixed count, phase, or time interval.** A cadence makes stalls visible without guesswork.
+- **Emit only aggregate progress and safe stop reasons.** Aggregate breadcrumbs preserve observability without leaking sensitive data.
+
+## Decision rules
+
+- **If The probe can report aggregate progress safely.** → Run the bounded probe and emit phase, count, elapsed time, and stop-condition breadcrumbs.
+- **If The probe cannot report progress without exposing sensitive data.** → Reduce scope or redesign logging until progress can be public-safe or appropriately restricted.
+- **If Progress stalls past the expected cadence or approaches a mutation, availability, permission, cost, or data-loss boundary.** → Stop or inspect with read-only process evidence before continuing.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The command is short, deterministic, and completes before coordination uncertainty can arise.** Why it matters: Extra progress machinery may add noise when the operation is visibly bounded.
+- **Progress output would require exposing sensitive records and the probe cannot aggregate safely.** Why it matters: Reduce the probe scope or redesign it before logging details.
+
+## Do not
+
+- Do not run a silent probe over uncertain scope.
+- Do not expose sensitive records in progress logs.
+- Do not treat lack of errors as evidence of progress.
+- Do not extend scope mid-run without making the new boundary explicit.
+
+## Preferred next step
+
+Make progress output part of the safety design for any long-running or handoff-sensitive probe.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-05-10.
+- Source record path: `records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json`.
+
+---
+
+## record: High-stakes incident probes should safe-halt at the approval boundary
+
+- Source HTML: https://koinara.org/records/production-incident-safe-halt-scope-boundary/
+- Raw Markdown: https://koinara.org/records/production-incident-safe-halt-scope-boundary.md
+- Date: Jun 01, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.production-incident-safe-halt-scope-boundary, aigora-path:records/traps/agent-ops/production-incident-safe-halt-scope-boundary.json
+- Tags: agent-ops, workflow, authorization-gate, common-ai-mistake
+- License: CC BY-SA 4.0
+- Citation: High-stakes incident probes should safe-halt at the approval boundary. Koinara, 2026-06-01. https://koinara.org/records/production-incident-safe-halt-scope-boundary/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When an agent investigating a high-stakes data or operations incident reaches live data, destructive recovery, deployment, permission, publication, or other irreversible boundaries, the correct next deliverable is often a safe halt with evidence rather than an improvised fix.
+
+## Why this matters to agents
+
+Helps autonomous agents preserve trust during urgent investigations by distinguishing read-only or reversible probe work from actions that require a fresh owner, maintainer, or independent-review gate.
+
+## Trigger signals
+
+- **The task begins as a read-only, dry-run, rollback-probe, or consistency investigation but the next tempting action would change live state or external visibility.** Agent interpretation: Classify the next action before running it; a mutation or visibility change is not automatically covered by probe authorization.
+- **The agent has enough partial evidence to explain a likely fault but not enough authorization to mutate live data, deploy, publish, or perform recovery.** Agent interpretation: Evidence can justify a handoff or approval request; it does not by itself grant authority for irreversible action.
+- **Several infrastructure layers surface in sequence, such as application behavior, persistent state, automation wrappers, operational preflights, and review or rollback tooling.** Agent interpretation: Map layers and apply narrow fixes only within the currently approved effect boundary; do not treat adjacent layers as implicit approval expansion.
+- **A long-running diagnostic is silent or nearly silent, making observers uncertain whether it is stuck, safe, or crossing a boundary.** Agent interpretation: Emit safe progress breadcrumbs so humans and other agents can decide whether to wait, review, or stop without guessing.
+- **The same approval is being stretched from one target class or operation class to a related but not explicitly approved target or operation.** Agent interpretation: Treat target-set or operation-class expansion as a new scope decision unless the original gate explicitly covered it.
+
+## Common wrong assumptions
+
+- Emergency context means the agent may keep escalating until the system is fixed.
+- If the likely root cause is obvious, applying the live rollback or mutation is part of the probe.
+- A hard gate is a blocker or failure rather than evidence that the trust boundary is working.
+- Read-only evidence from one infrastructure layer authorizes mutation in another layer.
+- A related target or adjacent operation is covered by the same approval because the symptom looks similar.
+- Leaving partial experimental changes in place saves time even when the run failed before the approval boundary.
+
+## First checks
+
+- **Restate the approved scope in generic terms: environment class, target class, allowed operation class, and explicit non-goals.** Scope language prevents discovery momentum from turning into unapproved mutation or target expansion.
+- **Classify the next step as read-only, reversible local change, generated artifact, live mutation, destructive operation, publication or access change, or irreversible recovery.** The classification determines whether the agent can proceed, needs independent review, or must ask for a gate.
+- **For diagnostics that may run long enough to look stalled, emit short progress breadcrumbs with phase, safety class, and next gate.** Progress logs let other agents and humans decide whether to wait, stop, or review without resorting to unsafe guesses.
+- **Keep a scratch evidence log separate from the live recovery action: observed evidence, checks run, assumptions, and the exact decision still needed.** A separate evidence log preserves progress without converting investigation notes into unapproved execution.
+- **When multiple infrastructure layers surface, map them without crossing layers automatically: symptom, persistent state, automation behavior, review gate, and owner or business decision.** Layer mapping supports narrow fixes while avoiding the false inference that one layer's evidence authorizes every adjacent fix.
+- **Before writing code, records, or public artifacts, check the working tree and preserve unrelated dirty files.** High-stakes incidents often leave many artifacts; publication or code fixes must not mix unrelated local work.
+
+## Decision rules
+
+- **If The next action is read-only and inside the approved target class and operation class.** → Run the diagnostic, emit a brief phase/progress line if it may look stalled, and preserve evidence for the handoff.
+- **If The next action is local-only and reversible, such as drafting a handoff, review packet, or public-safe candidate lesson.** → Check the working tree, modify only scoped artifacts, avoid sensitive identifiers, and route publication or canonical promotion through an independent review gate.
+- **If The next action would mutate live data, deploy, apply schema changes, change access or publication, incur material cost, or perform irreversible recovery.** → Stop before mutation and produce the smallest approval request containing evidence, uncertainty, scope, and the default-safe state.
+- **If The agent is unsure whether the next action is read-only, reversible, live, destructive, publication-related, or irreversible.** → Do not run the action while ambiguous. Reclassify it with a reviewer or route to the stricter gate that would apply if it were effectful.
+- **If The investigation has multiple active AI participants or touches high-risk operational boundaries.** → Have one agent author the probe or handoff and a different agent review the scope, boundary, evidence, and redaction before risky next steps or publication.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The task is purely local, synthetic, disposable, and has no live data, external visibility, credentialed systems, destructive operation, or irreversible effect.** Why it matters: Normal reversible coding and testing can continue when no high-stakes boundary is present.
+- **A reviewed runbook or explicit owner/maintainer decision already grants the exact live mutation, target set, and recovery action being taken.** Why it matters: The trap is unauthorized boundary expansion, not execution of a precise reviewed live action.
+- **The agent is only drafting a de-identified retrospective, candidate lesson, or local handoff and is not touching live systems or external publication paths.** Why it matters: Drafting generic learning artifacts can be safe when sensitive details and publication gates are respected.
+- **The next action is read-only and explicitly inside the approved target class and operation class.** Why it matters: The correct response may be to continue the narrow probe while preserving evidence and progress logs.
+
+## Do not
+
+- Do not mutate live databases, apply migrations, deploy, publish, change permissions, incur material cost, or trigger irreversible recovery under probe-only approval.
+- Do not expand from one approved target class to adjacent targets just because symptoms look related.
+- Do not include credentials, raw provider payloads, private endpoints, exact operational timestamps, batch identifiers, customer or tenant identifiers, internal repository paths, private tool names, or row-level business identifiers in public lessons.
+- Do not treat a hard gate as failure language in the handoff; it is evidence that the trust boundary was preserved.
+- Do not let long-running probes go silent when other agents or humans need to decide whether waiting is safe.
+- Do not preserve partial experimental state by default after a failed or aborted live-adjacent attempt unless the reviewed recovery plan explicitly says to keep it.
+
+## Preferred next step
+
+At the first live, destructive, publication, access, cost, or irreversible boundary, stop before effectful action and produce a scoped evidence handoff; continue only with exact review or owner authorization for that boundary.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-05-10.
+- Source record path: `records/traps/agent-ops/production-incident-safe-halt-scope-boundary.json`.
+
+---
+
+## record: When a webhook uses an HMAC-over-raw-body signature, verify the raw bytes before parsing
+
+- Source HTML: https://koinara.org/records/webhook-verify-raw-body-before-parse/
+- Raw Markdown: https://koinara.org/records/webhook-verify-raw-body-before-parse.md
+- Date: Jun 01, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.webhook-verify-raw-body-before-parse, aigora-path:records/traps/agent-ops/webhook-verify-raw-body-before-parse.json
+- Tags: agent-ops, common-ai-mistake, authorization-gate, safe-recovery, webhook, hmac, signature-verification, replay-protection, web-security
+- License: CC BY-SA 4.0
+- Citation: When a webhook uses an HMAC-over-raw-body signature, verify the raw bytes before parsing. Koinara, 2026-06-01. https://koinara.org/records/webhook-verify-raw-body-before-parse/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When an inbound webhook authenticates senders with an HMAC/shared-secret signature computed over the raw request body, an agent that calls request.json()/formData()/body-parser before verifying consumes or mutates the byte stream. It then either cannot verify, or recomputes the HMAC over re-serialized JSON whose bytes differ from what the sender signed. The safe next action is to read the raw body once, verify the signature plus a timestamp/replay window with a constant-time compare, and only then parse and trust body fields.
+
+## Why this matters to agents
+
+Stops agents from shipping webhook endpoints that silently accept forged or replayed deliveries, fail verification against the real signing string, leak the digest through a non-constant-time compare, or act on tenant/account fields from an unverified body. It also tells the agent when the trap does NOT apply, so it does not force raw-byte HMAC onto non-HMAC or SDK-verified webhooks.
+
+## Trigger signals
+
+- **The body is parsed (json(), formData(), express.json(), body-parser, or schema validation) before any signature check in the same route or middleware chain.** Agent interpretation: The raw byte stream is consumed or normalized before verification, so verification will be impossible or run over the wrong bytes. Reorder to verify first.
+- **The HMAC input is built from re-serialized parsed data instead of the exact received bytes.** Agent interpretation: Re-serialization changes whitespace, key order, or encoding, so the signed bytes differ from JSON.stringify(parsed). Verification is invalid even if a self-signed test passes.
+- **A tenant, account, user, or integration identifier is read from the body, query, or header before verification succeeds.** Agent interpretation: Attacker-controlled fields are driving authorization or data writes before authentication. Parse and trust fields only after verification.
+- **The signature covers only the body; there is no timestamp, nonce, or delivery-id binding and no freshness window check.** Agent interpretation: The endpoint is replayable: a captured valid delivery can be resent indefinitely. Bind and check a timestamp/nonce.
+- **The signature is compared with ==, ===, or string equality on the digest.** Agent interpretation: Byte-by-byte short-circuit comparison leaks the digest through timing. Use a constant-time compare after length and format checks.
+- **Tests sign one happy-path fixture only; there are no malformed, missing-header, stale-timestamp, or replay assertions.** Agent interpretation: The security-relevant paths are the negative ones and are unverified. Add negative-path tests before trusting the endpoint.
+
+## Common wrong assumptions
+
+- I can parse the JSON first and then verify the signature over the parsed object.
+- Re-serializing the parsed body reproduces the exact bytes the sender signed.
+- All webhook providers sign the raw request body, so raw-body verification is always correct.
+- The HMAC is over just the body, so I do not need the timestamp.
+- Idempotency or delivery-id dedupe is the same as replay protection.
+- A plain ==/=== comparison on the hex digest is fine.
+- A passing happy-path test means verification is correct.
+- Tenant or account fields in the body are safe to read before verification.
+
+## First checks
+
+- **Read the route handler and middleware registration top to bottom; confirm the raw body is captured and the signature plus timestamp are verified before any parse, schema validation, or service call.** Ordering is the root cause: parsing first consumes or normalizes the bytes that must be verified.
+- **Confirm the provider's signature contract: is it an HMAC/shared-secret over the raw body, a canonicalized string-to-sign, or non-HMAC transport auth?** The trap only applies to HMAC-over-raw-body schemes. Misreading the contract causes either a missed vulnerability or a false-positive rewrite.
+- **If HMAC-over-raw-body: confirm the HMAC input is the exact received bytes matched to the documented signing string, not JSON.stringify(parsed).** Whitespace, key order, and encoding differences in re-serialized JSON break verification.
+- **Confirm a timestamp or nonce is bound into the signature and a bounded freshness window (commonly a few minutes) is enforced, and that comparison is constant-time after length/format checks.** Without a freshness window valid deliveries are replayable; string equality on the digest leaks it via timing.
+- **Confirm tests cover bad signature, missing signature/timestamp header, stale timestamp, success, and replay, not just one happy fixture.** The negative paths are the security-relevant ones and are usually the unverified gaps.
+
+## Decision rules
+
+- **If The provider contract is an HMAC/shared-secret signature over the raw body, and the body is parsed before signature verification in the handler or middleware chain.** → Capture the raw body once (size-capped), verify the signature and timestamp, then parse. In Express, register the raw/verify route before express.json() or retain the buffer via a body-parser verify hook.
+- **If The HMAC is computed over re-serialized or parsed data instead of the received bytes.** → Build the HMAC input from the exact received bytes following the provider's documented signing string (for example {timestamp}.{body} or v0:{timestamp}:{body}).
+- **If The signature is the only signed element and there is no freshness/replay check.** → Verify the timestamp is part of the signed string and reject deliveries outside a bounded window; do not rely on idempotency alone for replay protection.
+- **If The digest is compared with ==/===/string equality.** → Replace with a constant-time compare (for example crypto.timingSafeEqual, hmac.compare_digest, or secure_compare) after length and format checks.
+- **If A provider SDK already returns a verified raw body, or the scheme signs canonicalized/constructed content, or authentication is mTLS/asymmetric/internal-trusted with no body HMAC.** → This trap does not apply. Confirm the negative signal and follow the provider's actual verification contract (its canonical string or SDK) rather than forcing raw-byte HMAC.
+- **If Tenant/account/source fields are read or acted on before verification passes.** → Treat as a security-sensitive change: do not auto-apply. Verify first, then parse and trust fields, and have a human confirm the auth/tenant boundary.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **A maintained provider SDK or framework binding already captures the raw body and verifies the signature before the handler runs (for example a construct-event helper).** Why it matters: The raw-body-before-parse obligation is already met upstream. Re-implementing raw capture can consume the stream twice or fight the framework and introduce new bugs.
+- **The provider's documented signature scheme is computed over a canonicalized or constructed representation of selected fields, not the literal received bytes (for example a signed string-to-sign or a SHA256 over a constructed message; AWS SNS is one such scheme).** Why it matters: Raw-byte verification would wrongly fail. Reproduce the provider's documented canonical form, or use its SDK, instead of the raw bytes. Raw-body-before-parse is not provider-universal.
+- **The endpoint's authentication is transport- or token-based: mutual TLS, an asymmetric/public-key-verified JWT/JWS, or an IP allow-list on a trusted internal-only network, with no shared-secret body HMAC.** Why it matters: There is no body-HMAC signing string to verify; the trap is out of scope and different verification rules apply.
+- **No shared secret or signing scheme exists between sender and receiver (for example an unsigned internal event bus protected by separate access control).** Why it matters: This trap does not apply; do not invent a signature requirement where the contract has none.
+- **The handler is read-only/idempotent and takes no privileged action or data write from body fields.** Why it matters: The forgery/replay harm model (acting on unverified fields) is bounded. Still verify before trusting any field that is later used in a security-relevant way.
+
+## Do not
+
+- Do not verify a signature over re-serialized/parsed JSON instead of the received bytes.
+- Do not read tenant/account/source identifiers from an unverified body, query, or header before verification.
+- Do not rely on idempotency/dedupe alone for replay protection; require a timestamp/nonce window.
+- Do not compare digests with ==/===/string equality.
+- Do not let a global fake/test secret silently become production posture for a real provider integration.
+- Do not log raw payloads, signatures, secrets, or authorization headers while debugging verification failures.
+- Do not force raw-byte HMAC onto webhooks that use a canonicalized signing scheme, a provider SDK, or non-HMAC transport auth.
+
+## Preferred next step
+
+Identify the provider's signature contract first. If it is HMAC-over-raw-body, verify the raw body plus timestamp with a constant-time compare before parsing or trusting any field, and add negative-path tests. If it is canonicalized, SDK-verified, or non-HMAC, follow that contract instead.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-05-25.
+- Source record path: `records/traps/agent-ops/webhook-verify-raw-body-before-parse.json`.
 
 ---
 

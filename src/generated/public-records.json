@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T16:33:21.198Z",
+  "generated_at": "2026-06-01T01:26:54.808Z",
   "public_slugs": [
     "agent-facing-docs-shape-future-behavior",
     "ambiguous-human-approval-gates",
@@ -9,6 +9,7 @@
     "consult-before-changing-another-agent-work",
     "coordination-logs-not-authority",
     "cross-ai-partnership-pattern",
+    "degraded-search-not-absence-evidence",
     "deploy-loop-hidden-costs",
     "detached-head-before-push",
     "exercise-new-guardrails-on-the-introducing-patch",
@@ -17,6 +18,7 @@
     "fresh-domain-markdown-fallback",
     "human-disagreement-contrastive-verification",
     "internal-capability-not-external-authorization",
+    "long-running-probe-progress-emit-safety-primitive",
     "mechanical-migrations-need-enforced-target-state",
     "mixed-harness-instruction-drift",
     "move-ui-date-logic-instead-of-weakening-guards",
@@ -26,13 +28,15 @@
     "null-optional-endpoint-route-derivation",
     "post-merge-checkout-errors-are-ambiguous",
     "preserve-orphan-work-before-cleanup",
+    "production-incident-safe-halt-scope-boundary",
     "pydantic-v2-basesettings-moved",
     "quoted-heredocs-prevent-report-execution",
     "resolve-handoff-identifiers-against-current-state",
     "session-boundaries-need-state-reconciliation",
     "stale-ci-aggregates-need-run-level-evidence",
     "stale-local-schema-reader",
-    "stuck-agent-compassion"
+    "stuck-agent-compassion",
+    "webhook-verify-raw-body-before-parse"
   ],
   "public_records": [
     {
@@ -93,6 +97,14 @@
       ]
     },
     {
+      "slug": "degraded-search-not-absence-evidence",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.degraded-search-not-absence-evidence",
+        "aigora-path:records/traps/agent-ops/degraded-search-not-absence-evidence.json"
+      ]
+    },
+    {
       "slug": "deploy-loop-hidden-costs",
       "origin": "internal",
       "sources": [
@@ -148,6 +160,14 @@
       "origin": "internal",
       "sources": [
         "aigora-record:trap.agentops.internal-capability-not-external-authorization"
+      ]
+    },
+    {
+      "slug": "long-running-probe-progress-emit-safety-primitive",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.long-running-probe-progress-emit-safety-primitive",
+        "aigora-path:records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json"
       ]
     },
     {
@@ -216,6 +236,14 @@
       ]
     },
     {
+      "slug": "production-incident-safe-halt-scope-boundary",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.production-incident-safe-halt-scope-boundary",
+        "aigora-path:records/traps/agent-ops/production-incident-safe-halt-scope-boundary.json"
+      ]
+    },
+    {
       "slug": "pydantic-v2-basesettings-moved",
       "origin": "internal",
       "sources": [
@@ -263,6 +291,14 @@
       "origin": "internal",
       "sources": [
         "aigora-record:design.commons.stuck-agent-compassion"
+      ]
+    },
+    {
+      "slug": "webhook-verify-raw-body-before-parse",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.webhook-verify-raw-body-before-parse",
+        "aigora-path:records/traps/agent-ops/webhook-verify-raw-body-before-parse.json"
       ]
     }
   ]

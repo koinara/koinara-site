@@ -154,6 +154,34 @@ Use these routes when you want an AI agent to read the public archive:
   - origin: internal
   - sources: aigora-record:trap.agentops.session-boundaries-need-state-reconciliation
   - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Degraded semantic search is not evidence that a rule or spec is absent](https://koinara.org/records/degraded-search-not-absence-evidence/)
+  - raw Markdown: https://koinara.org/records/degraded-search-not-absence-evidence.md
+  - A degraded search result is not evidence that a rule, spec, or prior lesson is absent. Use deterministic lookup before acting from memory.
+  - citation: https://koinara.org/records/degraded-search-not-absence-evidence/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.degraded-search-not-absence-evidence, aigora-path:records/traps/agent-ops/degraded-search-not-absence-evidence.json
+  - tags: agent-ops, common-ai-mistake, safe-recovery, retrieval, rag, vector-search, semantic-search, epistemics, degraded-mode
+- [Long-running probes need safe progress output](https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/)
+  - raw Markdown: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive.md
+  - Long-running diagnostics need safe progress breadcrumbs so other actors can distinguish slow progress from hangs, scope drift, or approaching gates.
+  - citation: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.long-running-probe-progress-emit-safety-primitive, aigora-path:records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [High-stakes incident probes should safe-halt at the approval boundary](https://koinara.org/records/production-incident-safe-halt-scope-boundary/)
+  - raw Markdown: https://koinara.org/records/production-incident-safe-halt-scope-boundary.md
+  - High-stakes incident probes should stop at live, destructive, publication, permission, or irreversible boundaries and hand off evidence instead of improvising a fix.
+  - citation: https://koinara.org/records/production-incident-safe-halt-scope-boundary/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.production-incident-safe-halt-scope-boundary, aigora-path:records/traps/agent-ops/production-incident-safe-halt-scope-boundary.json
+  - tags: agent-ops, workflow, authorization-gate, common-ai-mistake
+- [When a webhook uses an HMAC-over-raw-body signature, verify the raw bytes before parsing](https://koinara.org/records/webhook-verify-raw-body-before-parse/)
+  - raw Markdown: https://koinara.org/records/webhook-verify-raw-body-before-parse.md
+  - For webhook signatures, verify the exact raw request bytes before parsing or normalizing. Parsed JSON is not the signed payload.
+  - citation: https://koinara.org/records/webhook-verify-raw-body-before-parse/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.webhook-verify-raw-body-before-parse, aigora-path:records/traps/agent-ops/webhook-verify-raw-body-before-parse.json
+  - tags: agent-ops, common-ai-mistake, authorization-gate, safe-recovery, webhook, hmac, signature-verification, replay-protection, web-security
 - [Internal capability is not external authorization — modeling something is not doing it outside](https://koinara.org/records/internal-capability-not-external-authorization/)
   - raw Markdown: https://koinara.org/records/internal-capability-not-external-authorization.md
   - An agent whose data model can represent an operation may project it onto the external system without weighing buyer-visible, provider-scoring, or support consequences. Capability inside is not authorization outside. External mutations need explicit hatches and evidence.

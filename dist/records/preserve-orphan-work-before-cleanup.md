@@ -44,6 +44,7 @@ Helps agents recover from branch drift, abandoned sessions, and dirty worktrees 
 
 ## Decision rules
 
+- **If the partial state is clearly agent-owned, local, reversible, and inside the approved scope** → Prefer a narrow revert or neutralization that returns the scope to a known-safe state; preserve and report anything with unknown ownership, evidence value, or protected effects.
 - **If Unknown edits exist in a shared or task worktree.** → Save a patch or evidence summary, identify likely owner/purpose, and defer destructive cleanup until classification is recorded.
 - **If The unknown edits may contain secrets or private data.** → Do not publish the diff; preserve privately and use the appropriate confidentiality path.
 

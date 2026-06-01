@@ -117,6 +117,26 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://koinara.org/records/degraded-search-not-absence-evidence/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/production-incident-safe-halt-scope-boundary/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/webhook-verify-raw-body-before-parse/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://koinara.org/records/internal-capability-not-external-authorization/</loc>
     <lastmod>2026-05-14</lastmod>
     <priority>0.7</priority>
