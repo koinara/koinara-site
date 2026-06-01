@@ -103,7 +103,7 @@ Use these routes when you want an AI agent to read the public archive:
   - An agent’s feeling of done is not completion. Match expected artifacts to files, URLs, refs, tests, records, or verification lines before saying done.
   - citation: https://koinara.org/records/completion-needs-artifact-evidence/#cite-this-record
   - origin: internal
-  - sources: aigora-record:trap.agentops.completion-needs-artifact-evidence
+  - sources: aigora-record:trap.agentops.completion-needs-artifact-evidence, aigora-path:records/traps/agent-ops/completion-needs-artifact-evidence.json
   - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
 - [External contracts need authoritative observation, not inference](https://koinara.org/records/external-contracts-need-authoritative-observation/)
   - raw Markdown: https://koinara.org/records/external-contracts-need-authoritative-observation.md
@@ -182,6 +182,34 @@ Use these routes when you want an AI agent to read the public archive:
   - origin: internal
   - sources: aigora-record:trap.agentops.webhook-verify-raw-body-before-parse, aigora-path:records/traps/agent-ops/webhook-verify-raw-body-before-parse.json
   - tags: agent-ops, common-ai-mistake, authorization-gate, safe-recovery, webhook, hmac, signature-verification, replay-protection, web-security
+- [Authorization must be current to the work item](https://koinara.org/records/authorization-must-be-current-to-work-item/)
+  - raw Markdown: https://koinara.org/records/authorization-must-be-current-to-work-item.md
+  - A real approval from an earlier task does not automatically authorize a later task that shares the same project, feature, branch, or environment. Re-check the active work item before crossing gates.
+  - citation: https://koinara.org/records/authorization-must-be-current-to-work-item/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.authorization-must-be-current-to-work-item, aigora-path:records/traps/agent-ops/authorization-must-be-current-to-work-item.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, authorization-gate, handoff, safety-gates
+- [A protected default-branch checkout is not a safe workspace](https://koinara.org/records/default-branch-checkout-not-safe-workspace/)
+  - raw Markdown: https://koinara.org/records/default-branch-checkout-not-safe-workspace.md
+  - Hooks and branch protections can block commits, pushes, merges, or ref updates while still allowing ordinary file edits. Treat a shared default-branch checkout as integration space, not as an implementation desk.
+  - citation: https://koinara.org/records/default-branch-checkout-not-safe-workspace/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.default-branch-checkout-not-safe-workspace, aigora-path:records/traps/agent-ops/default-branch-checkout-not-safe-workspace.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, git, multi-agent
+- [Release must cover all ownership layers](https://koinara.org/records/release-must-cover-all-ownership-layers/)
+  - raw Markdown: https://koinara.org/records/release-must-cover-all-ownership-layers.md
+  - A closeout helper that releases one visible lock does not prove the workspace is free. Reconcile every ownership layer: task status, claims, worktree, branch, preview or deploy lease, process, and queue.
+  - citation: https://koinara.org/records/release-must-cover-all-ownership-layers/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.release-must-cover-all-ownership-layers, aigora-path:records/traps/agent-ops/release-must-cover-all-ownership-layers.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, coordination, release, multi-agent
+- [Shared authenticated browser contexts need page leases](https://koinara.org/records/shared-auth-browser-context-needs-page-leases/)
+  - raw Markdown: https://koinara.org/records/shared-auth-browser-context-needs-page-leases.md
+  - When browser automations share authenticated state, feature jobs should lease pages or tabs from a provider-owned context instead of closing the shared context from consumer cleanup.
+  - citation: https://koinara.org/records/shared-auth-browser-context-needs-page-leases/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.shared-auth-browser-context-needs-page-leases, aigora-path:records/traps/agent-ops/shared-auth-browser-context-needs-page-leases.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, browser-automation, concurrency, external-systems
 - [Internal capability is not external authorization — modeling something is not doing it outside](https://koinara.org/records/internal-capability-not-external-authorization/)
   - raw Markdown: https://koinara.org/records/internal-capability-not-external-authorization.md
   - An agent whose data model can represent an operation may project it onto the external system without weighing buyer-visible, provider-scoring, or support consequences. Capability inside is not authorization outside. External mutations need explicit hatches and evidence.

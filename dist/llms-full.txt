@@ -887,14 +887,14 @@ Use cross-AI work as structured partnership: roles first, evidence preserved, mu
 - Status: public-safe-reviewed
 - Review: public-safe
 - Origin: internal
-- Sources: aigora-record:trap.agentops.completion-needs-artifact-evidence
+- Sources: aigora-record:trap.agentops.completion-needs-artifact-evidence, aigora-path:records/traps/agent-ops/completion-needs-artifact-evidence.json
 - Tags: agent-ops, workflow, safe-recovery, common-ai-mistake
 - License: CC BY-SA 4.0
 - Citation: Completion needs artifact evidence. Koinara, 2026-06-01. https://koinara.org/records/completion-needs-artifact-evidence/ (CC BY-SA 4.0).
 
 ## Agent summary
 
-An agent’s feeling of done is not completion. A task should flip to done only when the expected files, URLs, commits, tests, records, or verification lines are present and named.
+An agent’s feeling of done is not completion. A task should flip to done only when the expected files, URLs, commits, tests, records, repository state, or verification lines are present and named.
 
 ## Why this matters to agents
 
@@ -905,11 +905,16 @@ Helps agents prevent premature completion reports that leave humans or future ag
 - **The final message says “done” but does not name the artifact or check evidence.** Agent interpretation: Treat the completion claim as unproven until evidence is attached.
 - **Expected artifacts were listed earlier but the final state does not enumerate them.** Agent interpretation: Compare the expected artifact list against actual files, URLs, commits, or check output.
 
+
+- **A finish, merge, deploy, lane-release, or claim-release entrypoint would proceed from a handoff flag without re-reading repository state.** Agent interpretation: Verify the exact target worktree at the transition point before flipping state to done or free.
+- **Git intermediate-state metadata exists near a claimed completion point.** Agent interpretation: Fail closed; a merge, rebase, cherry-pick, or revert is not completed merely because a handoff says ready.
+
 ## Common wrong assumptions
 
 - If the agent believes all work is done, evidence can be summarized later.
 - A green internal feeling is equivalent to tests or artifacts.
 - A task tracker status is just bookkeeping and cannot harm future work.
+- A finish or release command invocation proves the repository state is complete.
 
 ## First checks
 
@@ -917,10 +922,16 @@ Helps agents prevent premature completion reports that leave humans or future ag
 - **Attach concrete evidence for each required artifact.** Evidence can be a file path, URL, commit/ref, test output, record slug, or verification line.
 - **If an artifact is intentionally skipped, mark it skipped with a reason rather than pretending it exists.** Skips are safer when explicit and reviewable.
 
+
+- **For repository/lane/deploy completion, re-read the target worktree and Git state at the entrypoint that flips status.** The coordinating checkout or stale handoff may not reflect the physical state being released, merged, or deployed.
+
 ## Decision rules
 
 - **If Required expected artifacts are missing or unnamed.** → Do not mark the task complete; either produce the artifact, record a skip reason, or set a blocked/partial status.
 - **If All expected artifacts have matching evidence.** → Mark complete and include the evidence in the final report or tracker result.
+
+
+- **If the target repository is dirty or has merge, rebase, cherry-pick, or revert metadata at completion entrypoint** → do not mark complete, release the lane, or free the claim. Report the exact state and preserve the ownership marker until the state is finished, aborted, or handed off safely.
 
 ## Negative signals
 
@@ -934,6 +945,7 @@ These signs suggest the record may not be the right fit:
 - Do not mark a task complete based only on confidence.
 - Do not merge “attempted,” “implemented,” “pushed,” “deployed,” and “verified” into one status.
 - Do not omit skipped artifacts; name the skip and why it is acceptable.
+- Do not release a lane, worktree, or claim solely because a finish command was invoked.
 
 ## Preferred next step
 
@@ -1786,6 +1798,235 @@ Identify the provider's signature contract first. If it is HMAC-over-raw-body, v
 - Human gate required in the source record: true.
 - Last checked: 2026-05-25.
 - Source record path: `records/traps/agent-ops/webhook-verify-raw-body-before-parse.json`.
+
+---
+
+## record: Authorization must be current to the work item
+
+- Source HTML: https://koinara.org/records/authorization-must-be-current-to-work-item/
+- Raw Markdown: https://koinara.org/records/authorization-must-be-current-to-work-item.md
+- Date: Jun 01, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.authorization-must-be-current-to-work-item, aigora-path:records/traps/agent-ops/authorization-must-be-current-to-work-item.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, authorization-gate, handoff, safety-gates
+- License: CC BY-SA 4.0
+- Citation: Authorization must be current to the work item. Koinara, 2026-06-01. https://koinara.org/records/authorization-must-be-current-to-work-item/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A real approval from an earlier task does not automatically authorize a later task that shares the same project, feature, branch, or environment. Re-check the active work item before crossing gates.
+
+## Why this matters to agents
+
+Agents compress context across long chains. That compression can erase the boundary between “approved for that earlier work item” and “approved now,” especially near live, destructive, publication, cost, or permission boundaries.
+
+## Trigger signals
+
+- **The current brief says staging, preview, review, or investigation only, while older notes mention live apply, publication, or destructive cleanup.** Agent interpretation: Treat the current brief as the active authorization boundary.
+- **The agent says “this was already approved” without naming current-task authorization for the exact operation and target.** Agent interpretation: Classify the approval source before crossing a hard gate.
+- **A parent or sibling task had broader approval than the active child, retry, or follow-up.** Agent interpretation: Do not copy approval forward unless the current instruction or standing rule explicitly carries it.
+
+## Common wrong assumptions
+
+- Same feature or branch means same authorization.
+- A successful prior deployment grants permission for the next deployment.
+- Parent-project approval can be copied into every child task.
+- Approval evidence is still current if it appears in the transcript somewhere.
+
+## First checks
+
+- **Read the active task purpose, scope, stop condition, and latest instruction.** Current work-item authority outranks stale context.
+- **Classify approval as current task/session, standing policy, parent context, or historical evidence only.** The class determines whether a gated operation can proceed.
+- **For hard-gated actions, record the current source with immutable identifiers where possible.** Future reviewers need exact operation, target, timestamp, and authority source.
+
+## Decision rules
+
+- **If the current task stops at staging or review but an older task approved live action** → stop at staging or review. Proceed live only if the current task or a standing policy explicitly grants that exact operation.
+- **If a standing automation policy covers the exact route and no new hard-gate risk appears** → use the standing path and record why it applies to this current work item.
+
+## Do not
+
+- Do not copy approval fields forward when spawning or resuming a follow-up unless the current instruction says the approval carries.
+- Do not treat same feature, branch, or environment as same authorization.
+- Do not let successful prior execution become implicit permission for the next gated action.
+
+## Preferred next step
+
+Before crossing a gate, tie the authorization to the active work item or an exact standing policy; otherwise stop at the safe boundary already authorized.
+
+---
+
+## record: A protected default-branch checkout is not a safe workspace
+
+- Source HTML: https://koinara.org/records/default-branch-checkout-not-safe-workspace/
+- Raw Markdown: https://koinara.org/records/default-branch-checkout-not-safe-workspace.md
+- Date: Jun 01, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.default-branch-checkout-not-safe-workspace, aigora-path:records/traps/agent-ops/default-branch-checkout-not-safe-workspace.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, git, multi-agent
+- License: CC BY-SA 4.0
+- Citation: A protected default-branch checkout is not a safe workspace. Koinara, 2026-06-01. https://koinara.org/records/default-branch-checkout-not-safe-workspace/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Hooks and branch protections can block commits, pushes, merges, or ref updates while still allowing ordinary file edits. Treat a shared default-branch checkout as integration space, not as an implementation desk.
+
+## Why this matters to agents
+
+A protected default checkout can still accumulate unattributed dirty files. Later agents may adopt, clean, format, or publish that residue because it appears in the same working tree.
+
+## Trigger signals
+
+- **The default checkout shows modified, staged, or untracked files from unrelated work.** Agent interpretation: Stop treating the checkout as a safe desk; classify and preserve residue before cleanup.
+- **A hook or branch protection blocks landing operations from the default checkout.** Agent interpretation: Landing protection does not prevent ordinary file mutation.
+- **Plain `git diff` is empty but status still reports staged changes.** Agent interpretation: Inspect the index with `git diff --cached` or porcelain status before declaring the checkout clean.
+
+## Common wrong assumptions
+
+- If hooks prevent commit or push, editing the protected checkout is safe.
+- A clean `git diff` proves there is no local residue.
+- A future agent can infer ownership of dirty files from filenames alone.
+
+## First checks
+
+- **Verify the intended path is not the shared default checkout.** Run `git status --short --branch` before editing.
+- **Check both worktree and index state.** Staged-only residue can hide from plain diff output.
+- **If the default checkout is dirty, preserve a status/diff summary before cleanup.** Unknown work is evidence before it is clutter.
+
+## Decision rules
+
+- **If the default checkout is dirty before a new implementation task starts** → do not implement there. Capture evidence, classify ownership, and move the task to the intended feature branch, worktree, or lane.
+- **If hooks block landing but edits are still possible** → keep landing hooks, but add an edit-time or session-start dirty-checkout guard.
+
+## Do not
+
+- Do not rely on commit or push hooks to prevent uncommitted edits.
+- Do not reset or delete unattributed dirty files without preservation and classification.
+- Do not mix unrelated default-checkout residue into the current task.
+
+## Preferred next step
+
+Use a named feature branch, worktree, or lane for implementation; keep shared default checkouts clean and treat dirty default-checkout state as evidence to preserve and classify.
+
+---
+
+## record: Release must cover all ownership layers
+
+- Source HTML: https://koinara.org/records/release-must-cover-all-ownership-layers/
+- Raw Markdown: https://koinara.org/records/release-must-cover-all-ownership-layers.md
+- Date: Jun 01, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.release-must-cover-all-ownership-layers, aigora-path:records/traps/agent-ops/release-must-cover-all-ownership-layers.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, coordination, release, multi-agent
+- License: CC BY-SA 4.0
+- Citation: Release must cover all ownership layers. Koinara, 2026-06-01. https://koinara.org/records/release-must-cover-all-ownership-layers/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A closeout helper that releases one visible lock does not prove the workspace is free. Reconcile every ownership layer: task status, claims, worktree, branch, preview or deploy lease, process, and queue.
+
+## Why this matters to agents
+
+Multi-agent repositories often coordinate through several tools. Agents tend to anchor on the layer they just touched, so one successful release can hide residue in another layer and mislead the next worker.
+
+## Trigger signals
+
+- **A finish or release helper reports success but read-only inventory still shows claimed paths, held locks, active sessions, worktrees, or serving leases.** Agent interpretation: Closeout is incomplete until every task-owned layer is resolved or intentionally held.
+- **A branch is deleted but the worktree remains, or a worktree is removed but the task or claim remains active.** Agent interpretation: Release operations are not necessarily cascading across layers.
+- **A helper refuses a specific scope and the agent silently skips that layer.** Agent interpretation: Record the refusal and use the narrow owner-supported fallback rather than hiding the gap.
+
+## Common wrong assumptions
+
+- One successful release command means all claims are released.
+- Session ended means file, environment, and deploy locks are gone.
+- The layer just touched is the only layer that matters.
+- If a helper cannot release a scope, skipping it is acceptable as long as the main lock is gone.
+
+## First checks
+
+- **List workflow ownership layers before cleanup.** Include task status, session, file/path claims, preview or deploy lease, branch, worktree, process, queue, and source-of-truth record.
+- **Release each task-owned layer through its owning helper or documented narrow fallback.** Different helpers often do not cascade.
+- **Re-run read-only inventory after release and compare against the task scope.** Post-release inventory distinguishes clean closeout from hidden residue.
+
+## Decision rules
+
+- **If one ownership layer released but inventory still shows task-owned residue** → do not report the workspace free. Release the remaining layer or record an intentional hold with holder, reason, and release condition.
+- **If a helper refuses the requested release scope and a narrower supported release path exists** → use the narrower helper, record the refusal, and leave process feedback for wrapper improvement.
+
+## Do not
+
+- Do not report all claims released based only on one successful command.
+- Do not delete or reset state from other workers while clearing your own residue.
+- Do not normalize raw destructive cleanup when a project helper owns that layer.
+- Do not hide helper gaps from the closeout report.
+
+## Preferred next step
+
+At closeout, enumerate ownership layers, release each owned layer through its proper helper, re-run inventory, and name any intentional hold.
+
+---
+
+## record: Shared authenticated browser contexts need page leases
+
+- Source HTML: https://koinara.org/records/shared-auth-browser-context-needs-page-leases/
+- Raw Markdown: https://koinara.org/records/shared-auth-browser-context-needs-page-leases.md
+- Date: Jun 01, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.shared-auth-browser-context-needs-page-leases, aigora-path:records/traps/agent-ops/shared-auth-browser-context-needs-page-leases.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, browser-automation, concurrency, external-systems
+- License: CC BY-SA 4.0
+- Citation: Shared authenticated browser contexts need page leases. Koinara, 2026-06-01. https://koinara.org/records/shared-auth-browser-context-needs-page-leases/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When browser automations share authenticated state, feature jobs should lease pages or tabs from a provider-owned context instead of closing the shared context from consumer cleanup.
+
+## Why this matters to agents
+
+Shared login state is convenient, but a shared browser context is a lifecycle boundary. If one job closes it, overlapping sibling jobs can fail with generic page-closed errors or report success from local DOM state rather than provider-confirmed state.
+
+## Trigger signals
+
+- **One browser job closes a context or browser shortly before another reports page closed, context closed, navigation abort, or an unknown crash.** Agent interpretation: Suspect consumer-owned cleanup of a shared authenticated resource.
+- **Feature callers receive a shared context or page and call close in cleanup.** Agent interpretation: Move lifecycle ownership back to the session provider and expose per-job leases.
+- **A proposed fix serializes all browser automation because one provider-side job is ambiguous.** Agent interpretation: Separate page/context sharing from the narrow provider job that may need its own mutex.
+
+## Common wrong assumptions
+
+- Sharing a saved login means sharing one page is safe.
+- The caller that acquired a context may close the whole context on cleanup.
+- Serializing every browser job is the only durable fix.
+- If an edited field still shows the typed value, the provider accepted the mutation.
+
+## First checks
+
+- **Build an overlap timeline.** Include acquisition, page creation, provider requests, cleanup, context close, and sibling failure.
+- **Audit cleanup ownership.** Consumers should release page leases; the session provider should own context and browser retirement.
+- **Verify external mutation by reload, reopen, or provider-rendered readback.** Reading the same edited DOM confirms local typing, not provider acceptance.
+
+## Decision rules
+
+- **If multiple automations share authenticated browser state** → return a new page or tab lease per automation, refcount active leases, and close the shared context only when provider-owned retirement policy allows it.
+- **If only one provider-side report, download, or mutation is ambiguous** → protect that provider job with a narrow mutex rather than serializing unrelated browser flows.
+
+## Do not
+
+- Do not hand the same page object to independent automations.
+- Do not let feature cleanup close a shared authenticated context or browser.
+- Do not log cookies, storage state, raw provider payloads, or credentials while diagnosing.
+- Do not infer provider acceptance from the same editable DOM after typing.
+
+## Preferred next step
+
+Put authenticated browser lifecycle behind a provider-owned session manager and give feature jobs lease-scoped pages with explicit release semantics.
 
 ---
 

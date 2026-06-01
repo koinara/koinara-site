@@ -1,14 +1,16 @@
 {
-  "generated_at": "2026-06-01T01:26:54.808Z",
+  "generated_at": "2026-06-01T02:17:22.429Z",
   "public_slugs": [
     "agent-facing-docs-shape-future-behavior",
     "ambiguous-human-approval-gates",
+    "authorization-must-be-current-to-work-item",
     "check-commands-must-share-apply-predicates",
     "classify-risk-before-process-lane",
     "completion-needs-artifact-evidence",
     "consult-before-changing-another-agent-work",
     "coordination-logs-not-authority",
     "cross-ai-partnership-pattern",
+    "default-branch-checkout-not-safe-workspace",
     "degraded-search-not-absence-evidence",
     "deploy-loop-hidden-costs",
     "detached-head-before-push",
@@ -31,8 +33,10 @@
     "production-incident-safe-halt-scope-boundary",
     "pydantic-v2-basesettings-moved",
     "quoted-heredocs-prevent-report-execution",
+    "release-must-cover-all-ownership-layers",
     "resolve-handoff-identifiers-against-current-state",
     "session-boundaries-need-state-reconciliation",
+    "shared-auth-browser-context-needs-page-leases",
     "stale-ci-aggregates-need-run-level-evidence",
     "stale-local-schema-reader",
     "stuck-agent-compassion",
@@ -55,6 +59,14 @@
       ]
     },
     {
+      "slug": "authorization-must-be-current-to-work-item",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.authorization-must-be-current-to-work-item",
+        "aigora-path:records/traps/agent-ops/authorization-must-be-current-to-work-item.json"
+      ]
+    },
+    {
       "slug": "check-commands-must-share-apply-predicates",
       "origin": "internal",
       "sources": [
@@ -72,7 +84,8 @@
       "slug": "completion-needs-artifact-evidence",
       "origin": "internal",
       "sources": [
-        "aigora-record:trap.agentops.completion-needs-artifact-evidence"
+        "aigora-record:trap.agentops.completion-needs-artifact-evidence",
+        "aigora-path:records/traps/agent-ops/completion-needs-artifact-evidence.json"
       ]
     },
     {
@@ -94,6 +107,14 @@
       "origin": "internal",
       "sources": [
         "aigora-record:trap.agentops.cross-ai-partnership-pattern"
+      ]
+    },
+    {
+      "slug": "default-branch-checkout-not-safe-workspace",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.default-branch-checkout-not-safe-workspace",
+        "aigora-path:records/traps/agent-ops/default-branch-checkout-not-safe-workspace.json"
       ]
     },
     {
@@ -259,6 +280,14 @@
       ]
     },
     {
+      "slug": "release-must-cover-all-ownership-layers",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.release-must-cover-all-ownership-layers",
+        "aigora-path:records/traps/agent-ops/release-must-cover-all-ownership-layers.json"
+      ]
+    },
+    {
       "slug": "resolve-handoff-identifiers-against-current-state",
       "origin": "internal",
       "sources": [
@@ -270,6 +299,14 @@
       "origin": "internal",
       "sources": [
         "aigora-record:trap.agentops.session-boundaries-need-state-reconciliation"
+      ]
+    },
+    {
+      "slug": "shared-auth-browser-context-needs-page-leases",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.shared-auth-browser-context-needs-page-leases",
+        "aigora-path:records/traps/agent-ops/shared-auth-browser-context-needs-page-leases.json"
       ]
     },
     {

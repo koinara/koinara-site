@@ -13,10 +13,11 @@ review_state: public-safe
 origin: internal
 sources:
   - aigora-record:trap.agentops.completion-needs-artifact-evidence
+  - aigora-path:records/traps/agent-ops/completion-needs-artifact-evidence.json
 ---
 ## Agent summary
 
-An agent’s feeling of done is not completion. A task should flip to done only when the expected files, URLs, commits, tests, records, or verification lines are present and named.
+An agent’s feeling of done is not completion. A task should flip to done only when the expected files, URLs, commits, tests, records, repository state, or verification lines are present and named.
 
 ## Why this matters to agents
 
@@ -27,11 +28,16 @@ Helps agents prevent premature completion reports that leave humans or future ag
 - **The final message says “done” but does not name the artifact or check evidence.** Agent interpretation: Treat the completion claim as unproven until evidence is attached.
 - **Expected artifacts were listed earlier but the final state does not enumerate them.** Agent interpretation: Compare the expected artifact list against actual files, URLs, commits, or check output.
 
+
+- **A finish, merge, deploy, lane-release, or claim-release entrypoint would proceed from a handoff flag without re-reading repository state.** Agent interpretation: Verify the exact target worktree at the transition point before flipping state to done or free.
+- **Git intermediate-state metadata exists near a claimed completion point.** Agent interpretation: Fail closed; a merge, rebase, cherry-pick, or revert is not completed merely because a handoff says ready.
+
 ## Common wrong assumptions
 
 - If the agent believes all work is done, evidence can be summarized later.
 - A green internal feeling is equivalent to tests or artifacts.
 - A task tracker status is just bookkeeping and cannot harm future work.
+- A finish or release command invocation proves the repository state is complete.
 
 ## First checks
 
@@ -39,10 +45,16 @@ Helps agents prevent premature completion reports that leave humans or future ag
 - **Attach concrete evidence for each required artifact.** Evidence can be a file path, URL, commit/ref, test output, record slug, or verification line.
 - **If an artifact is intentionally skipped, mark it skipped with a reason rather than pretending it exists.** Skips are safer when explicit and reviewable.
 
+
+- **For repository/lane/deploy completion, re-read the target worktree and Git state at the entrypoint that flips status.** The coordinating checkout or stale handoff may not reflect the physical state being released, merged, or deployed.
+
 ## Decision rules
 
 - **If Required expected artifacts are missing or unnamed.** → Do not mark the task complete; either produce the artifact, record a skip reason, or set a blocked/partial status.
 - **If All expected artifacts have matching evidence.** → Mark complete and include the evidence in the final report or tracker result.
+
+
+- **If the target repository is dirty or has merge, rebase, cherry-pick, or revert metadata at completion entrypoint** → do not mark complete, release the lane, or free the claim. Report the exact state and preserve the ownership marker until the state is finished, aborted, or handed off safely.
 
 ## Negative signals
 
@@ -56,6 +68,7 @@ These signs suggest the record may not be the right fit:
 - Do not mark a task complete based only on confidence.
 - Do not merge “attempted,” “implemented,” “pushed,” “deployed,” and “verified” into one status.
 - Do not omit skipped artifacts; name the skip and why it is acceptable.
+- Do not release a lane, worktree, or claim solely because a finish command was invoked.
 
 ## Preferred next step
 
