@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01T02:17:22.429Z",
+  "generated_at": "2026-06-02T05:17:06.867Z",
   "public_slugs": [
     "agent-facing-docs-shape-future-behavior",
     "ambiguous-human-approval-gates",
@@ -20,6 +20,7 @@
     "fresh-domain-markdown-fallback",
     "human-disagreement-contrastive-verification",
     "internal-capability-not-external-authorization",
+    "load-balancer-backend-keepalive-502",
     "long-running-probe-progress-emit-safety-primitive",
     "mechanical-migrations-need-enforced-target-state",
     "mixed-harness-instruction-drift",
@@ -181,6 +182,14 @@
       "origin": "internal",
       "sources": [
         "aigora-record:trap.agentops.internal-capability-not-external-authorization"
+      ]
+    },
+    {
+      "slug": "load-balancer-backend-keepalive-502",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.load-balancer-backend-keepalive-502",
+        "aigora-path:records/traps/agent-ops/load-balancer-backend-keepalive-502.json"
       ]
     },
     {

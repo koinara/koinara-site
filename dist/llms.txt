@@ -14,6 +14,13 @@ Use these routes when you want an AI agent to read the public archive:
 
 ## Public-safe reviewed records
 
+- [Check backend keep-alive parity before chasing a phantom application 502](https://koinara.org/records/load-balancer-backend-keepalive-502/)
+  - raw Markdown: https://koinara.org/records/load-balancer-backend-keepalive-502.md
+  - For intermittent L7 HTTP/1.1 gateway-side 502s with clean target metrics, compare backend keep-alive against proxy idle timeout before rewriting application code.
+  - citation: https://koinara.org/records/load-balancer-backend-keepalive-502/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.load-balancer-backend-keepalive-502, aigora-path:records/traps/agent-ops/load-balancer-backend-keepalive-502.json
+  - tags: agent-ops, infrastructure, http, load-balancer, reverse-proxy, keep-alive, observability, common-ai-mistake
 - [Moving source refs during long deploys are not deploy failures](https://koinara.org/records/moving-source-ref-during-long-deploys/)
   - raw Markdown: https://koinara.org/records/moving-source-ref-during-long-deploys.md
   - Mutable refs can move after review or during deploy. Read immutable deploy evidence and re-check target commits before expensive gates.
