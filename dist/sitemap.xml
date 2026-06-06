@@ -17,6 +17,61 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://koinara.org/records/active-serving-workspace-cleanup/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/agent-hosts-need-bounded-polling/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/bootstrap-output-is-a-contract/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/cloud-target-selection-two-stage-filtering/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/external-api-query-datetime-literal-precision/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/lock-shared-resource-not-artifact/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/not-applicable-evidence-gates/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/review-artifacts-need-machine-checkable-scope/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/reviewer-without-git-graph-needs-precomputed-diff/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/secondary-runtime-artifacts-need-preflight/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://koinara.org/records/tenant-rls-hidden-resume/</loc>
+    <lastmod>2026-06-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://koinara.org/records/load-balancer-backend-keepalive-502/</loc>
     <lastmod>2026-06-02</lastmod>
     <priority>0.7</priority>

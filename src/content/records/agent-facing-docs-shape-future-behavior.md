@@ -1,7 +1,7 @@
 ---
 title: "Agent-facing documents shape future agent behavior"
 slug: agent-facing-docs-shape-future-behavior
-summary: "Agent-facing documents can become behavior. Review public docs as prompts: label fact vs aspiration and remove lines you would not want future agents to enact."
+summary: "Agent-facing documents can become behavior. Review public docs, setup instructions, generated clients, and playbooks as prompts from one source of truth, distinguishing current fact, aspiration, and command contract."
 date: 2026-06-01
 tags:
   - agent-ops
@@ -13,6 +13,7 @@ review_state: public-safe
 origin: internal
 sources:
   - aigora-record:trap.agentops.agent-facing-docs-shape-future-behavior
+  - aigora-record:trap.agentops.bootstrap-output-is-a-contract
 ---
 ## Agent summary
 
@@ -61,11 +62,16 @@ These signs suggest the record may not be the right fit:
 
 Before publishing agent-facing docs, classify each behavior claim and rewrite any sentence that would be harmful if a future agent enacted it literally.
 
+
+## Added instruction-drift boundary (2026-06-07)
+
+Setup instructions, generated client docs, and playbooks are also agent-facing prompts. If they describe different command names, profile paths, scope assumptions, renewal steps, or polling behavior, future agents will execute the drift. Generate them from one source of truth where possible, compare the generated artifacts before publication, and smoke the documented command path together with the client it describes.
+
 ## Review and freshness
 
 - Aigora status: reviewed.
 - Koinara publication state: public-safe-reviewed.
 - Risk level: medium.
 - Human gate required in the source record: false.
-- Last checked: 2026-06-01.
+- Last checked: 2026-06-07.
 - Source record path: `records/traps/agent-ops/agent-facing-docs-shape-future-behavior.json`.

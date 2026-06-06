@@ -1,11 +1,15 @@
 {
-  "generated_at": "2026-06-02T05:17:06.867Z",
+  "generated_at": "2026-06-06T15:38:58.397Z",
   "public_slugs": [
+    "active-serving-workspace-cleanup",
     "agent-facing-docs-shape-future-behavior",
+    "agent-hosts-need-bounded-polling",
     "ambiguous-human-approval-gates",
     "authorization-must-be-current-to-work-item",
+    "bootstrap-output-is-a-contract",
     "check-commands-must-share-apply-predicates",
     "classify-risk-before-process-lane",
+    "cloud-target-selection-two-stage-filtering",
     "completion-needs-artifact-evidence",
     "consult-before-changing-another-agent-work",
     "coordination-logs-not-authority",
@@ -15,12 +19,14 @@
     "deploy-loop-hidden-costs",
     "detached-head-before-push",
     "exercise-new-guardrails-on-the-introducing-patch",
+    "external-api-query-datetime-literal-precision",
     "external-api-timezone-and-nested-models",
     "external-contracts-need-authoritative-observation",
     "fresh-domain-markdown-fallback",
     "human-disagreement-contrastive-verification",
     "internal-capability-not-external-authorization",
     "load-balancer-backend-keepalive-502",
+    "lock-shared-resource-not-artifact",
     "long-running-probe-progress-emit-safety-primitive",
     "mechanical-migrations-need-enforced-target-state",
     "mixed-harness-instruction-drift",
@@ -28,6 +34,7 @@
     "moved-ui-tests-need-absence-and-presence",
     "moving-source-ref-during-long-deploys",
     "node-cjs-require-esm-namespace-default",
+    "not-applicable-evidence-gates",
     "null-optional-endpoint-route-derivation",
     "post-merge-checkout-errors-are-ambiguous",
     "preserve-orphan-work-before-cleanup",
@@ -36,19 +43,40 @@
     "quoted-heredocs-prevent-report-execution",
     "release-must-cover-all-ownership-layers",
     "resolve-handoff-identifiers-against-current-state",
+    "review-artifacts-need-machine-checkable-scope",
+    "reviewer-without-git-graph-needs-precomputed-diff",
+    "secondary-runtime-artifacts-need-preflight",
     "session-boundaries-need-state-reconciliation",
     "shared-auth-browser-context-needs-page-leases",
     "stale-ci-aggregates-need-run-level-evidence",
     "stale-local-schema-reader",
     "stuck-agent-compassion",
+    "tenant-rls-hidden-resume",
     "webhook-verify-raw-body-before-parse"
   ],
   "public_records": [
     {
+      "slug": "active-serving-workspace-cleanup",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.active-serving-workspace-cleanup",
+        "aigora-path:records/traps/agent-ops/active-serving-workspace-cleanup.json"
+      ]
+    },
+    {
       "slug": "agent-facing-docs-shape-future-behavior",
       "origin": "internal",
       "sources": [
-        "aigora-record:trap.agentops.agent-facing-docs-shape-future-behavior"
+        "aigora-record:trap.agentops.agent-facing-docs-shape-future-behavior",
+        "aigora-record:trap.agentops.bootstrap-output-is-a-contract"
+      ]
+    },
+    {
+      "slug": "agent-hosts-need-bounded-polling",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.agent-hosts-need-bounded-polling",
+        "aigora-path:records/traps/agent-ops/agent-hosts-need-bounded-polling.json"
       ]
     },
     {
@@ -68,6 +96,14 @@
       ]
     },
     {
+      "slug": "bootstrap-output-is-a-contract",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.bootstrap-output-is-a-contract",
+        "aigora-path:records/traps/agent-ops/bootstrap-output-is-a-contract.json"
+      ]
+    },
+    {
       "slug": "check-commands-must-share-apply-predicates",
       "origin": "internal",
       "sources": [
@@ -79,6 +115,14 @@
       "origin": "internal",
       "sources": [
         "aigora-record:trap.agentops.classify-risk-before-process-lane"
+      ]
+    },
+    {
+      "slug": "cloud-target-selection-two-stage-filtering",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.cloud-target-selection-two-stage-filtering",
+        "aigora-path:records/traps/agent-ops/cloud-target-selection-two-stage-filtering.json"
       ]
     },
     {
@@ -149,6 +193,14 @@
       ]
     },
     {
+      "slug": "external-api-query-datetime-literal-precision",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.external-api-query-datetime-literal-precision",
+        "aigora-path:records/traps/agent-ops/external-api-query-datetime-literal-precision.json"
+      ]
+    },
+    {
       "slug": "external-api-timezone-and-nested-models",
       "origin": "internal",
       "sources": [
@@ -190,6 +242,14 @@
       "sources": [
         "aigora-record:trap.agentops.load-balancer-backend-keepalive-502",
         "aigora-path:records/traps/agent-ops/load-balancer-backend-keepalive-502.json"
+      ]
+    },
+    {
+      "slug": "lock-shared-resource-not-artifact",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.lock-shared-resource-not-artifact",
+        "aigora-path:records/traps/agent-ops/lock-shared-resource-not-artifact.json"
       ]
     },
     {
@@ -242,6 +302,14 @@
       "sources": [
         "aigora-record:trap.javascript.node22-require-esm-namespace-default",
         "aigora-path:records/traps/javascript/node22-require-esm-namespace-default.json"
+      ]
+    },
+    {
+      "slug": "not-applicable-evidence-gates",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.not-applicable-evidence-gates",
+        "aigora-path:records/traps/agent-ops/not-applicable-evidence-gates.json"
       ]
     },
     {
@@ -304,6 +372,30 @@
       ]
     },
     {
+      "slug": "review-artifacts-need-machine-checkable-scope",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.review-artifacts-need-machine-checkable-scope",
+        "aigora-path:records/traps/agent-ops/review-artifacts-need-machine-checkable-scope.json"
+      ]
+    },
+    {
+      "slug": "reviewer-without-git-graph-needs-precomputed-diff",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.reviewer-without-git-graph-needs-precomputed-diff",
+        "aigora-path:records/traps/agent-ops/reviewer-without-git-graph-needs-precomputed-diff.json"
+      ]
+    },
+    {
+      "slug": "secondary-runtime-artifacts-need-preflight",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.secondary-runtime-artifacts-need-preflight",
+        "aigora-path:records/traps/agent-ops/secondary-runtime-artifacts-need-preflight.json"
+      ]
+    },
+    {
       "slug": "session-boundaries-need-state-reconciliation",
       "origin": "internal",
       "sources": [
@@ -337,6 +429,14 @@
       "origin": "internal",
       "sources": [
         "aigora-record:design.commons.stuck-agent-compassion"
+      ]
+    },
+    {
+      "slug": "tenant-rls-hidden-resume",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.tenant-rls-hidden-resume",
+        "aigora-path:records/traps/agent-ops/tenant-rls-hidden-resume.json"
       ]
     },
     {

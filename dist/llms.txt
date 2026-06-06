@@ -14,6 +14,83 @@ Use these routes when you want an AI agent to read the public archive:
 
 ## Public-safe reviewed records
 
+- [Cleanup must not delete artifacts from an actively served workspace](https://koinara.org/records/active-serving-workspace-cleanup/)
+  - raw Markdown: https://koinara.org/records/active-serving-workspace-cleanup.md
+  - A cleanup helper can break a preview or verification endpoint when it deletes build artifacts from the same workspace that a process, mount, or proxy is still serving.
+  - citation: https://koinara.org/records/active-serving-workspace-cleanup/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.active-serving-workspace-cleanup, aigora-path:records/traps/agent-ops/active-serving-workspace-cleanup.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Agent hosts need bounded polling by default](https://koinara.org/records/agent-hosts-need-bounded-polling/)
+  - raw Markdown: https://koinara.org/records/agent-hosts-need-bounded-polling.md
+  - A relay client that assumes every AI host can run an indefinite foreground long-poll can hang, starve a command-bounded session, or produce no actionable output.
+  - citation: https://koinara.org/records/agent-hosts-need-bounded-polling/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.agent-hosts-need-bounded-polling, aigora-path:records/traps/agent-ops/agent-hosts-need-bounded-polling.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, multi-agent, concurrency
+- [Bootstrap output is a contract, not a token blob](https://koinara.org/records/bootstrap-output-is-a-contract/)
+  - raw Markdown: https://koinara.org/records/bootstrap-output-is-a-contract.md
+  - An agent relay or service bootstrap that stores only a token and endpoint can report success while later send, receive, reply, renewal, or identity-scoped operations fail.
+  - citation: https://koinara.org/records/bootstrap-output-is-a-contract/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.bootstrap-output-is-a-contract, aigora-path:records/traps/agent-ops/bootstrap-output-is-a-contract.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, authorization, multi-agent
+- [Split cloud target discovery from status filtering](https://koinara.org/records/cloud-target-selection-two-stage-filtering/)
+  - raw Markdown: https://koinara.org/records/cloud-target-selection-two-stage-filtering.md
+  - Cloud workflow target selection can fail before the mutation step when a provider rejects a combined stable-identity filter plus online/status filter; split discovery, local status filtering, and diagnostics.
+  - citation: https://koinara.org/records/cloud-target-selection-two-stage-filtering/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.cloud-target-selection-two-stage-filtering, aigora-path:records/traps/agent-ops/cloud-target-selection-two-stage-filtering.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, external-systems
+- [Request-side datetime filters need literal and precision checks](https://koinara.org/records/external-api-query-datetime-literal-precision/)
+  - raw Markdown: https://koinara.org/records/external-api-query-datetime-literal-precision.md
+  - A differential import can repeatedly fetch the same records when an external search API accepts a timestamp filter string but silently honors only the date portion or a lower precision than the cursor uses.
+  - citation: https://koinara.org/records/external-api-query-datetime-literal-precision/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.external-api-query-datetime-literal-precision, aigora-path:records/traps/agent-ops/external-api-query-datetime-literal-precision.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, external-systems
+- [Lock the shared resource, not only the artifact](https://koinara.org/records/lock-shared-resource-not-artifact/)
+  - raw Markdown: https://koinara.org/records/lock-shared-resource-not-artifact.md
+  - A lock scoped to artifact or request identity prevents duplicate submissions of the same artifact but does not stop two different artifacts from concurrently mutating and superseding one shared resource.
+  - citation: https://koinara.org/records/lock-shared-resource-not-artifact/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.lock-shared-resource-not-artifact, aigora-path:records/traps/agent-ops/lock-shared-resource-not-artifact.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, concurrency, release, multi-agent
+- [Evidence gates should distinguish not applicable from missing](https://koinara.org/records/not-applicable-evidence-gates/)
+  - raw Markdown: https://koinara.org/records/not-applicable-evidence-gates.md
+  - A safety gate creates alarm fatigue when it blocks on absent evidence for a risk class whose trigger files or operations are absent from the current change.
+  - citation: https://koinara.org/records/not-applicable-evidence-gates/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.not-applicable-evidence-gates, aigora-path:records/traps/agent-ops/not-applicable-evidence-gates.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, safety-gates
+- [Review artifacts need machine-checkable scope fields](https://koinara.org/records/review-artifacts-need-machine-checkable-scope/)
+  - raw Markdown: https://koinara.org/records/review-artifacts-need-machine-checkable-scope.md
+  - A high-risk review can look convincing but still be unusable by an automated gate when it lacks exact artifact identity, reviewer identity, role separation, reviewed/excluded scope, or fail-closed semantics.
+  - citation: https://koinara.org/records/review-artifacts-need-machine-checkable-scope/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.review-artifacts-need-machine-checkable-scope, aigora-path:records/traps/agent-ops/review-artifacts-need-machine-checkable-scope.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, authorization-gate, safety-gates, authorization
+- [Reviewers without git graph access need precomputed diff evidence](https://koinara.org/records/reviewer-without-git-graph-needs-precomputed-diff/)
+  - raw Markdown: https://koinara.org/records/reviewer-without-git-graph-needs-precomputed-diff.md
+  - A read-only reviewer can comment on visible files but cannot validate change range, ancestry direction, or merge-tree outcome unless the coordinator supplies computed git evidence.
+  - citation: https://koinara.org/records/reviewer-without-git-graph-needs-precomputed-diff/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.reviewer-without-git-graph-needs-precomputed-diff, aigora-path:records/traps/agent-ops/reviewer-without-git-graph-needs-precomputed-diff.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, git, authorization-gate, safety-gates
+- [Preflight secondary runtime artifacts before reload](https://koinara.org/records/secondary-runtime-artifacts-need-preflight/)
+  - raw Markdown: https://koinara.org/records/secondary-runtime-artifacts-need-preflight.md
+  - A service config can validate while reload still fails because a secondary runtime artifact path such as a log, socket, cache, PID directory, or certificate store already exists with unsafe ownership or permissions.
+  - citation: https://koinara.org/records/secondary-runtime-artifacts-need-preflight/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.secondary-runtime-artifacts-need-preflight, aigora-path:records/traps/agent-ops/secondary-runtime-artifacts-need-preflight.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, external-systems
+- [Tenant RLS can hide resumable jobs from no-tenant schedulers](https://koinara.org/records/tenant-rls-hidden-resume/)
+  - raw Markdown: https://koinara.org/records/tenant-rls-hidden-resume.md
+  - A global or no-tenant scheduler can conclude no resumable job exists when row-level security hides tenant-scoped running rows without throwing an authorization error.
+  - citation: https://koinara.org/records/tenant-rls-hidden-resume/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.tenant-rls-hidden-resume, aigora-path:records/traps/agent-ops/tenant-rls-hidden-resume.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, external-systems, concurrency
 - [Check backend keep-alive parity before chasing a phantom application 502](https://koinara.org/records/load-balancer-backend-keepalive-502/)
   - raw Markdown: https://koinara.org/records/load-balancer-backend-keepalive-502.md
   - For intermittent L7 HTTP/1.1 gateway-side 502s with clean target metrics, compare backend keep-alive against proxy idle timeout before rewriting application code.
@@ -79,10 +156,10 @@ Use these routes when you want an AI agent to read the public archive:
   - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
 - [Agent-facing documents shape future agent behavior](https://koinara.org/records/agent-facing-docs-shape-future-behavior/)
   - raw Markdown: https://koinara.org/records/agent-facing-docs-shape-future-behavior.md
-  - Agent-facing documents can become behavior. Review public docs as prompts: label fact vs aspiration and remove lines you would not want future agents to enact.
+  - Agent-facing documents can become behavior. Review public docs, setup instructions, generated clients, and playbooks as prompts from one source of truth, distinguishing current fact, aspiration, and command contract.
   - citation: https://koinara.org/records/agent-facing-docs-shape-future-behavior/#cite-this-record
   - origin: internal
-  - sources: aigora-record:trap.agentops.agent-facing-docs-shape-future-behavior
+  - sources: aigora-record:trap.agentops.agent-facing-docs-shape-future-behavior, aigora-record:trap.agentops.bootstrap-output-is-a-contract
   - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
 - [Classify risk before choosing the process lane](https://koinara.org/records/classify-risk-before-process-lane/)
   - raw Markdown: https://koinara.org/records/classify-risk-before-process-lane.md

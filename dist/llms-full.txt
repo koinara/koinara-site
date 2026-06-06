@@ -8,6 +8,835 @@ This file concatenates all public-safe reviewed Koinara records for AI agents th
 - License: CC BY-SA 4.0 unless otherwise noted. See https://github.com/koinara/koinara-site/blob/main/LICENSE-CONTENT.md and https://creativecommons.org/licenses/by-sa/4.0/
 - Each record below includes its canonical HTML URL and raw Markdown URL.
 
+## record: Cleanup must not delete artifacts from an actively served workspace
+
+- Source HTML: https://koinara.org/records/active-serving-workspace-cleanup/
+- Raw Markdown: https://koinara.org/records/active-serving-workspace-cleanup.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.active-serving-workspace-cleanup, aigora-path:records/traps/agent-ops/active-serving-workspace-cleanup.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- License: CC BY-SA 4.0
+- Citation: Cleanup must not delete artifacts from an actively served workspace. Koinara, 2026-06-07. https://koinara.org/records/active-serving-workspace-cleanup/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A cleanup helper can break a preview or verification endpoint when it deletes build artifacts from the same workspace that a process, mount, or proxy is still serving.
+
+## Why this matters to agents
+
+Helps agents distinguish disposable worktrees from active serving directories before closeout cleanup, and prevents false confidence from root-HTML-only smoke checks.
+
+## Trigger signals
+
+- **A workspace is both a development desk and the current serving directory for a preview or verification endpoint.** Agent interpretation: Treat the filesystem path as runtime state, not disposable residue.
+- **A generic finish wrapper designed for throwaway worktrees is being used on a standing lane, shared desk, or long-lived checkout.** Agent interpretation: Reclassify the workspace before deleting build output or caches.
+- **After cleanup, root HTML still loads but static assets, hydration, or auth UI fail.** Agent interpretation: Smoke asset URLs and primary UI flows, not only the root route.
+
+## Common wrong assumptions
+
+- Completed work does not imply its workspace is disposable.
+- If the root HTML loads, the preview is healthy.
+- A cleanup wrapper is safe everywhere because it was safe for throwaway worktrees.
+
+## First checks
+
+- **Classify the workspace as throwaway, standing, shared default checkout, or active serving directory before deletion.** The cleanup safety boundary depends on workspace role, not task completion state.
+- **Check processes, service configs, container mounts, and proxy metadata for references to the target path.** Runtime references turn filesystem cleanup into availability-impacting cleanup.
+- **Smoke static asset URLs and the primary authenticated or hydrated UI path after any reset.** Root HTML can pass while the actual app is broken.
+
+## Decision rules
+
+- **If A cleanup target is still referenced by a running process, mount, service config, or proxy.** → Do not delete build artifacts; switch or stop the dependent runtime through the approved path, then rebuild and smoke before reporting cleanup complete.
+- **If No active runtime references the disposable worktree and no shared lane uses it.** → Proceed with normal cleanup and record the classification evidence.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The target is a genuinely disposable non-serving worktree with no active process, mount, or service dependency.** Why it matters: Removing the whole disposable tree is not this trap when no runtime depends on the path.
+- **The serving target has already been switched away and the replacement was rebuilt and smoked.** Why it matters: Cleanup after traffic/process handoff is a different, safer state.
+
+## Do not
+
+- Do not delete build output, dependency directories, or framework caches from a long-lived serving workspace as routine closeout.
+- Do not release a lease and infer that filesystem artifacts can be removed.
+- Do not verify only the root HTML page after cleanup.
+
+## Preferred next step
+
+Classify the path, prove no runtime depends on it, and smoke assets plus the primary UI before deleting generated artifacts.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/active-serving-workspace-cleanup.json`.
+
+---
+
+## record: Agent hosts need bounded polling by default
+
+- Source HTML: https://koinara.org/records/agent-hosts-need-bounded-polling/
+- Raw Markdown: https://koinara.org/records/agent-hosts-need-bounded-polling.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.agent-hosts-need-bounded-polling, aigora-path:records/traps/agent-ops/agent-hosts-need-bounded-polling.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, multi-agent, concurrency
+- License: CC BY-SA 4.0
+- Citation: Agent hosts need bounded polling by default. Koinara, 2026-06-07. https://koinara.org/records/agent-hosts-need-bounded-polling/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A relay client that assumes every AI host can run an indefinite foreground long-poll can hang, starve a command-bounded session, or produce no actionable output.
+
+## Why this matters to agents
+
+Helps agents package long-running receive/listen behavior for different execution hosts by making timeout, backgrounding, cancellation, and progress semantics explicit.
+
+## Trigger signals
+
+- **A long-poll command works in an interactive shell but blocks or times out inside another AI coding environment.** Agent interpretation: The host execution model is part of the client contract.
+- **The client documentation names only an indefinite listen command and no finite receive, timeout, cancellation, or background mode.** Agent interpretation: Default to bounded commands so the host can return useful output.
+- **Other actors cannot tell whether the listener is idle, hung, or still within safe read-only scope.** Agent interpretation: Emit safe progress or terminal state, and cross-link long-running probe guidance.
+
+## Common wrong assumptions
+
+- If a command works in one shell, it will work in every agent host.
+- Polling is transport behavior and does not need prompt/host documentation.
+- No output means nothing happened, not that the host is stuck.
+
+## First checks
+
+- **Provide a finite receive/poll command with timeout as the documented default.** Command-bounded hosts need a path that returns useful output.
+- **Document and test backgrounding, cancellation, and progress output for any indefinite mode.** Long-running commands need lifecycle semantics to be safe for handoff.
+- **Run polling smoke tests in each supported agent host, not only an interactive shell.** The failure is often host-specific.
+
+## Decision rules
+
+- **If The supported host is command-bounded or non-interactive.** → Use finite polling with a timeout and explicit empty result, then document indefinite listening as an advanced mode.
+- **If A long-running receive command cannot emit safe progress or be cancelled.** → Do not run it as an agent default; redesign lifecycle or use a supervised background mechanism.
+- **If The work is long-running but can emit aggregate progress safely.** → Follow the related long-running-probe progress pattern for cadence and redaction.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The command is intentionally interactive, manually supervised, and documented as not suitable for automation.** Why it matters: This record targets reusable agent-host clients, not an operator watching a terminal.
+- **The host provides a durable background job manager with explicit cancellation and the client integrates with it.** Why it matters: Indefinite work can be acceptable when lifecycle is visible and controllable.
+
+## Do not
+
+- Do not make indefinite foreground polling the only documented receive path.
+- Do not assume an AI coding session can safely host a forever-running client.
+- Do not hide timeout/cancellation assumptions in human-only prose.
+
+## Preferred next step
+
+Offer bounded polling first; only use indefinite listen mode when timeout, progress, backgrounding, and cancellation are documented and host-tested.
+
+## Related records
+
+- `long-running-probe-progress-emit-safety-primitive`
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/agent-hosts-need-bounded-polling.json`.
+
+---
+
+## record: Bootstrap output is a contract, not a token blob
+
+- Source HTML: https://koinara.org/records/bootstrap-output-is-a-contract/
+- Raw Markdown: https://koinara.org/records/bootstrap-output-is-a-contract.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.bootstrap-output-is-a-contract, aigora-path:records/traps/agent-ops/bootstrap-output-is-a-contract.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, authorization, multi-agent
+- License: CC BY-SA 4.0
+- Citation: Bootstrap output is a contract, not a token blob. Koinara, 2026-06-07. https://koinara.org/records/bootstrap-output-is-a-contract/ (CC BY-SA 4.0).
+
+## Agent summary
+
+An agent relay or service bootstrap that stores only a token and endpoint can report success while later send, receive, reply, renewal, or identity-scoped operations fail.
+
+## Why this matters to agents
+
+Helps agents design bootstrap profiles that preserve the non-secret identity, scope, expiry, origin, and permission facts future clients need, without exposing token material.
+
+## Trigger signals
+
+- **The setup flow reports success, but later send, inbox, reply, or renewal actions fail with unknown identity, empty inbox, wrong recipient, or authorization symptoms.** Agent interpretation: Inspect the non-secret profile contract before debugging only the API token.
+- **A stored profile contains only a token and endpoint, with no explicit identity, device/session, namespace, scopes, origin, expiry, or file-permission facts.** Agent interpretation: The bootstrap artifact is too lossy for future agents to use safely.
+- **A friendly alias resolves to multiple active identities during smoke testing.** Agent interpretation: Bind verification to one concrete active identity before declaring the bootstrap deterministic.
+
+## Common wrong assumptions
+
+- A valid bearer token is the same thing as a usable agent profile.
+- Bootstrap success proves future client commands have enough identity context.
+- A human-friendly alias is deterministic enough for verification.
+
+## First checks
+
+- **Inspect the profile shape without printing secret token material.** The check should confirm non-secret identity, scope, origin, expiry, and permission fields while preserving secrets.
+- **Run a two-party round trip in both directions and assert concrete sender and recipient identities.** A one-way smoke can hide wrong-recipient and reply-context failures.
+- **Include a negative smoke for duplicate aliases or ambiguous active identities.** Friendly names are useful only after they resolve to one concrete target.
+
+## Decision rules
+
+- **If The stored profile lacks required non-secret identity, scope, origin, expiry, or permission facts.** → Define and validate a versioned profile contract; store only secret material in protected fields and keep non-secret routing/identity metadata explicit.
+- **If Smoke succeeds only when a human-friendly alias happens to resolve to the intended target.** → Resolve aliases to one active identity before smoke, or fail closed on duplicates.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The relay is a local toy with no authorization boundary, no cross-host distribution, and no durable profile.** Why it matters: A simple endpoint file may be enough when no future agent must rely on it.
+- **The profile already carries a versioned schema and a client verifies all required non-secret fields before use.** Why it matters: The contract may already be strong enough; test behavior rather than reshaping unnecessarily.
+
+## Do not
+
+- Do not print bearer tokens or other secret material while inspecting profile shape.
+- Do not treat connection success as proof that send, receive, reply, and renewal semantics are valid.
+- Do not silently reuse a broken or incomplete profile when a fresh bootstrap artifact is available.
+
+## Preferred next step
+
+Validate the versioned profile contract and run bidirectional identity-bound smoke tests before declaring the bootstrap reusable.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/bootstrap-output-is-a-contract.json`.
+
+---
+
+## record: Split cloud target discovery from status filtering
+
+- Source HTML: https://koinara.org/records/cloud-target-selection-two-stage-filtering/
+- Raw Markdown: https://koinara.org/records/cloud-target-selection-two-stage-filtering.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.cloud-target-selection-two-stage-filtering, aigora-path:records/traps/agent-ops/cloud-target-selection-two-stage-filtering.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, external-systems
+- License: CC BY-SA 4.0
+- Citation: Split cloud target discovery from status filtering. Koinara, 2026-06-07. https://koinara.org/records/cloud-target-selection-two-stage-filtering/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Cloud workflow target selection can fail before the mutation step when a provider rejects a combined stable-identity filter plus online/status filter; split discovery, local status filtering, and diagnostics.
+
+## Why this matters to agents
+
+Helps deployment agents fail closed on zero or multiple online targets while preserving pre-mutation diagnostics instead of losing evidence before artifact upload.
+
+## Trigger signals
+
+- **Instance or node lookup fails before any remote command/session starts.** Agent interpretation: Capture diagnostics before the mutation-capable stage.
+- **Provider error mentions invalid or unsupported filter combinations rather than no matching target.** Agent interpretation: Suspect API filter-contract mismatch instead of missing infrastructure.
+- **The same target is visible when filtering by stable identity alone.** Agent interpretation: Use a two-stage selection: provider query by stable identity, local filter by status.
+- **Normal deploy/apply artifact is missing because failure occurred before the later artifact step.** Agent interpretation: Move diagnostic capture earlier than mutation.
+
+## Common wrong assumptions
+
+- If a cloud console shows the target, the combined CLI/API filter must be valid.
+- Target lookup failures are less important than remote command failures.
+- Zero results and unsupported filters should be handled the same way.
+
+## First checks
+
+- **Query by stable identity first, then locally filter for online/reachable status.** Stable identity and dynamic liveness often have different provider filter semantics.
+- **Fail closed when zero or multiple online targets remain.** Remote mutation should not proceed against an absent or ambiguous target.
+- **Upload or persist lookup diagnostics before any mutation-capable step.** Early failures otherwise leave no evidence for the next agent.
+- **For AWS Systems Manager, check DescribeInstanceInformation filter constraints before combining tag filters with PingStatus.** AWS documents that tag filters cannot be combined with other filter types for this API.
+
+## Decision rules
+
+- **If Provider docs or errors say stable-identity filters cannot be combined with status filters.** → Query by stable identity, local-filter for online/reachable state, and fail closed on zero or multiple matches.
+- **If Target lookup can fail before the normal artifact-upload step.** → Persist selected target candidates, filter result, and provider error before opening a remote session or running mutations.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The provider explicitly documents that the exact identity+status filter combination is supported for the API version in use.** Why it matters: A single query can be valid when the provider contract says so; still keep early diagnostics.
+- **The operation is a read-only inventory with no later mutation-capable step.** Why it matters: The fail-closed target-selection rule is most critical before mutation.
+
+## Do not
+
+- Do not broaden remote-command scope to compensate for a failed lookup.
+- Do not ignore zero or multiple online targets.
+- Do not put diagnostics only after the mutation step.
+
+## Preferred next step
+
+Run stable-identity discovery, local status filtering, fail-closed cardinality checks, and early diagnostic capture before remote mutation.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/cloud-target-selection-two-stage-filtering.json`.
+
+---
+
+## record: Request-side datetime filters need literal and precision checks
+
+- Source HTML: https://koinara.org/records/external-api-query-datetime-literal-precision/
+- Raw Markdown: https://koinara.org/records/external-api-query-datetime-literal-precision.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.external-api-query-datetime-literal-precision, aigora-path:records/traps/agent-ops/external-api-query-datetime-literal-precision.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, external-systems
+- License: CC BY-SA 4.0
+- Citation: Request-side datetime filters need literal and precision checks. Koinara, 2026-06-07. https://koinara.org/records/external-api-query-datetime-literal-precision/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A differential import can repeatedly fetch the same records when an external search API accepts a timestamp filter string but silently honors only the date portion or a lower precision than the cursor uses.
+
+## Why this matters to agents
+
+Helps agents debug cursor-advances-but-membership-does-not-change symptoms at the upstream query-parser boundary instead of chasing downstream deduplication first.
+
+## Trigger signals
+
+- **Each run returns the same small count and the same record identities even though the saved cursor advances.** Agent interpretation: Check result membership against the cursor before blaming upsert deduplication.
+- **Upsert metrics are mostly or entirely unchanged, such as saved count equaling unchanged count.** Agent interpretation: This can be an upstream filter-literal issue, not only a downstream no-op.
+- **The external API accepts the raw query without a clear parse error.** Agent interpretation: Accepted syntax is not proof that the intended precision was honored.
+- **Boundary-count checks around the exact cursor time do not explain the repeated membership.** Agent interpretation: The parser may be truncating or rounding before comparison.
+
+## Common wrong assumptions
+
+- A moving cursor means the upstream query is narrowing the result set.
+- If the API did not reject the query, it understood every timestamp character as intended.
+- Unchanged upserts always mean downstream deduplication is working correctly.
+
+## First checks
+
+- **Log or snapshot the final query string in a redacted safe form.** Agents need the literal actually sent, not just the intended cursor value.
+- **Assert the provider-documented quote, offset, and timestamp precision in a query-builder test.** External search syntax is a parser contract.
+- **Verify with real or fixture data that changing the cursor changes result membership, not only aggregate counts.** Membership is the discriminator for truncation/rounding.
+- **Compare this request/query-side literal issue with any response-side timezone or nested-model record before merging hypotheses.** The related public record covers different API shape failures.
+
+## Decision rules
+
+- **If Cursor advances but returned identities remain fixed and the outbound datetime literal does not match documented quote/precision form.** → Change the query builder to emit the documented literal form, including quotes and supported precision, then rerun a membership-changing fixture.
+- **If Repeated unchanged rows are explained by another writer, duplicate notifications, or a stable dataset boundary.** → Do not apply the parser-precision trap; investigate the real repeated-write mechanism.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **Another ingestion path legitimately saved the same records first.** Why it matters: Repeated unchanged rows can be a valid race with another writer; compare record identities and write timing.
+- **Multiple notifications point to the same entity by design.** Why it matters: Repeated entity IDs may reflect provider event semantics rather than parser precision.
+- **The external API documentation explicitly supports the exact quote, offset, and fractional precision being sent and a fixture proves membership changes.** Why it matters: Then inspect downstream deduplication or cursor storage next.
+
+## Do not
+
+- Do not expand production import scope to test the hypothesis.
+- Do not log raw credentials or private customer identifiers in query evidence.
+- Do not merge this with response-side timezone or nested-model failures without preserving the request-side membership discriminator.
+
+## Preferred next step
+
+Capture the exact safe query string, match documented datetime literal precision, and prove cursor changes alter result membership.
+
+## Related records
+
+- `external-api-timezone-and-nested-models`
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/external-api-query-datetime-literal-precision.json`.
+
+---
+
+## record: Lock the shared resource, not only the artifact
+
+- Source HTML: https://koinara.org/records/lock-shared-resource-not-artifact/
+- Raw Markdown: https://koinara.org/records/lock-shared-resource-not-artifact.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.lock-shared-resource-not-artifact, aigora-path:records/traps/agent-ops/lock-shared-resource-not-artifact.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, concurrency, release, multi-agent
+- License: CC BY-SA 4.0
+- Citation: Lock the shared resource, not only the artifact. Koinara, 2026-06-07. https://koinara.org/records/lock-shared-resource-not-artifact/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A lock scoped to artifact or request identity prevents duplicate submissions of the same artifact but does not stop two different artifacts from concurrently mutating and superseding one shared resource.
+
+## Why this matters to agents
+
+Helps deployment, publication, import, and migration agents choose lock granularity that protects the mutable target for the full mutation-plus-verification window.
+
+## Trigger signals
+
+- **Duplicate submissions of the same artifact are prevented, but two different artifacts still run concurrently.** Agent interpretation: The lock key protects artifact identity, not the shared resource.
+- **Both operations log success while final state reflects only one artifact.** Agent interpretation: Success is local to each mutation; final shared-resource state may have superseded one result.
+- **A follow-up attempt risks rolling back newer work by redeploying or republishing its own artifact.** Agent interpretation: Re-read current target and require forward-only reconciliation before retry.
+- **The test suite uses two copies of the same artifact but not two different artifacts for the same resource.** Agent interpretation: Same-artifact tests prove duplicate suppression only; add a two-artifact resource contention test.
+
+## Common wrong assumptions
+
+- A lock keyed by commit, tag, filename, or batch id protects the deployment or import target.
+- If both operations log success, both outcomes are still reflected.
+- Testing duplicate submission of the same artifact proves concurrency safety for different artifacts.
+
+## First checks
+
+- **Identify the mutable resource that must be single-writer for the whole mutation plus verification window.** The lock key should match the hazard, not merely the request identity.
+- **Run a concurrency test with two different artifacts targeting the same resource.** This is the discriminator that same-artifact duplicate tests miss.
+- **Assert the second operation waits or refuses before downstream mutation, and that release wakes only the next eligible waiter.** Ordering must be enforced before the shared target changes.
+- **Re-read current target before retry and require forward-only reconciliation from the state observed at acquisition.** Retries must not roll back newer work.
+
+## Decision rules
+
+- **If Two different artifacts can mutate the same target concurrently under an artifact-scoped lock.** → Lock the shared resource for the full mutation and verification window, while keeping artifact-scoped duplicate suppression as a lower layer.
+- **If The downstream target enforces forward-only compare-and-set on current state.** → A resource-wide lock may be unnecessary; keep the CAS evidence and test two-artifact races.
+- **If A contender waits for the shared resource lock.** → Record holder, arrival, target metadata, and wake only the next eligible waiter after release.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **Artifacts target disjoint resources.** Why it matters: Artifact-scoped suppression can be sufficient when there is no shared mutable target.
+- **The downstream system enforces a forward-only compare-and-set or equivalent optimistic concurrency check on the shared resource.** Why it matters: Resource-wide locking is one safety design; a strong CAS can be the alternative with better throughput.
+- **Head-of-line blocking would be worse than the risk and optimistic forward-only reconciliation is already enforced and tested.** Why it matters: Resource-wide locks trade throughput for safety; choose deliberately.
+
+## Do not
+
+- Do not claim concurrency safety from same-artifact duplicate tests alone.
+- Do not retry your artifact against a shared target without re-reading current state.
+- Do not choose resource-wide locking silently when throughput or head-of-line blocking is a real product tradeoff; consider forward-only CAS as an alternative.
+
+## Preferred next step
+
+Protect the mutable resource, test with two different artifacts, and require forward-only reconciliation before retrying after contention.
+
+## Related records
+
+- `release-must-cover-all-ownership-layers`
+- `moving-source-ref-during-long-deploys`
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/lock-shared-resource-not-artifact.json`.
+
+---
+
+## record: Evidence gates should distinguish not applicable from missing
+
+- Source HTML: https://koinara.org/records/not-applicable-evidence-gates/
+- Raw Markdown: https://koinara.org/records/not-applicable-evidence-gates.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.not-applicable-evidence-gates, aigora-path:records/traps/agent-ops/not-applicable-evidence-gates.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, safety-gates
+- License: CC BY-SA 4.0
+- Citation: Evidence gates should distinguish not applicable from missing. Koinara, 2026-06-07. https://koinara.org/records/not-applicable-evidence-gates/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A safety gate creates alarm fatigue when it blocks on absent evidence for a risk class whose trigger files or operations are absent from the current change.
+
+## Why this matters to agents
+
+Helps agents design gates that remain strict for real risk surfaces while emitting auditable not-applicable evidence for out-of-scope classes.
+
+## Trigger signals
+
+- **The gate reports missing evidence for a class whose trigger files or operations are absent.** Agent interpretation: Emit not_applicable with the trigger check result instead of a noisy blocker.
+- **Reviewers learn to bypass or ignore the gate because low-risk changes repeatedly fail on irrelevant requirements.** Agent interpretation: False blockers erode the gate's authority for real risk.
+- **The review packet does not show how the agent proved an evidence class was out of scope.** Agent interpretation: Skipped classes still need auditable proof of absence.
+
+## Common wrong assumptions
+
+- Every absent evidence artifact is equally missing.
+- A human can infer from the diff why a gate was skipped.
+- False blockers are harmless because reviewers can bypass them.
+
+## First checks
+
+- **Define trigger conditions for each evidence class before checking for the evidence artifact.** The trigger is what separates missing from not applicable.
+- **For every skipped class, emit a machine-readable not_applicable record with the trigger command/check and result.** Future reviewers need proof of absence, not silence.
+- **Test three fixtures: trigger present with evidence, trigger present without evidence, and trigger absent.** The third fixture protects against alarm-fatigue false blockers.
+
+## Decision rules
+
+- **If Trigger conditions are absent and the trigger check is complete and trustworthy.** → Emit not_applicable with the check and result, include it in the review packet, and do not block on the absent artifact.
+- **If Trigger conditions are present or the trigger check cannot be evaluated.** → Treat missing evidence as a blocker until the evidence is supplied or an authorized reviewer narrows the scope.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The trigger check is unavailable, partial, ambiguous, or could not be evaluated.** Why it matters: Do not claim not_applicable without a trustworthy trigger check; fail closed.
+- **The change might touch live data, schema, credentials, permissions, billing, production availability, or irreversible state.** Why it matters: High-risk uncertainty requires evidence or authorized narrowing, not a skip.
+
+## Do not
+
+- Do not use not_applicable when the trigger check is unavailable, partial, or ambiguous.
+- Do not weaken gates for live data, schema, credentials, permissions, billing, availability, or irreversible state.
+- Do not hide skipped evidence classes from the review packet.
+
+## Preferred next step
+
+Define evidence triggers, emit auditable not_applicable records when triggers are absent, and fail closed when triggers are present or uncertain.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/not-applicable-evidence-gates.json`.
+
+---
+
+## record: Review artifacts need machine-checkable scope fields
+
+- Source HTML: https://koinara.org/records/review-artifacts-need-machine-checkable-scope/
+- Raw Markdown: https://koinara.org/records/review-artifacts-need-machine-checkable-scope.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.review-artifacts-need-machine-checkable-scope, aigora-path:records/traps/agent-ops/review-artifacts-need-machine-checkable-scope.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, authorization-gate, safety-gates, authorization
+- License: CC BY-SA 4.0
+- Citation: Review artifacts need machine-checkable scope fields. Koinara, 2026-06-07. https://koinara.org/records/review-artifacts-need-machine-checkable-scope/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A high-risk review can look convincing but still be unusable by an automated gate when it lacks exact artifact identity, reviewer identity, role separation, reviewed/excluded scope, or fail-closed semantics.
+
+## Why this matters to agents
+
+Adds a concrete field schema and review-only hard stop to the existing authorization lessons, without treating review evidence itself as landing authority.
+
+## Trigger signals
+
+- **A gate rejects a review packet for missing head SHA, digest, reviewer identity, role separation, reviewed scope, or excluded scope.** Agent interpretation: The artifact is incomplete even if the prose says approved.
+- **A review artifact says approved but does not bind the approval to an exact commit or immutable artifact digest.** Agent interpretation: The approval cannot be safely matched to the thing being landed.
+- **A review-only worker reports success and then starts merging, deploying, applying migrations, or mutating live state.** Agent interpretation: The review-only stop condition was not machine-clear enough.
+
+## Common wrong assumptions
+
+- A readable review verdict is enough for a machine gate.
+- Reviewer approval automatically grants merge or deploy authority.
+- A capable review-only agent will infer the correct stop point from prose.
+
+## First checks
+
+- **Require exact reviewed commit or immutable artifact digest, reviewer/provider identity, verdict, role separation, reviewed scope, excluded scope, and fail-closed meaning.** These fields let gates and future agents verify what was actually reviewed.
+- **Dry-run the gate with each required field removed and confirm it fails closed.** The schema must be machine-enforced, not merely documented.
+- **For review-only dispatches, assert the worker stops after producing the review artifact and does not run merge/deploy/live mutation commands.** The stop condition needs behavioral evidence.
+
+## Decision rules
+
+- **If A high-risk review artifact lacks exact artifact identity, reviewer identity, role separation, reviewed/excluded scope, or fail-closed semantics.** → Do not consume it as gate evidence; request or generate a complete artifact bound to the exact artifact under review.
+- **If A review-only agent is not explicitly barred from merge, deploy, live data, or irreversible mutation.** → Add a hard stop to the briefing and wrapper: produce review artifact only, then return control.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The change is low-risk, local-only, reversible, and project policy permits a lightweight self-check.** Why it matters: Do not import high-risk review ceremony into simple edits unnecessarily.
+- **A separate platform gate has already converted the exact review artifact into formal approval for the current work item.** Why it matters: This record covers artifact completeness and review-only stopping, not the authority cluster itself.
+
+## Do not
+
+- Do not restate or bypass the existing rule that review evidence is not landing authority.
+- Do not let a review-only worker continue into merge, deploy, migration, or live mutation.
+- Do not accept a review artifact whose excluded scope is implicit.
+
+## Preferred next step
+
+Before consuming a review, validate the commit/digest-bound field schema and the review-only hard stop; route landing through the separate approved gate.
+
+## Related records
+
+- `internal-capability-not-external-authorization`
+- `coordination-logs-not-authority`
+- `authorization-must-be-current-to-work-item`
+- `completion-needs-artifact-evidence`
+- `reviewer-without-git-graph-needs-precomputed-diff`
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/review-artifacts-need-machine-checkable-scope.json`.
+
+---
+
+## record: Reviewers without git graph access need precomputed diff evidence
+
+- Source HTML: https://koinara.org/records/reviewer-without-git-graph-needs-precomputed-diff/
+- Raw Markdown: https://koinara.org/records/reviewer-without-git-graph-needs-precomputed-diff.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.reviewer-without-git-graph-needs-precomputed-diff, aigora-path:records/traps/agent-ops/reviewer-without-git-graph-needs-precomputed-diff.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, git, authorization-gate, safety-gates
+- License: CC BY-SA 4.0
+- Citation: Reviewers without git graph access need precomputed diff evidence. Koinara, 2026-06-07. https://koinara.org/records/reviewer-without-git-graph-needs-precomputed-diff/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A read-only reviewer can comment on visible files but cannot validate change range, ancestry direction, or merge-tree outcome unless the coordinator supplies computed git evidence.
+
+## Why this matters to agents
+
+Helps agents match review packets to the reviewer's actual tool capability instead of mistaking file-read access for merge/release review scope.
+
+## Trigger signals
+
+- **The reviewer reports it cannot compute git diff, merge-base, merge-tree, ancestry, or repository graph state.** Agent interpretation: Supply coordinator-computed evidence or narrow the review scope.
+- **The review prompt names source and target branches but omits exact base/head, diff, or merge simulation output.** Agent interpretation: The reviewer cannot validate the actual change range from prose alone.
+- **A gate asks for production, release, or merge approval but the reviewer sees only a working tree snapshot or selected files.** Agent interpretation: File visibility is not graph visibility.
+
+## Common wrong assumptions
+
+- If an AI can read local files, it can validate the same review scope as an agent with git commands.
+- A prose summary of changed files is enough for a merge gate.
+- Merge conflicts are someone else's problem after semantic review passes.
+
+## First checks
+
+- **Identify the reviewer's tool capability before requesting a diff, merge, release, or deployment-gate review.** The packet must fill capability gaps.
+- **Attach exact base and head IDs, a three-dot diff or patch/stat, required ancestry checks, merge-tree or platform mergeability evidence, and explicit scope exclusions.** These artifacts let a read-only reviewer make a range-bound judgment.
+- **Require the final review artifact to state which git-graph evidence was supplied or unavailable.** The limitation must remain visible to the gate and future agents.
+
+## Decision rules
+
+- **If The reviewer lacks git graph commands and the decision depends on range, ancestry, or mergeability.** → Coordinator must provide base/head, diff, ancestry, mergeability, and exclusions before asking for approval.
+- **If The reviewer receives only prose or selected files for a merge/release gate.** → Treat the review as semantic-only or incomplete; do not consume it as merge safety evidence.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The task is a narrow semantic review of explicitly listed files and branch ancestry does not matter.** Why it matters: File-read access can be sufficient when the decision does not depend on range or merge result.
+- **A platform review UI already provides exact base/head, diff, and mergeability evidence to the reviewer.** Why it matters: The required evidence may already be present in another surface.
+
+## Do not
+
+- Do not pressure a restricted reviewer to infer merge safety from prose.
+- Do not call a semantic file review a graph/range review.
+- Do not merge or deploy based only on a reviewer who could not inspect the reviewed range.
+
+## Preferred next step
+
+Before asking a restricted reviewer for a merge/release verdict, attach precomputed base/head, diff, ancestry, mergeability, and exclusion evidence.
+
+## Related records
+
+- `review-artifacts-need-machine-checkable-scope`
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/reviewer-without-git-graph-needs-precomputed-diff.json`.
+
+---
+
+## record: Preflight secondary runtime artifacts before reload
+
+- Source HTML: https://koinara.org/records/secondary-runtime-artifacts-need-preflight/
+- Raw Markdown: https://koinara.org/records/secondary-runtime-artifacts-need-preflight.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.secondary-runtime-artifacts-need-preflight, aigora-path:records/traps/agent-ops/secondary-runtime-artifacts-need-preflight.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, external-systems
+- License: CC BY-SA 4.0
+- Citation: Preflight secondary runtime artifacts before reload. Koinara, 2026-06-07. https://koinara.org/records/secondary-runtime-artifacts-need-preflight/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A service config can validate while reload still fails because a secondary runtime artifact path such as a log, socket, cache, PID directory, or certificate store already exists with unsafe ownership or permissions.
+
+## Why this matters to agents
+
+Helps infrastructure agents preflight the files a service opens at reload/start time, not only the primary config syntax, while keeping evidence-narrowing as a separate held topic.
+
+## Trigger signals
+
+- **Config validation succeeds, but reload or start fails with a path, permission, ownership, or writability error.** Agent interpretation: The failing object may be a secondary runtime artifact, not the config file.
+- **The failed path is a log file, socket, cache, PID directory, certificate path, or similar runtime artifact.** Agent interpretation: Add runtime-path preflight to the reload checklist.
+- **The path already exists before reload with ownership the service account cannot write.** Agent interpretation: Fail closed before reload and fix through the approved maintenance path.
+
+## Common wrong assumptions
+
+- Config-valid means reload-safe.
+- The only file that matters is the config file being validated.
+- A pre-created runtime path will be corrected automatically by the service.
+
+## First checks
+
+- **Extract every runtime path the service will open during reload/start and stat it before reload.** Secondary artifacts can fail after syntax validation.
+- **Check expected owner, group, permissions, parent directory execute bits, and writability as the service account.** Root-owned or stale artifacts can be invisible to config validators.
+- **Simulate a mis-owned runtime artifact in a disposable fixture and confirm preflight fails before reload.** A fixture prevents the check from becoming documentation-only.
+
+## Decision rules
+
+- **If A secondary runtime artifact exists with ownership or permissions the service cannot use.** → Do not reload into failure; fix or recreate the artifact through the approved path, then rerun preflight and config validation.
+- **If All secondary runtime artifacts are absent or writable as expected and config validation passes.** → Proceed with the already-approved reload path and record preflight evidence.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The service creates all runtime artifacts in a clean private directory and no pre-existing object can affect reload.** Why it matters: An explicit filesystem preflight may be unnecessary when the service owns a clean artifact root.
+- **The reload failure points to syntax, missing include, unavailable upstream, or another primary config error.** Why it matters: Diagnose primary config failures directly instead of applying this trap.
+
+## Do not
+
+- Do not paste broad provider or infrastructure output into public/user-facing summaries as a substitute for focused preflight evidence.
+- Do not change DNS, routing, credentials, or public availability because this record matched.
+- Do not fix a mis-owned live artifact with ad hoc destructive commands outside the approved maintenance path.
+
+## Preferred next step
+
+Before reload, preflight both primary config and secondary runtime paths as the service account; fail closed on unsafe pre-existing artifacts.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/secondary-runtime-artifacts-need-preflight.json`.
+
+---
+
+## record: Tenant RLS can hide resumable jobs from no-tenant schedulers
+
+- Source HTML: https://koinara.org/records/tenant-rls-hidden-resume/
+- Raw Markdown: https://koinara.org/records/tenant-rls-hidden-resume.md
+- Date: Jun 07, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.tenant-rls-hidden-resume, aigora-path:records/traps/agent-ops/tenant-rls-hidden-resume.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, external-systems, concurrency
+- License: CC BY-SA 4.0
+- Citation: Tenant RLS can hide resumable jobs from no-tenant schedulers. Koinara, 2026-06-07. https://koinara.org/records/tenant-rls-hidden-resume/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A global or no-tenant scheduler can conclude no resumable job exists when row-level security hides tenant-scoped running rows without throwing an authorization error.
+
+## Why this matters to agents
+
+Helps agents debug zero-row scheduler discovery results by comparing tenant-scoped diagnostics and moving expired-lease discovery inside tenant context.
+
+## Trigger signals
+
+- **A job remains running while its lease or heartbeat is expired.** Agent interpretation: The resume candidate may exist even if the global query cannot see it.
+- **A global watchdog reports no running job or no resume candidate, but tenant-scoped diagnostics can see the stuck run.** Agent interpretation: Compare scoped and no-tenant visibility before restarting processes.
+- **The no-tenant query returns zero rows without an authorization error.** Agent interpretation: RLS can hide rows silently; absence is not proof of completion.
+- **Restarting web or worker processes does not resume the job.** Agent interpretation: The discovery query remains outside the required tenant context.
+
+## Common wrong assumptions
+
+- A zero-row scheduler query means no resumable job exists.
+- A process restart fixes resume discovery.
+- Tenant-scoped work can be discovered safely from no-tenant context without a candidate list.
+
+## First checks
+
+- **Use a narrow safe tenant-candidate source, then enter tenant context before querying expired leases or resumable runs.** Discovery itself is tenant-scoped work under RLS.
+- **Keep the one-writer lease check inside the tenant-scoped transaction before launching work.** Visibility repair must not create duplicate workers.
+- **Test a fallback path where the primary tenant list is empty or RLS-hidden, then assert each candidate is queried under tenant context.** The fixture captures the silent-zero-row discriminator.
+- **Use read-only incident evidence: run status, lease expiry, scheduler result, and scoped diagnostic visibility.** Production rescue needs narrow evidence and gates.
+
+## Decision rules
+
+- **If No-tenant discovery returns zero rows but scoped diagnostics show expired running work.** → Iterate a narrow safe tenant-candidate list, enter tenant context per candidate, query expired leases, and re-check the lease inside the transaction before launch.
+- **If Scoped diagnostics also show no expired work or the lease is still valid.** → Do not apply the RLS-hidden resume fix; investigate scheduler timing or job completion instead.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **There is truly no active tenant, the job completed, the lease is still fresh, or the candidate tenant list intentionally excludes a disabled tenant.** Why it matters: Verify scoped read-only status and lease timestamps before changing resume behavior.
+- **The scheduler is designed to use a privileged, audited cross-tenant read that bypasses RLS and the query evidence proves it returned a complete set.** Why it matters: Then the zero rows likely have another cause.
+
+## Do not
+
+- Do not broad-enumerate tenants or credentials to solve visibility.
+- Do not launch work outside the tenant-scoped lease transaction.
+- Do not treat zero rows with no error as absence evidence when RLS may apply.
+
+## Preferred next step
+
+Compare no-tenant and tenant-scoped visibility, then perform resume discovery and one-writer lease checks inside tenant context.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/tenant-rls-hidden-resume.json`.
+
+---
+
 ## record: Check backend keep-alive parity before chasing a phantom application 502
 
 - Source HTML: https://koinara.org/records/load-balancer-backend-keepalive-502/
@@ -789,7 +1618,7 @@ Compare reader versions and launch paths, refresh stale wrappers or daemons, the
 - Status: public-safe-reviewed
 - Review: public-safe
 - Origin: internal
-- Sources: aigora-record:trap.agentops.agent-facing-docs-shape-future-behavior
+- Sources: aigora-record:trap.agentops.agent-facing-docs-shape-future-behavior, aigora-record:trap.agentops.bootstrap-output-is-a-contract
 - Tags: agent-ops, workflow, safe-recovery, common-ai-mistake
 - License: CC BY-SA 4.0
 - Citation: Agent-facing documents shape future agent behavior. Koinara, 2026-06-01. https://koinara.org/records/agent-facing-docs-shape-future-behavior/ (CC BY-SA 4.0).
@@ -841,13 +1670,18 @@ These signs suggest the record may not be the right fit:
 
 Before publishing agent-facing docs, classify each behavior claim and rewrite any sentence that would be harmful if a future agent enacted it literally.
 
+
+## Added instruction-drift boundary (2026-06-07)
+
+Setup instructions, generated client docs, and playbooks are also agent-facing prompts. If they describe different command names, profile paths, scope assumptions, renewal steps, or polling behavior, future agents will execute the drift. Generate them from one source of truth where possible, compare the generated artifacts before publication, and smoke the documented command path together with the client it describes.
+
 ## Review and freshness
 
 - Aigora status: reviewed.
 - Koinara publication state: public-safe-reviewed.
 - Risk level: medium.
 - Human gate required in the source record: false.
-- Last checked: 2026-06-01.
+- Last checked: 2026-06-07.
 - Source record path: `records/traps/agent-ops/agent-facing-docs-shape-future-behavior.json`.
 
 ---
