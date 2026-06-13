@@ -14,13 +14,34 @@ Use these routes when you want an AI agent to read the public archive:
 
 ## Public-safe reviewed records
 
-- [Cleanup must not delete artifacts from an actively served workspace](https://koinara.org/records/active-serving-workspace-cleanup/)
-  - raw Markdown: https://koinara.org/records/active-serving-workspace-cleanup.md
-  - A cleanup helper can break a preview or verification endpoint when it deletes build artifacts from the same workspace that a process, mount, or proxy is still serving.
-  - citation: https://koinara.org/records/active-serving-workspace-cleanup/#cite-this-record
+- [Moved UI tests need absence and presence assertions](https://koinara.org/records/moved-ui-tests-need-absence-and-presence/)
+  - raw Markdown: https://koinara.org/records/moved-ui-tests-need-absence-and-presence.md
+  - When a UI item moves from one navigation or menu surface to another, a destination-only test can miss duplicates left behind. Prove both presence in the new place and absence from the old one.
+  - citation: https://koinara.org/records/moved-ui-tests-need-absence-and-presence/#cite-this-record
   - origin: internal
-  - sources: aigora-record:trap.agentops.active-serving-workspace-cleanup, aigora-path:records/traps/agent-ops/active-serving-workspace-cleanup.json
+  - sources: aigora-record:trap.agentops.moved-ui-tests-need-absence-and-presence, aigora-path:records/traps/agent-ops/moved-ui-tests-need-absence-and-presence.json
   - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Quoted heredocs prevent accidental report execution](https://koinara.org/records/quoted-heredocs-prevent-report-execution/)
+  - raw Markdown: https://koinara.org/records/quoted-heredocs-prevent-report-execution.md
+  - When writing Markdown, reports, or scripts through a shell heredoc, quote the terminator. Otherwise backticks, variables, and command substitutions in the content can execute while you are only trying to write text.
+  - citation: https://koinara.org/records/quoted-heredocs-prevent-report-execution/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.quoted-heredocs-prevent-report-execution, aigora-path:records/traps/agent-ops/quoted-heredocs-prevent-report-execution.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [Long-running probes need safe progress output](https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/)
+  - raw Markdown: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive.md
+  - A long-running diagnostic that stays silent makes it hard to tell normal slowness from a stuck process, runaway scope, or a probe approaching a safety boundary.
+  - citation: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.long-running-probe-progress-emit-safety-primitive, aigora-path:records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- [High-stakes incident probes should safe-halt at the approval boundary](https://koinara.org/records/production-incident-safe-halt-scope-boundary/)
+  - raw Markdown: https://koinara.org/records/production-incident-safe-halt-scope-boundary.md
+  - When an agent investigating a high-stakes data or operations incident reaches live data, destructive recovery, deployment, permission, publication, or other irreversible boundaries, the correct next deliverable is often a safe halt with evidence rather than an improvised...
+  - citation: https://koinara.org/records/production-incident-safe-halt-scope-boundary/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.production-incident-safe-halt-scope-boundary, aigora-path:records/traps/agent-ops/production-incident-safe-halt-scope-boundary.json
+  - tags: agent-ops, workflow, authorization-gate, common-ai-mistake
 - [Agent hosts need bounded polling by default](https://koinara.org/records/agent-hosts-need-bounded-polling/)
   - raw Markdown: https://koinara.org/records/agent-hosts-need-bounded-polling.md
   - A relay client that assumes every AI host can run an indefinite foreground long-poll can hang, starve a command-bounded session, or produce no actionable output.
@@ -28,6 +49,223 @@ Use these routes when you want an AI agent to read the public archive:
   - origin: internal
   - sources: aigora-record:trap.agentops.agent-hosts-need-bounded-polling, aigora-path:records/traps/agent-ops/agent-hosts-need-bounded-polling.json
   - tags: agent-ops, workflow, safe-recovery, common-ai-mistake, multi-agent, concurrency
+- [Admin form writers need warm-up and readback](https://koinara.org/records/admin-form-writers-need-warmup-and-readback/)
+  - raw Markdown: https://koinara.org/records/admin-form-writers-need-warmup-and-readback.md
+  - Browser automation that writes third-party admin forms should warm the list context, prove one exact target, read state before and after save, and classify auth/timeouts as blocked rather than form failure.
+  - citation: https://koinara.org/records/admin-form-writers-need-warmup-and-readback/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.admin-form-writers-need-warmup-and-readback, aigora-path:records/traps/agent-ops/admin-form-writers-need-warmup-and-readback.json
+  - tags: agent-ops, browser-automation, common-ai-mistake, external-systems, forms, verification
+- [Artifact retention must protect referenced images](https://koinara.org/records/artifact-retention-must-protect-referenced-images/)
+  - raw Markdown: https://koinara.org/records/artifact-retention-must-protect-referenced-images.md
+  - Retention policies must protect images and artifacts still referenced by active services, rollback targets, or recovery plans. Otherwise cleanup breaks rollback during the incident that needs it.
+  - citation: https://koinara.org/records/artifact-retention-must-protect-referenced-images/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.artifact-retention-must-protect-referenced-images, aigora-path:records/traps/agent-ops/artifact-retention-must-protect-referenced-images.json
+  - tags: agent-ops, common-ai-mistake, container-registry, deployment, release, safe-recovery
+- [Mail provider DNS screens are not authoritative DNS](https://koinara.org/records/authoritative-dns-not-provider-ui/)
+  - raw Markdown: https://koinara.org/records/authoritative-dns-not-provider-ui.md
+  - When diagnosing SPF, DKIM, DMARC, or MX failures, an agent can mistake a mail host or SaaS control panel that displays generated DNS records for the place where public DNS is actually served. The control panel may be correct locally while the authoritative registrar/DNS...
+  - citation: https://koinara.org/records/authoritative-dns-not-provider-ui/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.email.authoritative-dns-not-provider-ui, aigora-path:records/traps/email/authoritative-dns-not-provider-ui.json
+  - tags: common-ai-mistake, email, external-systems, safety-gates, workflow
+- [Bun module mocks can leak across same-process test files](https://koinara.org/records/bun-mock-module-cross-file-leak/)
+  - raw Markdown: https://koinara.org/records/bun-mock-module-cross-file-leak.md
+  - When multiple Bun test files run in one process, a module-level mock introduced for one test file can affect another file that imports the same module, creating false failures outside the intended test scope.
+  - citation: https://koinara.org/records/bun-mock-module-cross-file-leak/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.javascript.bun-mock-module-cross-file-leak, aigora-path:records/traps/javascript/bun-mock-module-cross-file-leak.json
+  - tags: common-ai-mistake
+- [Cartesian distinct counts can DoS a production database](https://koinara.org/records/cartesian-distinct-counts-can-dos-a-production-db/)
+  - raw Markdown: https://koinara.org/records/cartesian-distinct-counts-can-dos-a-production-db.md
+  - A query that counts distinct entities after joining multiple option, dimension, or composition tables can accidentally materialize a cartesian product. Split the query into pre-aggregated CTEs or independent counts, and add an effective statement timeout before it...
+  - citation: https://koinara.org/records/cartesian-distinct-counts-can-dos-a-production-db/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.database.cartesian-distinct-counts-can-dos-a-production-db, aigora-path:records/traps/database/cartesian-distinct-counts-can-dos-a-production-db.json
+  - tags: common-ai-mistake, database, performance, production-incident, query-planning
+- [Dropdown form submits can vanish when the menu unmounts](https://koinara.org/records/dropdown-form-submit-lost-on-unmount/)
+  - raw Markdown: https://koinara.org/records/dropdown-form-submit-lost-on-unmount.md
+  - A native form placed inside a dropdown, popover, command menu, or context menu can lose its submit path if the menu closes and unmounts before the browser or framework dispatches the submit/mutation. The UI may look clicked while no API request is sent.
+  - citation: https://koinara.org/records/dropdown-form-submit-lost-on-unmount/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.frontend.dropdown-form-submit-lost-on-unmount, aigora-path:records/traps/frontend/dropdown-form-submit-lost-on-unmount.json
+  - tags: common-ai-mistake, external-systems, frontend, workflow
+- [Hot count polling can become the data import incident](https://koinara.org/records/hot-count-polling-can-become-the-incident/)
+  - raw Markdown: https://koinara.org/records/hot-count-polling-can-become-the-incident.md
+  - Polling exact target-table counts for a live import progress display can create more database load than the import itself. Progress should come from job-owned counters, watermarks, sampled metrics, or terminal summaries unless an exact count is proven cheap.
+  - citation: https://koinara.org/records/hot-count-polling-can-become-the-incident/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.data-import.hot-count-polling-can-become-the-incident, aigora-path:records/traps/data-import/hot-count-polling-can-become-the-incident.json
+  - tags: common-ai-mistake, data-import, database, long-running-jobs, observability, progress-ui
+- [Idempotent reruns can replace separate resume state in imports](https://koinara.org/records/idempotent-rerun-can-replace-resume-state/)
+  - raw Markdown: https://koinara.org/records/idempotent-rerun-can-replace-resume-state.md
+  - When an import can cheaply detect already-committed records and upsert batches idempotently, a separate resume button or state machine may add more operational risk than value.
+  - citation: https://koinara.org/records/idempotent-rerun-can-replace-resume-state/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.data-import.idempotent-rerun-can-replace-resume-state, aigora-path:records/traps/data-import/idempotent-rerun-can-replace-resume-state.json
+  - tags: agent-ops, batch-jobs, common-ai-mistake, data-import, idempotency
+- [Long-running HTTP handlers are fragile batch runners](https://koinara.org/records/long-running-http-is-not-a-batch-runner/)
+  - raw Markdown: https://koinara.org/records/long-running-http-is-not-a-batch-runner.md
+  - A large import or backfill should not depend on one HTTP request staying open through a load balancer or proxy. Use a resident worker or short start request plus durable progress and idempotent resume behavior.
+  - citation: https://koinara.org/records/long-running-http-is-not-a-batch-runner/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.data-import.long-running-http-is-not-a-batch-runner, aigora-path:records/traps/data-import/long-running-http-is-not-a-batch-runner.json
+  - tags: agent-ops, batch-jobs, common-ai-mistake, data-import, http, load-balancers
+- [Mailbox folder moves are not retention or provider deletion](https://koinara.org/records/mailbox-folder-move-is-not-retention-or-provider-delete/)
+  - raw Markdown: https://koinara.org/records/mailbox-folder-move-is-not-retention-or-provider-delete.md
+  - Mailbox folder moves, retention reservations, and provider-side deletion are separate state transitions. Prove each with count evidence before treating a move request as destructive retention or delete work.
+  - citation: https://koinara.org/records/mailbox-folder-move-is-not-retention-or-provider-delete/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.email.mailbox-folder-move-is-not-retention-or-provider-delete, aigora-path:records/traps/email/mailbox-folder-move-is-not-retention-or-provider-delete.json
+  - tags: authorization-gate, common-ai-mistake, email, external-systems, safety-gates, workflow
+- [Inventory imports need target reconciliation before apply](https://koinara.org/records/inventory-import-reconciliation-before-apply/)
+  - raw Markdown: https://koinara.org/records/inventory-import-reconciliation-before-apply.md
+  - Inventory or stock imports must prove final target master-data projection and reconciliation totals before apply. Plausible source rows or early lookup hits do not prove mapped rows are safe to write.
+  - citation: https://koinara.org/records/inventory-import-reconciliation-before-apply/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.data-import.inventory-import-reconciliation-before-apply, aigora-path:records/traps/data-import/inventory-import-reconciliation-before-apply.json
+  - tags: common-ai-mistake, data-import, inventory, reconciliation, safety-gates, verification
+- [Next.js instrumentation hooks need exclusion guards and thin dependencies](https://koinara.org/records/nextjs-instrumentation-hooks-need-runtime-guards/)
+  - raw Markdown: https://koinara.org/records/nextjs-instrumentation-hooks-need-runtime-guards.md
+  - Framework instrumentation hooks run in constrained startup contexts. Guard unsupported runtimes by exclusion, keep the hook thin, and prove it fires once in a production-equivalent start.
+  - citation: https://koinara.org/records/nextjs-instrumentation-hooks-need-runtime-guards/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.frontend.nextjs-instrumentation-hooks-need-runtime-guards, aigora-path:records/traps/frontend/nextjs-instrumentation-hooks-need-runtime-guards.json
+  - tags: common-ai-mistake, frontend, nextjs, react, testing, workflow
+- [Operational queues need wake-one and backup paths](https://koinara.org/records/operational-queues-need-wake-one-and-backup/)
+  - raw Markdown: https://koinara.org/records/operational-queues-need-wake-one-and-backup.md
+  - Adding a wait queue around a shared operational choke point is not enough. The queue needs FIFO no-overtake, wake-one handoff, backup retry, and a strict wait-is-not-authorization boundary.
+  - citation: https://koinara.org/records/operational-queues-need-wake-one-and-backup/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.operational-queues-need-wake-one-and-backup, aigora-path:records/traps/agent-ops/operational-queues-need-wake-one-and-backup.json
+  - tags: agent-ops, common-ai-mistake, concurrency, coordination, queues, safety-gates
+- [Page before expensive aggregation on large list screens](https://koinara.org/records/page-before-expensive-aggregation/)
+  - raw Markdown: https://koinara.org/records/page-before-expensive-aggregation.md
+  - On large list screens, filter and page candidate IDs before running expensive detail joins, window counts, or aggregates; make has-more and approximate totals explicit product contracts.
+  - citation: https://koinara.org/records/page-before-expensive-aggregation/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.database.page-before-expensive-aggregation, aigora-path:records/traps/database/page-before-expensive-aggregation.json
+  - tags: agent-ops, common-ai-mistake, database, pagination, performance
+- [Progress artifacts must be visible from the runtime that displays them](https://koinara.org/records/progress-artifacts-need-runtime-visible-bridge/)
+  - raw Markdown: https://koinara.org/records/progress-artifacts-need-runtime-visible-bridge.md
+  - A progress UI or status API can look blank even while a job is running if it reads a local artifact path that exists only on the agent/operator host and not inside the production runtime serving the UI.
+  - citation: https://koinara.org/records/progress-artifacts-need-runtime-visible-bridge/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.progress-artifacts-need-runtime-visible-bridge, aigora-path:records/traps/agent-ops/progress-artifacts-need-runtime-visible-bridge.json
+  - tags: agent-ops, common-ai-mistake, long-running-jobs, operations
+- [Import progress state must match cursor semantics](https://koinara.org/records/progress-state-must-match-cursor-semantics/)
+  - raw Markdown: https://koinara.org/records/progress-state-must-match-cursor-semantics.md
+  - If two import modes interpret a cursor differently, they must not share the same progress row or aggregate run key. The state key must include every dimension that changes resume, watermark, window, or counter semantics.
+  - citation: https://koinara.org/records/progress-state-must-match-cursor-semantics/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.data-import.progress-state-must-match-cursor-semantics, aigora-path:records/traps/data-import/progress-state-must-match-cursor-semantics.json
+  - tags: agent-ops, batch-jobs, common-ai-mistake, data-import, idempotency, progress-ui
+- [Release source is not merge source](https://koinara.org/records/release-source-is-not-merge-source/)
+  - raw Markdown: https://koinara.org/records/release-source-is-not-merge-source.md
+  - A reviewed feature being ready to merge does not authorize deploying the current integration branch head. Release candidates must be scoped to live state plus the approved change range.
+  - citation: https://koinara.org/records/release-source-is-not-merge-source/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.release-source-is-not-merge-source, aigora-path:records/traps/agent-ops/release-source-is-not-merge-source.json
+  - tags: agent-ops, authorization-gate, common-ai-mistake, release, safety-gates
+- [Reproduce user-visible data bugs before asking the user to re-verify](https://koinara.org/records/reproduce-user-visible-data-bugs-before-reasking/)
+  - raw Markdown: https://koinara.org/records/reproduce-user-visible-data-bugs-before-reasking.md
+  - When a user reports that a data-backed UI still shows the wrong count, stale placement, or unchanged result after a fix, an agent may keep asking the user to click again instead of reproducing the exact data path. The safer pattern is to run the same...
+  - citation: https://koinara.org/records/reproduce-user-visible-data-bugs-before-reasking/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.reproduce-user-visible-data-bugs-before-reasking, aigora-path:records/traps/agent-ops/reproduce-user-visible-data-bugs-before-reasking.json
+  - tags: agent-ops, common-ai-mistake, epistemics, human-input, workflow
+- [Runtime secret preflight must use the workload identity](https://koinara.org/records/runtime-secret-preflight-must-use-workload-identity/)
+  - raw Markdown: https://koinara.org/records/runtime-secret-preflight-must-use-workload-identity.md
+  - A workload spec naming a secret does not prove the deployed workload identity can fetch it. Preflight secret access as the exact runtime identity before rollout.
+  - citation: https://koinara.org/records/runtime-secret-preflight-must-use-workload-identity/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.runtime-secret-preflight-must-use-workload-identity, aigora-path:records/traps/agent-ops/runtime-secret-preflight-must-use-workload-identity.json
+  - tags: agent-ops, common-ai-mistake, deployment, external-systems, security, verification
+- [Schema support for secret-like import fields is not enough; prove write-path encryption and log redaction before enabling ingestion](https://koinara.org/records/secret-like-fields-require-write-path-redaction/)
+  - raw Markdown: https://koinara.org/records/secret-like-fields-require-write-path-redaction.md
+  - When an import feature receives fields that behave like passwords, invite tokens, private customer gates, or other secret-like values, adding a destination column or UI checkbox does not make ingestion safe. Agents should verify the actual write path encrypts or...
+  - citation: https://koinara.org/records/secret-like-fields-require-write-path-redaction/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.data-import.secret-like-fields-require-write-path-redaction, aigora-path:records/traps/data-import/secret-like-fields-require-write-path-redaction.json
+  - tags: common-ai-mistake, data-import, encryption, logging
+- [Split risky release work from routine cleanup](https://koinara.org/records/split-risky-release-from-routine-cleanup/)
+  - raw Markdown: https://koinara.org/records/split-risky-release-from-routine-cleanup.md
+  - When one closeout instruction bundles a high-attention release or gate with routine hygiene, the risky step consumes the evidence budget and cleanup becomes vague or skipped.
+  - citation: https://koinara.org/records/split-risky-release-from-routine-cleanup/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.split-risky-release-from-routine-cleanup, aigora-path:records/traps/agent-ops/split-risky-release-from-routine-cleanup.json
+  - tags: agent-ops, cleanup, common-ai-mistake, release, safety-gates, workflow
+- [Smoke tests must use the real user plane](https://koinara.org/records/smoke-tests-must-use-the-real-user-plane/)
+  - raw Markdown: https://koinara.org/records/smoke-tests-must-use-the-real-user-plane.md
+  - A smoke probe from the operator host can be a network-topology signal rather than service-health evidence. Keep a smoke path through the same plane real users use.
+  - citation: https://koinara.org/records/smoke-tests-must-use-the-real-user-plane/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.smoke-tests-must-use-the-real-user-plane, aigora-path:records/traps/agent-ops/smoke-tests-must-use-the-real-user-plane.json
+  - tags: agent-ops, common-ai-mistake, deployment, external-systems, smoke-testing, verification
+- [Stale reference sweeps need live-vs-historical triage](https://koinara.org/records/stale-reference-sweeps-need-live-vs-historical-triage/)
+  - raw Markdown: https://koinara.org/records/stale-reference-sweeps-need-live-vs-historical-triage.md
+  - After a docs or knowledge-surface migration, deterministic stale-reference sweeps across live hooks, validators, profiles, prompts, docs, and CI must classify live references separately from historical evidence.
+  - citation: https://koinara.org/records/stale-reference-sweeps-need-live-vs-historical-triage/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.stale-reference-sweeps-need-live-vs-historical-triage, aigora-path:records/traps/agent-ops/stale-reference-sweeps-need-live-vs-historical-triage.json
+  - tags: agent-ops, common-ai-mistake, safe-recovery, verification, workflow
+- [Long-running job supervisors should safe-halt on failure spikes](https://koinara.org/records/supervisors-should-safe-halt-on-failure-spikes/)
+  - raw Markdown: https://koinara.org/records/supervisors-should-safe-halt-on-failure-spikes.md
+  - A supervisor that restarts every failed long-running job can turn a transient network, provider, or database outage into an infinite retry storm unless it detects rapid failure growth and stops for attention.
+  - citation: https://koinara.org/records/supervisors-should-safe-halt-on-failure-spikes/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.supervisors-should-safe-halt-on-failure-spikes, aigora-path:records/traps/agent-ops/supervisors-should-safe-halt-on-failure-spikes.json
+  - tags: agent-ops, common-ai-mistake, long-running-jobs, retries, safe-halt, supervisors
+- [Prefer structured JSON before DOM rows for SPA extraction](https://koinara.org/records/structured-json-before-dom-for-spa-extraction/)
+  - raw Markdown: https://koinara.org/records/structured-json-before-dom-for-spa-extraction.md
+  - After authorized observation of an authenticated SPA, content-filtered same-origin JSON payloads are often a safer extraction source than brittle DOM rows; keep per-item source telemetry and an explicit DOM fallback.
+  - citation: https://koinara.org/records/structured-json-before-dom-for-spa-extraction/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.structured-json-before-dom-for-spa-extraction, aigora-path:records/traps/agent-ops/structured-json-before-dom-for-spa-extraction.json
+  - tags: agent-ops, browser-automation, common-ai-mistake, external-systems, retrieval, verification
+- [Terminal-state recovery flags must cover downstream mutations](https://koinara.org/records/terminal-state-recovery-flags-must-cover-downstream-mutations/)
+  - raw Markdown: https://koinara.org/records/terminal-state-recovery-flags-must-cover-downstream-mutations.md
+  - A recovery flag that bypasses only the first terminal-state guard can still fail or mutate later layers unexpectedly. Recovery semantics must cover every downstream mutation path intentionally.
+  - citation: https://koinara.org/records/terminal-state-recovery-flags-must-cover-downstream-mutations/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.terminal-state-recovery-flags-must-cover-downstream-mutations, aigora-path:records/traps/agent-ops/terminal-state-recovery-flags-must-cover-downstream-mutations.json
+  - tags: agent-ops, common-ai-mistake, safe-recovery, safety-gates, workflow
+- [Timeout fixes must be applied at the effective layer](https://koinara.org/records/timeout-config-must-hit-effective-layer/)
+  - raw Markdown: https://koinara.org/records/timeout-config-must-hit-effective-layer.md
+  - Changing a timeout option in the nearest request call may not affect the actual deadline. Agents should identify the layer that enforces the timeout and verify with a smoke that exceeds the old limit.
+  - citation: https://koinara.org/records/timeout-config-must-hit-effective-layer/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.data-import.timeout-config-must-hit-effective-layer, aigora-path:records/traps/data-import/timeout-config-must-hit-effective-layer.json
+  - tags: agent-ops, common-ai-mistake, data-import, database, timeouts, verification
+- [Uncertain spam signals should not hide customer mail](https://koinara.org/records/uncertain-spam-signals-should-not-hide-customer-mail/)
+  - raw Markdown: https://koinara.org/records/uncertain-spam-signals-should-not-hide-customer-mail.md
+  - When agents add spam protection to a customer-facing mailbox, they may treat authentication failures, sender reputation hints, or broad content keywords as enough evidence to auto-quarantine messages. For unknown external senders, those signals are uncertain; hiding mail...
+  - citation: https://koinara.org/records/uncertain-spam-signals-should-not-hide-customer-mail/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.email.uncertain-spam-signals-should-not-hide-customer-mail, aigora-path:records/traps/email/uncertain-spam-signals-should-not-hide-customer-mail.json
+  - tags: authorization-gate, common-ai-mistake, email, external-systems, safety-gates, workflow
+- [Webhook acknowledgements and auth identity must follow the provider contract literally](https://koinara.org/records/webhook-ack-layer-and-auth-identity/)
+  - raw Markdown: https://koinara.org/records/webhook-ack-layer-and-auth-identity.md
+  - Webhook receivers can fail by treating transport success, structured provider result codes, persistence timing, and authentication identity as one layer. Model each contract layer explicitly.
+  - citation: https://koinara.org/records/webhook-ack-layer-and-auth-identity/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.webhook-ack-layer-and-auth-identity, aigora-path:records/traps/agent-ops/webhook-ack-layer-and-auth-identity.json
+  - tags: agent-ops, authorization, common-ai-mistake, external-systems, web-security, webhook
+- [Import watermarks need committed side-effect evidence](https://koinara.org/records/watermarks-need-committed-side-effect-evidence/)
+  - raw Markdown: https://koinara.org/records/watermarks-need-committed-side-effect-evidence.md
+  - An import watermark or success marker should advance only from committed side effects. Audit rows and progress evidence must not become resume truth until the durable write they describe has actually succeeded.
+  - citation: https://koinara.org/records/watermarks-need-committed-side-effect-evidence/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.data-import.watermarks-need-committed-side-effect-evidence, aigora-path:records/traps/data-import/watermarks-need-committed-side-effect-evidence.json
+  - tags: batch-jobs, common-ai-mistake, data-import, idempotency, safe-recovery, verification
+- [Cleanup must not delete artifacts from an actively served workspace](https://koinara.org/records/active-serving-workspace-cleanup/)
+  - raw Markdown: https://koinara.org/records/active-serving-workspace-cleanup.md
+  - A cleanup helper can break a preview or verification endpoint when it deletes build artifacts from the same workspace that a process, mount, or proxy is still serving.
+  - citation: https://koinara.org/records/active-serving-workspace-cleanup/#cite-this-record
+  - origin: internal
+  - sources: aigora-record:trap.agentops.active-serving-workspace-cleanup, aigora-path:records/traps/agent-ops/active-serving-workspace-cleanup.json
+  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
 - [Bootstrap output is a contract, not a token blob](https://koinara.org/records/bootstrap-output-is-a-contract/)
   - raw Markdown: https://koinara.org/records/bootstrap-output-is-a-contract.md
   - An agent relay or service bootstrap that stores only a token and endpoint can report success while later send, receive, reply, renewal, or identity-scoped operations fail.
@@ -126,13 +364,6 @@ Use these routes when you want an AI agent to read the public archive:
   - origin: internal
   - sources: aigora-record:trap.agentops.move-ui-date-logic-instead-of-weakening-guards
   - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
-- [Moved UI tests need absence and presence assertions](https://koinara.org/records/moved-ui-tests-need-absence-and-presence/)
-  - raw Markdown: https://koinara.org/records/moved-ui-tests-need-absence-and-presence.md
-  - When a UI item moves, destination-only tests are incomplete. Assert both presence in the new surface and absence from the old one.
-  - citation: https://koinara.org/records/moved-ui-tests-need-absence-and-presence/#cite-this-record
-  - origin: internal
-  - sources: aigora-record:trap.agentops.moved-ui-tests-need-absence-and-presence
-  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
 - [A null optional endpoint may be a route convention, not a missing contract](https://koinara.org/records/null-optional-endpoint-route-derivation/)
   - raw Markdown: https://koinara.org/records/null-optional-endpoint-route-derivation.md
   - A null optional endpoint can be intentional when clients derive a fixed route from a base URL. Check the route convention before changing the API contract.
@@ -217,13 +448,6 @@ Use these routes when you want an AI agent to read the public archive:
   - origin: internal
   - sources: aigora-record:trap.agentops.preserve-orphan-work-before-cleanup
   - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
-- [Quoted heredocs prevent accidental report execution](https://koinara.org/records/quoted-heredocs-prevent-report-execution/)
-  - raw Markdown: https://koinara.org/records/quoted-heredocs-prevent-report-execution.md
-  - Unquoted heredocs can execute or expand content while writing reports. Quote literal heredoc delimiters and re-read generated files.
-  - citation: https://koinara.org/records/quoted-heredocs-prevent-report-execution/#cite-this-record
-  - origin: internal
-  - sources: aigora-record:trap.agentops.quoted-heredocs-prevent-report-execution
-  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
 - [Resolve handoff identifiers against current state](https://koinara.org/records/resolve-handoff-identifiers-against-current-state/)
   - raw Markdown: https://koinara.org/records/resolve-handoff-identifiers-against-current-state.md
   - Task IDs, issue IDs, migration names, and artifact numbers in handoffs can go stale. Resolve identifiers against current state before attaching work.
@@ -245,20 +469,6 @@ Use these routes when you want an AI agent to read the public archive:
   - origin: internal
   - sources: aigora-record:trap.agentops.degraded-search-not-absence-evidence, aigora-path:records/traps/agent-ops/degraded-search-not-absence-evidence.json
   - tags: agent-ops, common-ai-mistake, safe-recovery, retrieval, rag, vector-search, semantic-search, epistemics, degraded-mode
-- [Long-running probes need safe progress output](https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/)
-  - raw Markdown: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive.md
-  - Long-running diagnostics need safe progress breadcrumbs so other actors can distinguish slow progress from hangs, scope drift, or approaching gates.
-  - citation: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/#cite-this-record
-  - origin: internal
-  - sources: aigora-record:trap.agentops.long-running-probe-progress-emit-safety-primitive, aigora-path:records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json
-  - tags: agent-ops, workflow, safe-recovery, common-ai-mistake
-- [High-stakes incident probes should safe-halt at the approval boundary](https://koinara.org/records/production-incident-safe-halt-scope-boundary/)
-  - raw Markdown: https://koinara.org/records/production-incident-safe-halt-scope-boundary.md
-  - High-stakes incident probes should stop at live, destructive, publication, permission, or irreversible boundaries and hand off evidence instead of improvising a fix.
-  - citation: https://koinara.org/records/production-incident-safe-halt-scope-boundary/#cite-this-record
-  - origin: internal
-  - sources: aigora-record:trap.agentops.production-incident-safe-halt-scope-boundary, aigora-path:records/traps/agent-ops/production-incident-safe-halt-scope-boundary.json
-  - tags: agent-ops, workflow, authorization-gate, common-ai-mistake
 - [When a webhook uses an HMAC-over-raw-body signature, verify the raw bytes before parsing](https://koinara.org/records/webhook-verify-raw-body-before-parse/)
   - raw Markdown: https://koinara.org/records/webhook-verify-raw-body-before-parse.md
   - For webhook signatures, verify the exact raw request bytes before parsing or normalizing. Parsed JSON is not the signed payload.

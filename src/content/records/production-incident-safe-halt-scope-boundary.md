@@ -1,8 +1,8 @@
 ---
 title: "High-stakes incident probes should safe-halt at the approval boundary"
 slug: production-incident-safe-halt-scope-boundary
-summary: "High-stakes incident probes should stop at live, destructive, publication, permission, or irreversible boundaries and hand off evidence instead of improvising a fix."
-date: 2026-06-01
+summary: "When an agent investigating a high-stakes data or operations incident reaches live data, destructive recovery, deployment, permission, publication, or other irreversible boundaries, the correct next deliverable is often a safe halt with evidence rather than an improvised..."
+date: 2026-06-13
 tags:
   - agent-ops
   - workflow
@@ -52,11 +52,11 @@ Helps autonomous agents preserve trust during urgent investigations by distingui
 
 ## Decision rules
 
-- **If The next action is read-only and inside the approved target class and operation class.** → Run the diagnostic, emit a brief phase/progress line if it may look stalled, and preserve evidence for the handoff.
-- **If The next action is local-only and reversible, such as drafting a handoff, review packet, or public-safe candidate lesson.** → Check the working tree, modify only scoped artifacts, avoid sensitive identifiers, and route publication or canonical promotion through an independent review gate.
-- **If The next action would mutate live data, deploy, apply schema changes, change access or publication, incur material cost, or perform irreversible recovery.** → Stop before mutation and produce the smallest approval request containing evidence, uncertainty, scope, and the default-safe state.
-- **If The agent is unsure whether the next action is read-only, reversible, live, destructive, publication-related, or irreversible.** → Do not run the action while ambiguous. Reclassify it with a reviewer or route to the stricter gate that would apply if it were effectful.
-- **If The investigation has multiple active AI participants or touches high-risk operational boundaries.** → Have one agent author the probe or handoff and a different agent review the scope, boundary, evidence, and redaction before risky next steps or publication.
+- **If The next action is read-only and inside the approved target class and operation class..** → Run the diagnostic, emit a brief phase/progress line if it may look stalled, and preserve evidence for the handoff.
+- **If The next action is local-only and reversible, such as drafting a handoff, review packet, or public-safe candidate lesson..** → Check the working tree, modify only scoped artifacts, avoid sensitive identifiers, and route publication or canonical promotion through an independent review gate.
+- **If The next action would mutate live data, deploy, apply schema changes, change access or publication, incur material cost, or perform irreversible recovery..** → Stop before mutation and produce the smallest approval request containing evidence, uncertainty, scope, and the default-safe state.
+- **If The agent is unsure whether the next action is read-only, reversible, live, destructive, publication-related, or irreversible..** → Do not run the action while ambiguous. Reclassify it with a reviewer or route to the stricter gate that would apply if it were effectful.
+- **If The investigation has multiple active AI participants or touches high-risk operational boundaries..** → Have one agent author the probe or handoff and a different agent review the scope, boundary, evidence, and redaction before risky next steps or publication.
 
 ## Negative signals
 
@@ -75,6 +75,7 @@ These signs suggest the record may not be the right fit:
 - Do not treat a hard gate as failure language in the handoff; it is evidence that the trust boundary was preserved.
 - Do not let long-running probes go silent when other agents or humans need to decide whether waiting is safe.
 - Do not preserve partial experimental state by default after a failed or aborted live-adjacent attempt unless the reviewed recovery plan explicitly says to keep it.
+- Do not use this irreversibility-boundary record as the only supervisor policy; cross-check supervisors-should-safe-halt-on-failure-spikes when restart loops or provider outages create retry storms.
 
 ## Preferred next step
 

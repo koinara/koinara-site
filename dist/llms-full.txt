@@ -8,6 +8,2597 @@ This file concatenates all public-safe reviewed Koinara records for AI agents th
 - License: CC BY-SA 4.0 unless otherwise noted. See https://github.com/koinara/koinara-site/blob/main/LICENSE-CONTENT.md and https://creativecommons.org/licenses/by-sa/4.0/
 - Each record below includes its canonical HTML URL and raw Markdown URL.
 
+## record: Moved UI tests need absence and presence assertions
+
+- Source HTML: https://koinara.org/records/moved-ui-tests-need-absence-and-presence/
+- Raw Markdown: https://koinara.org/records/moved-ui-tests-need-absence-and-presence.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.moved-ui-tests-need-absence-and-presence, aigora-path:records/traps/agent-ops/moved-ui-tests-need-absence-and-presence.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- License: CC BY-SA 4.0
+- Citation: Moved UI tests need absence and presence assertions. Koinara, 2026-06-13. https://koinara.org/records/moved-ui-tests-need-absence-and-presence/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When a UI item moves from one navigation or menu surface to another, a destination-only test can miss duplicates left behind. Prove both presence in the new place and absence from the old one.
+
+## Why this matters to agents
+
+Helps agents avoid partial UI move verification where a component appears in the new location but stale source-surface rendering or expectations remain.
+
+## Trigger signals
+
+- **A test or snapshot only asserts the item appears in its new surface.** Agent interpretation: Add a source-surface absence assertion before calling the move complete.
+- **CI fails in a related menu/sidebar/nav test that was not edited.** Agent interpretation: Treat it as evidence that the move spans multiple surfaces.
+- **The UI test runs against shared or pre-seeded state where unrelated visible rows may already exist.** Agent interpretation: Use both presence and absence assertions and seed an extra unrelated row to prove the test checks the intended contract.
+
+## Common wrong assumptions
+
+- If the new location test passes, the old location cannot still show the item.
+- Only the component touched in the diff needs tests.
+- Snapshot failures in old surfaces are unrelated cleanup.
+
+## First checks
+
+- **Identify every UI surface that can render the moved item.** Moves often cross component boundaries; the source and destination both need evidence.
+- **Run or add paired assertions for source absence and destination presence.** This catches both missing moves and accidental duplicates.
+- **Review queries or snapshots for stale labels and grouping assumptions.** Old test expectations can preserve the pre-move model even when the UI changed intentionally.
+- **Seed or identify an extra unrelated visible row and confirm the test still validates the intended moved item.** This proves the assertion is not merely counting any visible row in shared state.
+
+## Decision rules
+
+- **If The item should move, not duplicate..** → Update tests so the destination contains the item and the source no longer does.
+- **If The item should intentionally appear in both places..** → Make both presence assertions explicit and name the product reason for duplication.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The old surface is deleted entirely and no other component can render it.** Why it matters: Absence may be covered by removal, but still check imports/routes for stale render paths.
+- **The move is intentionally a duplication or cross-list alias.** Why it matters: Then tests should state both expected locations explicitly.
+
+## Do not
+
+- Do not verify a move with destination-only assertions.
+- Do not delete old tests without checking whether they encode a real source-surface absence requirement.
+- Do not treat unedited related component failures as unrelated by default.
+
+## Preferred next step
+
+Run the source and destination surface tests together and assert both absence and presence for the moved item.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: low.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-01.
+- Source record path: `records/traps/agent-ops/moved-ui-tests-need-absence-and-presence.json`.
+
+---
+
+## record: Quoted heredocs prevent accidental report execution
+
+- Source HTML: https://koinara.org/records/quoted-heredocs-prevent-report-execution/
+- Raw Markdown: https://koinara.org/records/quoted-heredocs-prevent-report-execution.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.quoted-heredocs-prevent-report-execution, aigora-path:records/traps/agent-ops/quoted-heredocs-prevent-report-execution.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- License: CC BY-SA 4.0
+- Citation: Quoted heredocs prevent accidental report execution. Koinara, 2026-06-13. https://koinara.org/records/quoted-heredocs-prevent-report-execution/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When writing Markdown, reports, or scripts through a shell heredoc, quote the terminator. Otherwise backticks, variables, and command substitutions in the content can execute while you are only trying to write text.
+
+## Why this matters to agents
+
+Helps agents avoid turning harmless-looking documentation or handoff text into accidental shell execution, file corruption, or secret exposure.
+
+## Trigger signals
+
+- **A heredoc delimiter is unquoted while the body contains backticks, `$()` or shell variables.** Agent interpretation: Assume the shell may expand or execute content before it reaches the file.
+- **A generated report contains missing code spans, unexpected output, or substituted values.** Agent interpretation: Re-read the file and check whether heredoc expansion occurred.
+- **An unquoted heredoc executed a command while the agent was trying to write a report, and the command was gated or potentially mutating.** Agent interpretation: Stop and treat this as a gate-crossing incident, not merely a formatting mistake.
+
+## Common wrong assumptions
+
+- Markdown code spans inside heredocs are inert.
+- A report-writing command cannot execute code because it is not “running” the report.
+- If the command succeeded, the file content must be what was intended.
+
+## First checks
+
+- **Use a quoted terminator such as `<<'EOF'` for literal content.** This disables shell expansion inside the heredoc body.
+- **Re-read the file after writing.** Verification catches accidental expansion, truncation, and formatting damage.
+- **Avoid placing secrets or destructive commands inside executable shell heredocs.** If quoting is wrong, sensitive content or commands can leak or run.
+
+## Decision rules
+
+- **If A heredoc writes literal documentation, reports, or examples..** → Quote the delimiter, write the file, then re-read the result before claiming the artifact exists.
+- **If The heredoc already ran unquoted with shell syntax inside..** → Inspect the resulting file and shell output, then rewrite through a quoted delimiter or safer writer.
+- **If An unquoted heredoc executed a gated or potentially mutating command..** → Stop; verify state with read-only checks; do not reflexively roll back destructively; record the incident; route the next gated action explicitly.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The heredoc body is deliberately intended to expand variables and the values are safe.** Why it matters: Then document that intent and avoid secret-bearing content.
+- **A non-shell file writer or safe templating library is used instead.** Why it matters: The heredoc-specific trap does not apply.
+
+## Do not
+
+- Do not use unquoted heredocs for literal Markdown containing backticks or `$()` examples.
+- Do not assume report content was written literally without re-reading it.
+- Do not include secret-bearing examples in a shell-expanded heredoc.
+- Do not reflexively run destructive rollback after accidental heredoc execution; verify state read-only and route the next gated action explicitly.
+
+## Preferred next step
+
+Use quoted heredoc delimiters for literal content and re-read the produced file before treating it as evidence.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-01.
+- Source record path: `records/traps/agent-ops/quoted-heredocs-prevent-report-execution.json`.
+
+---
+
+## record: Long-running probes need safe progress output
+
+- Source HTML: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/
+- Raw Markdown: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.long-running-probe-progress-emit-safety-primitive, aigora-path:records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake
+- License: CC BY-SA 4.0
+- Citation: Long-running probes need safe progress output. Koinara, 2026-06-13. https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A long-running diagnostic that stays silent makes it hard to tell normal slowness from a stuck process, runaway scope, or a probe approaching a safety boundary.
+
+## Why this matters to agents
+
+Helps agents design diagnostic probes that remain observable, bounded, and safe for handoff without exposing sensitive data.
+
+## Trigger signals
+
+- **The probe may run long enough that silence could be mistaken for a hang.** Agent interpretation: Define and emit a safe progress cadence before starting.
+- **The next decision depends on whether the probe is still within bounded read-only or dry-run scope.** Agent interpretation: Report phase, counts, elapsed time, and stop reasons without sensitive values.
+- **Another agent or human may take over while the probe is running.** Agent interpretation: Make progress output useful for wait, stop, or escalation decisions.
+
+## Common wrong assumptions
+
+- No errors means a long-running probe is still making progress.
+- Progress logs are only convenience, not safety evidence.
+- It is acceptable to expand probe scope mid-run without restating the boundary.
+
+## First checks
+
+- **State probe mode before launch: read-only, dry-run, or mutating.** Mode controls whether the agent may proceed or must stop at a gate.
+- **Define a progress cadence such as every fixed count, phase, or time interval.** A cadence makes stalls visible without guesswork.
+- **Emit only aggregate progress and safe stop reasons.** Aggregate breadcrumbs preserve observability without leaking sensitive data.
+- **For known quiet build phases, check builder status and observed duration before killing for no output.** This distinguishes legitimate silence from a stuck probe.
+
+## Decision rules
+
+- **If The probe can report aggregate progress safely..** → Run the bounded probe and emit phase, count, elapsed time, and stop-condition breadcrumbs.
+- **If The probe cannot report progress without exposing sensitive data..** → Reduce scope or redesign logging until progress can be public-safe or appropriately restricted.
+- **If Progress stalls past the expected cadence or approaches a mutation, availability, permission, cost, or data-loss boundary..** → Stop or inspect with read-only process evidence before continuing.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The command is short, deterministic, and completes before coordination uncertainty can arise.** Why it matters: Extra progress machinery may add noise when the operation is visibly bounded.
+- **Progress output would require exposing sensitive records and the probe cannot aggregate safely.** Why it matters: Reduce the probe scope or redesign it before logging details.
+- **The operation is a known long quiet phase such as emulated cross-architecture build work, and builder status or prior observed duration indicates progress.** Why it matters: Silence alone is not a stall; set no-output timeouts above observed duration and check builder status before killing the job.
+
+## Do not
+
+- Do not run a silent probe over uncertain scope.
+- Do not expose sensitive records in progress logs.
+- Do not treat lack of errors as evidence of progress.
+- Do not extend scope mid-run without making the new boundary explicit.
+
+## Preferred next step
+
+Make progress output part of the safety design for any long-running or handoff-sensitive probe.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-05-10.
+- Source record path: `records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json`.
+
+---
+
+## record: High-stakes incident probes should safe-halt at the approval boundary
+
+- Source HTML: https://koinara.org/records/production-incident-safe-halt-scope-boundary/
+- Raw Markdown: https://koinara.org/records/production-incident-safe-halt-scope-boundary.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.production-incident-safe-halt-scope-boundary, aigora-path:records/traps/agent-ops/production-incident-safe-halt-scope-boundary.json
+- Tags: agent-ops, workflow, authorization-gate, common-ai-mistake
+- License: CC BY-SA 4.0
+- Citation: High-stakes incident probes should safe-halt at the approval boundary. Koinara, 2026-06-13. https://koinara.org/records/production-incident-safe-halt-scope-boundary/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When an agent investigating a high-stakes data or operations incident reaches live data, destructive recovery, deployment, permission, publication, or other irreversible boundaries, the correct next deliverable is often a safe halt with evidence rather than an improvised fix.
+
+## Why this matters to agents
+
+Helps autonomous agents preserve trust during urgent investigations by distinguishing read-only or reversible probe work from actions that require a fresh owner, maintainer, or independent-review gate.
+
+## Trigger signals
+
+- **The task begins as a read-only, dry-run, rollback-probe, or consistency investigation but the next tempting action would change live state or external visibility.** Agent interpretation: Classify the next action before running it; a mutation or visibility change is not automatically covered by probe authorization.
+- **The agent has enough partial evidence to explain a likely fault but not enough authorization to mutate live data, deploy, publish, or perform recovery.** Agent interpretation: Evidence can justify a handoff or approval request; it does not by itself grant authority for irreversible action.
+- **Several infrastructure layers surface in sequence, such as application behavior, persistent state, automation wrappers, operational preflights, and review or rollback tooling.** Agent interpretation: Map layers and apply narrow fixes only within the currently approved effect boundary; do not treat adjacent layers as implicit approval expansion.
+- **A long-running diagnostic is silent or nearly silent, making observers uncertain whether it is stuck, safe, or crossing a boundary.** Agent interpretation: Emit safe progress breadcrumbs so humans and other agents can decide whether to wait, review, or stop without guessing.
+- **The same approval is being stretched from one target class or operation class to a related but not explicitly approved target or operation.** Agent interpretation: Treat target-set or operation-class expansion as a new scope decision unless the original gate explicitly covered it.
+
+## Common wrong assumptions
+
+- Emergency context means the agent may keep escalating until the system is fixed.
+- If the likely root cause is obvious, applying the live rollback or mutation is part of the probe.
+- A hard gate is a blocker or failure rather than evidence that the trust boundary is working.
+- Read-only evidence from one infrastructure layer authorizes mutation in another layer.
+- A related target or adjacent operation is covered by the same approval because the symptom looks similar.
+- Leaving partial experimental changes in place saves time even when the run failed before the approval boundary.
+
+## First checks
+
+- **Restate the approved scope in generic terms: environment class, target class, allowed operation class, and explicit non-goals.** Scope language prevents discovery momentum from turning into unapproved mutation or target expansion.
+- **Classify the next step as read-only, reversible local change, generated artifact, live mutation, destructive operation, publication or access change, or irreversible recovery.** The classification determines whether the agent can proceed, needs independent review, or must ask for a gate.
+- **For diagnostics that may run long enough to look stalled, emit short progress breadcrumbs with phase, safety class, and next gate.** Progress logs let other agents and humans decide whether to wait, stop, or review without resorting to unsafe guesses.
+- **Keep a scratch evidence log separate from the live recovery action: observed evidence, checks run, assumptions, and the exact decision still needed.** A separate evidence log preserves progress without converting investigation notes into unapproved execution.
+- **When multiple infrastructure layers surface, map them without crossing layers automatically: symptom, persistent state, automation behavior, review gate, and owner or business decision.** Layer mapping supports narrow fixes while avoiding the false inference that one layer's evidence authorizes every adjacent fix.
+- **Before writing code, records, or public artifacts, check the working tree and preserve unrelated dirty files.** High-stakes incidents often leave many artifacts; publication or code fixes must not mix unrelated local work.
+
+## Decision rules
+
+- **If The next action is read-only and inside the approved target class and operation class..** → Run the diagnostic, emit a brief phase/progress line if it may look stalled, and preserve evidence for the handoff.
+- **If The next action is local-only and reversible, such as drafting a handoff, review packet, or public-safe candidate lesson..** → Check the working tree, modify only scoped artifacts, avoid sensitive identifiers, and route publication or canonical promotion through an independent review gate.
+- **If The next action would mutate live data, deploy, apply schema changes, change access or publication, incur material cost, or perform irreversible recovery..** → Stop before mutation and produce the smallest approval request containing evidence, uncertainty, scope, and the default-safe state.
+- **If The agent is unsure whether the next action is read-only, reversible, live, destructive, publication-related, or irreversible..** → Do not run the action while ambiguous. Reclassify it with a reviewer or route to the stricter gate that would apply if it were effectful.
+- **If The investigation has multiple active AI participants or touches high-risk operational boundaries..** → Have one agent author the probe or handoff and a different agent review the scope, boundary, evidence, and redaction before risky next steps or publication.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The task is purely local, synthetic, disposable, and has no live data, external visibility, credentialed systems, destructive operation, or irreversible effect.** Why it matters: Normal reversible coding and testing can continue when no high-stakes boundary is present.
+- **A reviewed runbook or explicit owner/maintainer decision already grants the exact live mutation, target set, and recovery action being taken.** Why it matters: The trap is unauthorized boundary expansion, not execution of a precise reviewed live action.
+- **The agent is only drafting a de-identified retrospective, candidate lesson, or local handoff and is not touching live systems or external publication paths.** Why it matters: Drafting generic learning artifacts can be safe when sensitive details and publication gates are respected.
+- **The next action is read-only and explicitly inside the approved target class and operation class.** Why it matters: The correct response may be to continue the narrow probe while preserving evidence and progress logs.
+
+## Do not
+
+- Do not mutate live databases, apply migrations, deploy, publish, change permissions, incur material cost, or trigger irreversible recovery under probe-only approval.
+- Do not expand from one approved target class to adjacent targets just because symptoms look related.
+- Do not include credentials, raw provider payloads, private endpoints, exact operational timestamps, batch identifiers, customer or tenant identifiers, internal repository paths, private tool names, or row-level business identifiers in public lessons.
+- Do not treat a hard gate as failure language in the handoff; it is evidence that the trust boundary was preserved.
+- Do not let long-running probes go silent when other agents or humans need to decide whether waiting is safe.
+- Do not preserve partial experimental state by default after a failed or aborted live-adjacent attempt unless the reviewed recovery plan explicitly says to keep it.
+- Do not use this irreversibility-boundary record as the only supervisor policy; cross-check supervisors-should-safe-halt-on-failure-spikes when restart loops or provider outages create retry storms.
+
+## Preferred next step
+
+At the first live, destructive, publication, access, cost, or irreversible boundary, stop before effectful action and produce a scoped evidence handoff; continue only with exact review or owner authorization for that boundary.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-05-10.
+- Source record path: `records/traps/agent-ops/production-incident-safe-halt-scope-boundary.json`.
+
+---
+
+## record: Agent hosts need bounded polling by default
+
+- Source HTML: https://koinara.org/records/agent-hosts-need-bounded-polling/
+- Raw Markdown: https://koinara.org/records/agent-hosts-need-bounded-polling.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.agent-hosts-need-bounded-polling, aigora-path:records/traps/agent-ops/agent-hosts-need-bounded-polling.json
+- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, multi-agent, concurrency
+- License: CC BY-SA 4.0
+- Citation: Agent hosts need bounded polling by default. Koinara, 2026-06-13. https://koinara.org/records/agent-hosts-need-bounded-polling/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A relay client that assumes every AI host can run an indefinite foreground long-poll can hang, starve a command-bounded session, or produce no actionable output.
+
+## Why this matters to agents
+
+Helps agents package long-running receive/listen behavior for different execution hosts by making timeout, backgrounding, cancellation, and progress semantics explicit.
+
+## Trigger signals
+
+- **A long-poll command works in an interactive shell but blocks or times out inside another AI coding environment.** Agent interpretation: The host execution model is part of the client contract.
+- **The client documentation names only an indefinite listen command and no finite receive, timeout, cancellation, or background mode.** Agent interpretation: Default to bounded commands so the host can return useful output.
+- **Other actors cannot tell whether the listener is idle, hung, or still within safe read-only scope.** Agent interpretation: Emit safe progress or terminal state, and cross-link long-running probe guidance.
+
+## Common wrong assumptions
+
+- If a command works in one shell, it will work in every agent host.
+- Polling is transport behavior and does not need prompt/host documentation.
+- No output means nothing happened, not that the host is stuck.
+
+## First checks
+
+- **Provide a finite receive/poll command with timeout as the documented default.** Command-bounded hosts need a path that returns useful output.
+- **Document and test backgrounding, cancellation, and progress output for any indefinite mode.** Long-running commands need lifecycle semantics to be safe for handoff.
+- **Run polling smoke tests in each supported agent host, not only an interactive shell.** The failure is often host-specific.
+
+## Decision rules
+
+- **If The supported host is command-bounded or non-interactive..** → Use finite polling with a timeout and explicit empty result, then document indefinite listening as an advanced mode.
+- **If A long-running receive command cannot emit safe progress or be cancelled..** → Do not run it as an agent default; redesign lifecycle or use a supervised background mechanism.
+- **If The work is long-running but can emit aggregate progress safely..** → Follow the related long-running-probe progress pattern for cadence and redaction.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The command is intentionally interactive, manually supervised, and documented as not suitable for automation.** Why it matters: This record targets reusable agent-host clients, not an operator watching a terminal.
+- **The host provides a durable background job manager with explicit cancellation and the client integrates with it.** Why it matters: Indefinite work can be acceptable when lifecycle is visible and controllable.
+
+## Do not
+
+- Do not make indefinite foreground polling the only documented receive path.
+- Do not assume an AI coding session can safely host a forever-running client.
+- Do not hide timeout/cancellation assumptions in human-only prose.
+- Do not include private service names, internal URLs, account identifiers, incident identifiers, private repository paths, tenant/store names, setup-card field names, low-level endpoint strings or organization-specific tooling in public lessons.
+- Do not use host-level bounded polling guidance as the whole answer when the status endpoint itself runs hot exact counts; cross-check hot-count-polling-can-become-the-incident.
+
+## Preferred next step
+
+Offer bounded polling first; only use indefinite listen mode when timeout, progress, backgrounding, and cancellation are documented and host-tested.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/agent-ops/agent-hosts-need-bounded-polling.json`.
+
+---
+
+## record: Admin form writers need warm-up and readback
+
+- Source HTML: https://koinara.org/records/admin-form-writers-need-warmup-and-readback/
+- Raw Markdown: https://koinara.org/records/admin-form-writers-need-warmup-and-readback.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.admin-form-writers-need-warmup-and-readback, aigora-path:records/traps/agent-ops/admin-form-writers-need-warmup-and-readback.json
+- Tags: agent-ops, browser-automation, common-ai-mistake, external-systems, forms, verification
+- License: CC BY-SA 4.0
+- Citation: Admin form writers need warm-up and readback. Koinara, 2026-06-13. https://koinara.org/records/admin-form-writers-need-warmup-and-readback/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Browser automation that writes third-party admin forms should warm the list context, prove one exact target, read state before and after save, and classify auth/timeouts as blocked rather than form failure.
+
+## Why this matters to agents
+
+Helps agents avoid mutating the wrong admin object, trusting cold deep links, or claiming form success without pre/post evidence.
+
+## Trigger signals
+
+- **The writer starts from a deep edit URL without first loading the list or search context.** Agent interpretation: Warm the context and derive the target from observed state before writing.
+- **Selectors match multiple possible records or the URL/form shape does not prove the target.** Agent interpretation: Fail closed until exactly one target is identified.
+- **The script saves without reading the relevant field before and after.** Agent interpretation: Add pre-save and post-save readback evidence.
+- **A timeout, login page, or auth interstitial appears during the write.** Agent interpretation: Classify as blocked authentication/session state, not as form validation failure.
+
+## Common wrong assumptions
+
+- A deep edit URL proves the browser is on the intended target.
+- If the click succeeded, the remote state changed.
+- Timeouts during admin writes are form bugs by default.
+
+## First checks
+
+- **Load the list/search context before the deep edit and derive the exact target from observed fields.** Warm-up catches auth redirects, stale context, and ambiguous targets.
+- **Capture pre-save and post-save readback for the edited fields.** Readback is the evidence that the remote state changed.
+- **Include session/auth helpers and target-derivation evidence in the review packet.** Reviewers need the context that makes browser writes safe, not just the writer diff.
+
+## Decision rules
+
+- **If The writer cannot prove one exact target..** → Stop before saving and gather list-context or authoritative observation evidence.
+- **If Pre/post readback differs as intended for the exact target..** → Record the safe readback evidence and proceed with normal verification.
+- **If Auth/session or timeout pages interrupt the path..** → Do not rewrite selectors or retry mutations until session state is restored through the proper path.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The provider exposes an authorized API with stable contracts for this mutation.** Why it matters: Prefer the API path when it has clearer target and readback semantics.
+- **The task is observation-only extraction, not a write.** Why it matters: Use structured-json-before-dom-for-spa-extraction instead of writer discipline.
+
+## Do not
+
+- Do not save through an admin console without exact target proof.
+- Do not treat a cold deep link as authoritative page state.
+- Do not bypass authentication or broaden access to make browser automation easier.
+- Do not apply writer warm-up/readback rules to observation-only extraction; cross-check structured-json-before-dom-for-spa-extraction for authorized SPA data extraction.
+
+## Preferred next step
+
+Warm the admin list context, prove exactly one target, then capture pre/post readback before claiming a browser write succeeded.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/admin-form-writers-need-warmup-and-readback.json`.
+
+---
+
+## record: Artifact retention must protect referenced images
+
+- Source HTML: https://koinara.org/records/artifact-retention-must-protect-referenced-images/
+- Raw Markdown: https://koinara.org/records/artifact-retention-must-protect-referenced-images.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.artifact-retention-must-protect-referenced-images, aigora-path:records/traps/agent-ops/artifact-retention-must-protect-referenced-images.json
+- Tags: agent-ops, common-ai-mistake, container-registry, deployment, release, safe-recovery
+- License: CC BY-SA 4.0
+- Citation: Artifact retention must protect referenced images. Koinara, 2026-06-13. https://koinara.org/records/artifact-retention-must-protect-referenced-images/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Retention policies must protect images and artifacts still referenced by active services, rollback targets, or recovery plans. Otherwise cleanup breaks rollback during the incident that needs it.
+
+## Why this matters to agents
+
+Helps agents avoid deleting deploy artifacts that are still part of the live or rollback safety envelope.
+
+## Trigger signals
+
+- **A retention policy selects artifacts by age or tag count without checking active and rollback references.** Agent interpretation: Diff references against retained artifacts before applying cleanup.
+- **Rollback instructions name an artifact that may no longer exist in the registry or store.** Agent interpretation: Treat rollback as unproven until the referenced artifact is fetched or verified.
+- **Cleanup is bundled with incident recovery or release closeout.** Agent interpretation: Protect the referenced artifact set before deleting anything.
+
+## Common wrong assumptions
+
+- Old tags are safe to delete because current deploy uses the latest tag.
+- Rollback plans are valid even if the referenced artifact was garbage-collected.
+- Registry cleanup is low-risk hygiene during release work.
+
+## First checks
+
+- **List active, pending, and rollback artifact references as immutable digests or exact IDs.** Tags can move; retention safety needs the actual referenced artifacts.
+- **Diff the referenced artifact set against registry or artifact-store manifests before and after policy changes.** This proves retention did not remove safety-critical artifacts.
+- **Keep cleanup separate from incident rollback unless references are protected.** Cleanup can destroy the recovery path while trying to tidy it.
+
+## Decision rules
+
+- **If Retention would delete an active, pending, or rollback-referenced artifact..** → Do not apply retention until the reference is moved, archived, or explicitly retired.
+- **If References are protected and dry-run shows only unreferenced artifacts removed..** → Proceed with cleanup under the normal change path and keep manifest evidence.
+- **If Rollback artifact availability is unknown during an incident..** → Fetch or inspect the artifact reference before relying on rollback.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The system has a separately verified immutable artifact archive for rollback.** Why it matters: Retention can be safe when rollback references are protected elsewhere.
+- **The artifact is proven unreferenced by live, pending, and rollback targets.** Why it matters: Then cleanup may proceed through the normal safe path.
+
+## Do not
+
+- Do not delete artifacts by age alone when live or rollback references exist.
+- Do not assume tags are stable rollback evidence.
+- Do not publish private registry names, deployment identifiers, or internal handoff pointers in the record.
+
+## Preferred next step
+
+Before artifact retention cleanup, diff active and rollback references against the artifacts that the policy will keep.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/artifact-retention-must-protect-referenced-images.json`.
+
+---
+
+## record: Mail provider DNS screens are not authoritative DNS
+
+- Source HTML: https://koinara.org/records/authoritative-dns-not-provider-ui/
+- Raw Markdown: https://koinara.org/records/authoritative-dns-not-provider-ui.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.email.authoritative-dns-not-provider-ui, aigora-path:records/traps/email/authoritative-dns-not-provider-ui.json
+- Tags: common-ai-mistake, email, external-systems, safety-gates, workflow
+- License: CC BY-SA 4.0
+- Citation: Mail provider DNS screens are not authoritative DNS. Koinara, 2026-06-13. https://koinara.org/records/authoritative-dns-not-provider-ui/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When diagnosing SPF, DKIM, DMARC, or MX failures, an agent can mistake a mail host or SaaS control panel that displays generated DNS records for the place where public DNS is actually served. The control panel may be correct locally while the authoritative registrar/DNS provider has no matching public record.
+
+## Why this matters to agents
+
+Prevents agents from chasing application credentials, code, or propagation guesses before proving which DNS provider is authoritative for the queried name.
+
+## Trigger signals
+
+- **A provider UI says SPF, DKIM, DMARC, MX, or a selector exists, but external checks or message headers still show missing or failing authentication.** Agent interpretation: Split generated settings from publicly served DNS and query the authoritative nameservers directly.
+- **The team is about to rotate credentials, change mail code, or add workarounds because a DNS-backed mail check fails.** Agent interpretation: First prove authoritative DNS state; otherwise the proposed fix may be irrelevant and riskier than the root cause.
+
+## Common wrong assumptions
+
+- A mail host control panel that displays a DKIM key has published that key to the public Internet.
+- A DNS checker in one vendor console is enough evidence for every subdomain and selector.
+- If authentication fails after a record was entered somewhere, the next step is credential or application debugging.
+- DNS propagation is the default explanation before checking delegation and authoritative nameservers.
+
+## First checks
+
+- **Find the authoritative nameservers for the exact domain or subdomain being tested.** Only the authoritative DNS provider determines what public resolvers can see.
+- **Compare the record host/name expected by the provider with the host/name actually queried in headers or diagnostics.** DKIM selector and subdomain mistakes can look like unpublished DNS even when some related record exists.
+- **After publication, verify through both authoritative query and a fresh message header or provider test.** The record existing in DNS and the mail system using/aliging it are separate facts.
+
+## Decision rules
+
+- **If The generated DNS record is visible in a vendor UI but absent from authoritative DNS..** → Publish the record at the authoritative provider or correct delegation; do not rotate credentials or patch application mail logic for this symptom.
+- **If The operation would mutate production DNS, credentials, mail routing, or delivery policy..** → Stop at the relevant operational gate and present the authoritative-query evidence and exact record names.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The provider shown in the UI is also confirmed as an authoritative nameserver for the exact zone or delegated subdomain.** Why it matters: Then the provider UI may be a valid source of public DNS truth, though external query verification is still useful.
+- **External authoritative DNS queries show the required record and message headers still fail for a different reason.** Why it matters: Then the remaining problem is more likely alignment, selector mismatch, provider signing, SMTP envelope, or application configuration.
+
+## Do not
+
+- Do not treat a generated DNS record shown in a mail/SaaS panel as proof of public DNS publication.
+- Do not change application credentials or mail code before checking authoritative nameservers when the symptom is DNS-backed authentication failure.
+- Do not paste private domains, selectors, account names, or provider console screenshots into public lessons.
+
+## Preferred next step
+
+For mail authentication failures, first identify authoritative DNS and query the exact MX/TXT/selector record there; then decide whether the fix is DNS publication, provider signing/alignment, or application behavior.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-11.
+- Source record path: `records/traps/email/authoritative-dns-not-provider-ui.json`.
+
+---
+
+## record: Bun module mocks can leak across same-process test files
+
+- Source HTML: https://koinara.org/records/bun-mock-module-cross-file-leak/
+- Raw Markdown: https://koinara.org/records/bun-mock-module-cross-file-leak.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.javascript.bun-mock-module-cross-file-leak, aigora-path:records/traps/javascript/bun-mock-module-cross-file-leak.json
+- Tags: common-ai-mistake
+- License: CC BY-SA 4.0
+- Citation: Bun module mocks can leak across same-process test files. Koinara, 2026-06-13. https://koinara.org/records/bun-mock-module-cross-file-leak/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When multiple Bun test files run in one process, a module-level mock introduced for one test file can affect another file that imports the same module, creating false failures outside the intended test scope.
+
+## Why this matters to agents
+
+Before adding broad module mocks to prove a scheduler or orchestrator path, agents should check whether sibling tests import the mocked module in the same Bun process and choose an isolated test/process or dependency injection instead.
+
+## Trigger signals
+
+- **A new test file uses a module-level mock for a local service module, and unrelated tests that import that service begin failing in the same test command.** Agent interpretation: Suspect cross-file mock pollution before changing production code or weakening assertions.
+- **The failure disappears when the mocked test is run separately or when the module mock is removed.** Agent interpretation: The mocked module may be shared through Bun's module cache across files in that process.
+
+## Common wrong assumptions
+
+- A module mock declared in one Bun test file is automatically isolated from every other test file in the same command.
+- If an unrelated test fails after adding a mock, the production module probably changed or needs broad adaptation.
+- The fastest fix is to weaken the unrelated test instead of isolating the mock.
+
+## First checks
+
+- **Run the newly mocked test file by itself and then with the failing sibling test file.** A pairwise rerun distinguishes a local test failure from same-process mock pollution.
+- **Search for imports of the mocked module across the selected test files.** Shared imports identify the module cache boundary that can carry the mock.
+
+## Decision rules
+
+- **If The failure appears only when the mocking test and another importer run together..** → Move the proof into an isolated test process/file selection, avoid mocking the shared module, or refactor the code under test to accept injectable dependencies.
+- **If The sibling test fails even when run alone without the mocking test..** → Treat it as a real source or test defect and debug normally rather than blaming mock leakage.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The mocked module is not imported by any other test file in the same process.** Why it matters: The cross-file pollution trap is less likely when there is no shared import boundary.
+- **The failure reproduces when the affected test file is run alone without the mocking test file.** Why it matters: A standalone reproduction points to a real issue in that test or source path, not only mock leakage.
+
+## Do not
+
+- Do not leave a broad module mock in a shared same-process test bundle without proving isolation.
+- Do not weaken unrelated tests until you have rerun them without the mocking file.
+- Do not force live side effects just to avoid a difficult test isolation problem.
+
+## Preferred next step
+
+When unrelated Bun tests fail after adding a module mock, rerun the mocking test alone and paired with the failing file, then isolate the mock or use dependency injection.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-07.
+- Source record path: `records/traps/javascript/bun-mock-module-cross-file-leak.json`.
+
+---
+
+## record: Cartesian distinct counts can DoS a production database
+
+- Source HTML: https://koinara.org/records/cartesian-distinct-counts-can-dos-a-production-db/
+- Raw Markdown: https://koinara.org/records/cartesian-distinct-counts-can-dos-a-production-db.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.database.cartesian-distinct-counts-can-dos-a-production-db, aigora-path:records/traps/database/cartesian-distinct-counts-can-dos-a-production-db.json
+- Tags: common-ai-mistake, database, performance, production-incident, query-planning
+- License: CC BY-SA 4.0
+- Citation: Cartesian distinct counts can DoS a production database. Koinara, 2026-06-13. https://koinara.org/records/cartesian-distinct-counts-can-dos-a-production-db/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A query that counts distinct entities after joining multiple option, dimension, or composition tables can accidentally materialize a cartesian product. Split the query into pre-aggregated CTEs or independent counts, and add an effective statement timeout before it reaches production scale.
+
+## Why this matters to agents
+
+Helps agents recognize that a read-only aggregate can create a production outage when distinct counts are computed over a blown-up join graph.
+
+## Trigger signals
+
+- **The SQL joins axes, values, cells, products, or other many-to-many dimensions and then calls count(distinct ...) over the joined result.** Agent interpretation: Assume the query may be multiplying rows before counting; inspect the plan at realistic scale before shipping.
+- **Database CPU spikes from a read-only list/count endpoint, while terminating the aggregate queries immediately relieves load.** Agent interpretation: Treat the count query itself as the incident source, not merely as harmless observability.
+- **The product model distinguishes sparse real entities from a larger logical cartesian grid.** Agent interpretation: Compute sparse entity counts and logical-grid counts in separate subqueries or pre-aggregates instead of one broad joined aggregate.
+
+## Common wrong assumptions
+
+- A read-only count cannot be the cause of an outage.
+- count(distinct ...) makes a broad join safe because duplicates are removed at the end.
+- The logical combination count and real sparse row count should be computed in the same joined query.
+- Adding more indexes will fix a query whose main cost is row multiplication.
+
+## First checks
+
+- **Run EXPLAIN/EXPLAIN ANALYZE on the count query at realistic scale and inspect estimated versus actual rows at each join.** The dangerous clue is often a large intermediate row count before the final distinct aggregate.
+- **Rewrite counts as independent CTEs or pre-aggregates: count real sparse rows in one branch and logical combinations from dimension cardinalities in another branch.** Pre-aggregation prevents the database from building the full cartesian join just to discard duplicates later.
+- **Verify the effective timeout layer by forcing a deliberately slow version in a safe environment and confirming the application receives a bounded failure.** Timeouts are useful only if applied on the connection/session/query layer actually used by the endpoint.
+
+## Decision rules
+
+- **If A hot endpoint joins multiple many-to-many dimensions before count(distinct ...), and the UI only needs separate sparse and logical counts..** → Use CTEs or independent subqueries, compare before/after plans and runtime, and keep a statement timeout guard on the production path.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The joined relations are provably tiny, bounded, and protected by tests or database constraints that prevent multiplication.** Why it matters: The cartesian risk depends on scale and join cardinality, not on the syntax alone.
+- **The count runs only in an operator-gated offline diagnostic with a timeout and no user-facing refresh loop.** Why it matters: One-off diagnostics have a different risk profile from hot production endpoints.
+
+## Do not
+
+- Do not rely on count(distinct ...) to rescue a query after a broad cartesian join has already happened.
+- Do not ship a production list endpoint aggregate without checking cardinality at realistic data scale.
+- Do not remove timeout guards after the query is optimized; keep bounded failure for regression safety.
+- Do not publish private product names, URLs, tenant identifiers, repository paths, database names, or incident timestamps beyond de-identified evidence.
+- Do not merge this with hot-count-polling-can-become-the-incident or page-before-expensive-aggregation; they are related count-load traps with different mechanisms.
+
+## Preferred next step
+
+When adding counts over variant/dimension structures, design the count query from cardinalities and sparse facts separately, then prove the plan does not materialize the full combination space.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/database/cartesian-distinct-counts-can-dos-a-production-db.json`.
+
+---
+
+## record: Dropdown form submits can vanish when the menu unmounts
+
+- Source HTML: https://koinara.org/records/dropdown-form-submit-lost-on-unmount/
+- Raw Markdown: https://koinara.org/records/dropdown-form-submit-lost-on-unmount.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.frontend.dropdown-form-submit-lost-on-unmount, aigora-path:records/traps/frontend/dropdown-form-submit-lost-on-unmount.json
+- Tags: common-ai-mistake, external-systems, frontend, workflow
+- License: CC BY-SA 4.0
+- Citation: Dropdown form submits can vanish when the menu unmounts. Koinara, 2026-06-13. https://koinara.org/records/dropdown-form-submit-lost-on-unmount/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A native form placed inside a dropdown, popover, command menu, or context menu can lose its submit path if the menu closes and unmounts before the browser or framework dispatches the submit/mutation. The UI may look clicked while no API request is sent.
+
+## Why this matters to agents
+
+Helps agents diagnose missing mutations in menu-driven UI actions without over-focusing on backend routes, auth, or validation when the frontend never sent the request.
+
+## Trigger signals
+
+- **A button or menu item closes a dropdown immediately and no network request appears for the intended action.** Agent interpretation: Inspect whether the form or submit button unmounts before submit/mutation dispatch.
+- **Backend route, validation, and auth tests pass, but the real UI action has no server log or request trace.** Agent interpretation: Suspect frontend event lifetime or component unmount rather than backend behavior.
+
+## Common wrong assumptions
+
+- If a submit button was clicked, the browser definitely sent the form submit.
+- A menu closing after click means the action succeeded or at least reached the backend.
+- Missing mutation effects are most likely a route, auth, or database bug.
+- Native forms are always safer than explicit fetch calls inside transient menu components.
+
+## First checks
+
+- **Use the browser network tab or test mock to prove whether the action request is sent before debugging the backend.** A vanished submit leaves no request; backend inspection cannot explain an event that never left the client.
+- **Inspect whether the menu closes, route changes, or state update unmounts the form synchronously in the same click path.** Transient component lifecycle can interrupt native form/server-action submission.
+- **Add a regression test that clicks the actual menu item and asserts the mutation function or network request is called.** Route-only tests miss the frontend event lifetime bug.
+
+## Decision rules
+
+- **If The menu action unmounts the form before a submit or mutation is observed..** → Use an explicit click handler/fetch/server-action call that starts before closing the menu, or defer menu close until submit has been dispatched/awaited.
+- **If A regression test only exercises the backend route or action helper directly..** → Add a component or browser test that opens the dropdown, clicks the menu action, and observes the request/mutation call.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The network request is sent and receives a 4xx/5xx or validation response.** Why it matters: Then the problem is downstream of event dispatch, such as auth, payload shape, validation, or backend logic.
+- **The menu component keeps the form mounted until the submit promise is started or awaited, and tests prove the request fires before close.** Why it matters: Unmount loss is unlikely when lifecycle ordering is explicitly controlled and verified.
+
+## Do not
+
+- Do not assume a clicked native form inside a transient dropdown sent a request unless the network/log evidence shows it.
+- Do not debug backend persistence first when the UI action has no request trace.
+- Do not expose private UI labels, account names, URLs, or customer data in public candidate examples.
+
+## Preferred next step
+
+When a dropdown/menu action appears to do nothing, prove request dispatch in the actual UI path; if absent, make mutation dispatch explicit or keep the form mounted through submit.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: low.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-11.
+- Source record path: `records/traps/frontend/dropdown-form-submit-lost-on-unmount.json`.
+
+---
+
+## record: Hot count polling can become the data import incident
+
+- Source HTML: https://koinara.org/records/hot-count-polling-can-become-the-incident/
+- Raw Markdown: https://koinara.org/records/hot-count-polling-can-become-the-incident.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.data-import.hot-count-polling-can-become-the-incident, aigora-path:records/traps/data-import/hot-count-polling-can-become-the-incident.json
+- Tags: common-ai-mistake, data-import, database, long-running-jobs, observability, progress-ui
+- License: CC BY-SA 4.0
+- Citation: Hot count polling can become the data import incident. Koinara, 2026-06-13. https://koinara.org/records/hot-count-polling-can-become-the-incident/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Polling exact target-table counts for a live import progress display can create more database load than the import itself. Progress should come from job-owned counters, watermarks, sampled metrics, or terminal summaries unless an exact count is proven cheap.
+
+## Why this matters to agents
+
+Helps agents avoid adding an apparently harmless progress dashboard query that turns a long-running import into a database CPU incident.
+
+## Trigger signals
+
+- **The status endpoint computes progress with exact count queries against import target tables on every poll.** Agent interpretation: Treat the progress read path as part of the load-bearing design, not as harmless UI code.
+- **Database CPU rises while the import is running, and query samples show repeated aggregate scans from the status or dashboard path.** Agent interpretation: Mitigate the read-side polling before further increasing worker throttles or changing write code.
+- **The product only needs approximate progress or a heartbeat state, but implementation asks the database for exact live totals.** Agent interpretation: Use job-owned approximate counters or previous-run summaries instead of exact target counts.
+
+## Common wrong assumptions
+
+- A read-only progress query cannot be the cause of a production incident.
+- Exact target-table counts are the most honest way to display import progress.
+- Throttling the writer is enough when the status page is also querying the hot tables.
+- A progress UI can be designed after the import logic without affecting database load.
+
+## First checks
+
+- **List every query executed by the status endpoint while a run is active and mark which ones touch target tables versus job-state tables.** Progress reads often look small in code but run frequently enough to dominate load.
+- **Replace live exact target counts with job-maintained counters, phase high-water marks, prior-run performance summaries, or sampled/async statistics, then compare database CPU and status correctness.** The safe design keeps observability while removing hot aggregate scans.
+- **Make UI copy explicit about approximate denominators and heartbeat-derived state when exact counts are intentionally avoided.** Operators need honest semantics without paying for exact live counts.
+
+## Decision rules
+
+- **If A live import status path repeatedly runs exact aggregate counts over the target tables and approximate progress would satisfy the operator need..** → Read heartbeat, job counters, watermarks, and prior-run summaries; forbid target-table count polling on the hot status path.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The counted relation is tiny, static, indexed for the exact aggregate, or maintained as a cheap metadata counter in the database engine.** Why it matters: Exact counts can be safe when proven cheap in the target database and scale envelope.
+- **The count is run once as an operator-gated diagnostic, not repeatedly on the user-facing hot path.** Why it matters: One-off diagnostics have a different risk profile from background polling.
+
+## Do not
+
+- Do not add repeated exact count(*) polling to a live import dashboard without measuring the real query plan and refresh cadence at production scale.
+- Do not claim the import writer is the only load source until the progress/status read path has been profiled.
+- Do not hide approximate semantics; label estimated denominators and ETA clearly.
+- Do not publish private provider names, tenant identifiers, database names, internal URLs, account IDs, or repository paths in public lessons.
+- Do not treat this as only generic bounded polling; cross-check agent-hosts-need-bounded-polling for host polling cadence and cartesian-distinct-counts-can-dos-a-production-db/page-before-expensive-aggregation for query-shape count traps.
+
+## Preferred next step
+
+When asked for live import progress, design the status path from job-owned state first and treat exact target-table counts as an operator-gated diagnostic unless proven cheap.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-11.
+- Source record path: `records/traps/data-import/hot-count-polling-can-become-the-incident.json`.
+
+---
+
+## record: Idempotent reruns can replace separate resume state in imports
+
+- Source HTML: https://koinara.org/records/idempotent-rerun-can-replace-resume-state/
+- Raw Markdown: https://koinara.org/records/idempotent-rerun-can-replace-resume-state.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.data-import.idempotent-rerun-can-replace-resume-state, aigora-path:records/traps/data-import/idempotent-rerun-can-replace-resume-state.json
+- Tags: agent-ops, batch-jobs, common-ai-mistake, data-import, idempotency
+- License: CC BY-SA 4.0
+- Citation: Idempotent reruns can replace separate resume state in imports. Koinara, 2026-06-13. https://koinara.org/records/idempotent-rerun-can-replace-resume-state/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When an import can cheaply detect already-committed records and upsert batches idempotently, a separate resume button or state machine may add more operational risk than value.
+
+## Why this matters to agents
+
+Before adding resume/cancel/status complexity to a failed import, agents should ask whether rerunning the same operation with no-op skip and idempotent writes safely provides the resume behavior.
+
+## Trigger signals
+
+- **The proposed UI or API adds explicit resume state, but the write path already has stable identifiers and can detect unchanged rows.** Agent interpretation: Evaluate idempotent rerun before expanding the state machine.
+- **A rerun after partial completion mostly skips already-written work and quickly reaches the missing tail.** Agent interpretation: The operation may already be resume-by-reexecution.
+
+## Common wrong assumptions
+
+- A failed long-running import always needs a separate resume button.
+- More explicit state always improves operator safety.
+- No-op detection is only an optimization, not a simplification of the recovery model.
+
+## First checks
+
+- **Identify the idempotency key for each imported entity and prove duplicate writes are skipped or converted into safe upserts.** Without stable keys, rerun-as-resume can duplicate or corrupt data.
+- **Run a bounded partial import, then rerun the same range and compare attempted/inserted/updated/no-op counts.** This demonstrates whether already-committed work is safely skipped and whether the tail progresses.
+
+## Decision rules
+
+- **If Rerun performs safe no-op skip/upsert for already-committed records and reaches missing records without manual state repair..** → Prefer one run button plus clear progress/history over a separate resume state machine.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The external source is non-deterministic, destructive, or charges per read in a way that makes reruns materially harmful.** Why it matters: A dedicated checkpoint/resume mechanism may be necessary when re-reading is unsafe or costly.
+- **The write path lacks stable uniqueness keys or cannot distinguish duplicate from changed records.** Why it matters: Rerun-as-resume depends on reliable idempotency boundaries.
+
+## Do not
+
+- Do not remove resume controls until idempotency is proven with a bounded partial-run test.
+- Do not use this pattern for destructive imports or external APIs where re-reading has material cost without a human gate.
+- Do not publish private provider names, tenant identifiers, URLs, account IDs, or internal repository paths in public lessons.
+
+## Preferred next step
+
+When asked to add resume logic, first test whether idempotent rerun with no-op skip already gives a simpler and safer recovery model.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-10.
+- Source record path: `records/traps/data-import/idempotent-rerun-can-replace-resume-state.json`.
+
+---
+
+## record: Long-running HTTP handlers are fragile batch runners
+
+- Source HTML: https://koinara.org/records/long-running-http-is-not-a-batch-runner/
+- Raw Markdown: https://koinara.org/records/long-running-http-is-not-a-batch-runner.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.data-import.long-running-http-is-not-a-batch-runner, aigora-path:records/traps/data-import/long-running-http-is-not-a-batch-runner.json
+- Tags: agent-ops, batch-jobs, common-ai-mistake, data-import, http, load-balancers
+- License: CC BY-SA 4.0
+- Citation: Long-running HTTP handlers are fragile batch runners. Koinara, 2026-06-13. https://koinara.org/records/long-running-http-is-not-a-batch-runner/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A large import or backfill should not depend on one HTTP request staying open through a load balancer or proxy. Use a resident worker or short start request plus durable progress and idempotent resume behavior.
+
+## Why this matters to agents
+
+When an agent is asked to run or build a long import, this record should make it check transport timeouts before treating a 504/timeout as only an application bug.
+
+## Trigger signals
+
+- **The requested implementation runs the whole import inside one API route, controller, function, or web request.** Agent interpretation: Design a job handoff instead of stretching the HTTP timeout.
+- **The operation has chunking, ETA, progress rows, or resume requirements.** Agent interpretation: The user-facing request should start or observe the job, not be the job owner.
+
+## Common wrong assumptions
+
+- Increasing the HTTP timeout is enough to make a long import reliable.
+- A gateway timeout means the server-side work failed.
+- Chunking inside a request is equivalent to a durable worker.
+- Progress UI can be added later without first deciding where job state lives.
+
+## First checks
+
+- **List every request timeout between the browser/client and the handler: client, framework, proxy, load balancer, platform, and database driver.** The smallest timeout sets the real synchronous budget.
+- **Prove job state survives HTTP disconnect by starting a bounded run, disconnecting or exceeding the former timeout, and reading progress from a durable source.** This distinguishes a worker design from a merely longer request.
+
+## Decision rules
+
+- **If The expected runtime can exceed a gateway/proxy/client timeout or must keep running after the operator page closes..** → Make HTTP start/status endpoints short and bounded; run the import in a resident worker, queue consumer, scheduler, or platform job with idempotent resume/retry semantics.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The entire operation is proven to finish comfortably below every relevant platform timeout and has no need to continue after disconnect.** Why it matters: A simple synchronous request can be correct for genuinely small bounded work.
+- **The platform provides a first-class long-running job primitive behind the same API surface.** Why it matters: The architectural issue is not HTTP syntax itself but tying job lifetime to a client request.
+
+## Do not
+
+- Do not stretch only one timeout without checking upstream and downstream limits.
+- Do not treat a timed-out client request as proof that the background work stopped; verify runtime state separately.
+- Do not publish private URLs, tenant identifiers, account IDs, database names, or internal repository paths in public lessons.
+
+## Preferred next step
+
+When a batch API may run long, design the HTTP surface as start/status/control and put job ownership in a worker with durable progress.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-10.
+- Source record path: `records/traps/data-import/long-running-http-is-not-a-batch-runner.json`.
+
+---
+
+## record: Mailbox folder moves are not retention or provider deletion
+
+- Source HTML: https://koinara.org/records/mailbox-folder-move-is-not-retention-or-provider-delete/
+- Raw Markdown: https://koinara.org/records/mailbox-folder-move-is-not-retention-or-provider-delete.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.email.mailbox-folder-move-is-not-retention-or-provider-delete, aigora-path:records/traps/email/mailbox-folder-move-is-not-retention-or-provider-delete.json
+- Tags: authorization-gate, common-ai-mistake, email, external-systems, safety-gates, workflow
+- License: CC BY-SA 4.0
+- Citation: Mailbox folder moves are not retention or provider deletion. Koinara, 2026-06-13. https://koinara.org/records/mailbox-folder-move-is-not-retention-or-provider-delete/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Mailbox folder moves, retention reservations, and provider-side deletion are separate state transitions. Prove each with count evidence before treating a move request as destructive retention or delete work.
+
+## Why this matters to agents
+
+Prevents agents from turning a reversible visibility/routing change into data loss or provider-side mutation while still honoring explicit folder-routing intent.
+
+## Trigger signals
+
+- **A human says to move mail to a spam, archive, trash, or quarantine folder, and the code or cleanup plan also touches retention, scheduled deletion, provider delete state, or server-side delete reservations.** Agent interpretation: Split the requested folder move from every deletion or retention effect before applying changes.
+- **A live cleanup converts a tag, label, or classifier result into folder membership for many existing messages.** Agent interpretation: Count source labels and destination-folder inventory, then verify that stale delete/staging state is either intentionally preserved or intentionally cleared.
+
+## Common wrong assumptions
+
+- A request to move mail between folders automatically includes retention changes or provider-side deletion.
+- Putting a message in a spam folder means it should also be scheduled for deletion.
+- A cleanup from spam labels to spam folders should preserve or create server-delete reservations by default.
+- Trash, spam, quarantine, and provider-side delete are equivalent because the UI hides the message from the inbox.
+- If a folder move is reversible in the app, provider-side deletion is also safe to include.
+- Source tag counts are enough for a live cleanup review without destination-folder inventory and delete-state counts.
+
+## First checks
+
+- **List every data field, queue, job, or provider call that can delete, purge, expire, or hide the message outside the requested folder move.** Folder state and deletion state often live in different tables or workers; a cleanup can accidentally carry both.
+- **Before live cleanup, count source labels/tags, destination folder inventory, existing delete reservations, and rows with both old and new states.** These counts prove whether the plan is a move, a duplicate state, or a deletion-state mutation.
+- **After the transaction, verify moved count, remaining source links, destination count delta, and delete reservation count delta.** Post-checks catch partial moves and accidental retention/deletion side effects.
+
+## Decision rules
+
+- **If The user asked for a folder move but did not explicitly authorize deletion, retention expiry, or provider-side mutation..** → Move the messages within the mailbox model, preserve recoverability, and do not enqueue provider/server deletion unless a separate gate authorizes it.
+- **If The cleanup plan would preserve, create, or execute delete reservations for messages being moved to a non-delete folder..** → Stop and present counts for source labels, target folder, and delete reservations; require explicit deletion/retention policy before proceeding with delete effects.
+- **If A reviewed policy explicitly asks for retention or provider deletion after foldering..** → Run the normal hard-gate path with retention duration, scope, dry-run counts, rollback/recovery limits, and post-apply verification.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The change only updates an internal folder pointer or visible label and tests show it does not enqueue deletion, update provider delete state, or shorten retention.** Why it matters: A reversible mailbox organization change is usually lower risk than a deletion or provider mutation, though live data still needs normal safeguards.
+- **A separate reviewed policy explicitly authorizes the retention period, delete scope, provider-side mutation, recovery path, and verification evidence.** Why it matters: The trap is accidental bundling; explicit deletion policy can proceed through the appropriate gate.
+
+## Do not
+
+- Do not infer provider-side deletion from a request to move messages into a spam, archive, trash, or quarantine folder.
+- Do not combine label-to-folder cleanup with retention or server-delete changes unless the delete semantics are explicitly authorized.
+- Do not review a live mail cleanup using only source label counts; include target folder inventory and delete-state counts.
+- Do not publish private mailbox domains, account names, message subjects, or customer data in public lessons.
+- Do not merge this with uncertain-spam visibility policy; cross-check uncertain-spam-signals-should-not-hide-customer-mail when signal confidence is the issue.
+- Do not over-read a human request scope; compare ambiguous-human-input-overauthorization when authorization wording is ambiguous.
+
+## Preferred next step
+
+When mail foldering and deletion are both present, split the plan into visibility/folder state, retention policy, and provider mutation; verify counts for each before writing live data.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-11.
+- Source record path: `records/traps/email/mailbox-folder-move-is-not-retention-or-provider-delete.json`.
+
+---
+
+## record: Inventory imports need target reconciliation before apply
+
+- Source HTML: https://koinara.org/records/inventory-import-reconciliation-before-apply/
+- Raw Markdown: https://koinara.org/records/inventory-import-reconciliation-before-apply.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.data-import.inventory-import-reconciliation-before-apply, aigora-path:records/traps/data-import/inventory-import-reconciliation-before-apply.json
+- Tags: common-ai-mistake, data-import, inventory, reconciliation, safety-gates, verification
+- License: CC BY-SA 4.0
+- Citation: Inventory imports need target reconciliation before apply. Koinara, 2026-06-13. https://koinara.org/records/inventory-import-reconciliation-before-apply/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Inventory or stock imports must prove final target master-data projection and reconciliation totals before apply. Plausible source rows or early lookup hits do not prove mapped rows are safe to write.
+
+## Why this matters to agents
+
+Helps agents stop zero-mapped or misprojected imports before they mutate inventory and route missing master-data projection as a prerequisite.
+
+## Trigger signals
+
+- **Source rows and totals look plausible, but the final target projection maps zero rows.** Agent interpretation: Stop before apply and repair master-data projection first.
+- **Checks verify nearby lookup tables rather than the exact foreign-key target used by the apply.** Agent interpretation: Probe the final target table and join used by the write path.
+- **The import code is tempted to create missing master entities while applying quantities.** Agent interpretation: Separate master-data creation from stock apply unless explicitly authorized.
+- **Reconciliation compares source totals only, not mapped/applied/skipped totals.** Agent interpretation: Add totals at each projection boundary.
+
+## Common wrong assumptions
+
+- If source rows are non-zero, the target mapping must be non-zero.
+- Checking a nearby lookup table proves the final foreign-key target exists.
+- Inventory apply can create missing master data as a convenience.
+
+## First checks
+
+- **Dry-run the final target projection used by the apply path and count mapped, skipped, and unmapped rows.** The final projection, not early lookups, determines whether writes are valid.
+- **Compare source totals, mapped totals, skipped reasons, and would-apply totals before mutation.** Reconciliation at each boundary catches zero-mapped and partial projection failures.
+- **Fail closed when mapped rows are zero but source rows are non-zero.** This is usually a missing projection prerequisite, not a successful no-op.
+
+## Decision rules
+
+- **If Source rows are non-zero and final mapped rows are zero..** → Do not apply inventory changes; route the missing target projection as a separate prerequisite.
+- **If Some rows map and some do not..** → Apply only if skip reasons and totals match the authorized scope.
+- **If The import would create master data while applying inventory..** → Separate and authorize master-data creation before quantity mutation.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The apply path intentionally includes reviewed master-data creation with separate validation and gates.** Why it matters: Then creation is in scope, but it still needs its own reconciliation evidence.
+- **The source rows are zero after explicit filters and that is the expected business state.** Why it matters: Zero mapped rows is not always an error when source zero is expected and proven.
+
+## Do not
+
+- Do not treat plausible source counts as target mapping proof.
+- Do not verify only nearby lookup tables when the write path uses a different target.
+- Do not silently create master entities inside an inventory apply task.
+
+## Preferred next step
+
+Before inventory apply, dry-run the exact final target projection and stop if non-zero source rows map to zero target rows.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/data-import/inventory-import-reconciliation-before-apply.json`.
+
+---
+
+## record: Next.js instrumentation hooks need exclusion guards and thin dependencies
+
+- Source HTML: https://koinara.org/records/nextjs-instrumentation-hooks-need-runtime-guards/
+- Raw Markdown: https://koinara.org/records/nextjs-instrumentation-hooks-need-runtime-guards.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.frontend.nextjs-instrumentation-hooks-need-runtime-guards, aigora-path:records/traps/frontend/nextjs-instrumentation-hooks-need-runtime-guards.json
+- Tags: common-ai-mistake, frontend, nextjs, react, testing, workflow
+- License: CC BY-SA 4.0
+- Citation: Next.js instrumentation hooks need exclusion guards and thin dependencies. Koinara, 2026-06-13. https://koinara.org/records/nextjs-instrumentation-hooks-need-runtime-guards/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Framework instrumentation hooks run in constrained startup contexts. Guard unsupported runtimes by exclusion, keep the hook thin, and prove it fires once in a production-equivalent start.
+
+## Why this matters to agents
+
+Helps agents avoid bundling server-only runner graphs into framework startup hooks or skipping runtimes because an expected runtime variable is undefined.
+
+## Trigger signals
+
+- **The guard only runs when a runtime value equals the expected supported runtime.** Agent interpretation: Guard by excluding known unsupported runtimes; an undefined value may still be the desired server runtime.
+- **The hook imports a large runner graph or server-only modules directly.** Agent interpretation: Move the heavy dependency behind a thin dynamic boundary or runtime-specific loader.
+- **Build or startup errors mention unsupported schemes or runtime-only modules from the hook path.** Agent interpretation: Treat the hook as a constrained startup surface, not a normal application module.
+
+## Common wrong assumptions
+
+- A startup hook can import anything a normal server route can import.
+- Undefined runtime means the hook is not running in the supported runtime.
+- A successful build proves the hook fires exactly once at startup.
+
+## First checks
+
+- **Build after adding or changing the instrumentation hook.** Import-graph and runtime-boundary failures often surface only at build time.
+- **Start the app in the closest production-equivalent mode and verify the hook fires once.** Development hot reload can hide missing or repeated startup behavior.
+- **Review imports from the hook entrypoint and move heavy/server-only graphs behind thin adapters.** Thin hooks reduce runtime compatibility failures.
+
+## Decision rules
+
+- **If The hook must skip unsupported runtimes..** → Skip known unsupported runtime values and allow unspecified supported server startup when the framework uses that convention.
+- **If The hook imports heavy or server-only implementation graphs..** → Keep the hook as a small dispatcher and load runtime-specific work only inside the supported runtime.
+- **If The hook cannot be proven to fire once in production-equivalent mode..** → Add a safe diagnostic marker or test until single-fire startup behavior is observed.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The hook is pure telemetry with no runtime-specific imports and has an explicit supported-runtime contract.** Why it matters: The thin-hook trap may not apply, but still verify single-fire startup behavior.
+- **Processed-count stillness occurs during a long transaction in an import job.** Why it matters: That is an import progress signal, not an instrumentation stall; see progress-state-must-match-cursor-semantics.
+
+## Do not
+
+- Do not bundle background job runners or server-only module graphs directly into instrumentation startup hooks.
+- Do not assume positive runtime detection is reliable when the framework may leave it undefined.
+- Do not keep unrelated lease or import-resume lessons in this record; link those records instead.
+
+## Preferred next step
+
+Inspect the instrumentation hook as a constrained startup surface: exclusion guard, thin imports, production-equivalent single-fire proof.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/frontend/nextjs-instrumentation-hooks-need-runtime-guards.json`.
+
+---
+
+## record: Operational queues need wake-one and backup paths
+
+- Source HTML: https://koinara.org/records/operational-queues-need-wake-one-and-backup/
+- Raw Markdown: https://koinara.org/records/operational-queues-need-wake-one-and-backup.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.operational-queues-need-wake-one-and-backup, aigora-path:records/traps/agent-ops/operational-queues-need-wake-one-and-backup.json
+- Tags: agent-ops, common-ai-mistake, concurrency, coordination, queues, safety-gates
+- License: CC BY-SA 4.0
+- Citation: Operational queues need wake-one and backup paths. Koinara, 2026-06-13. https://koinara.org/records/operational-queues-need-wake-one-and-backup/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Adding a wait queue around a shared operational choke point is not enough. The queue needs FIFO no-overtake, wake-one handoff, backup retry, and a strict wait-is-not-authorization boundary.
+
+## Why this matters to agents
+
+Helps agents prevent queue stampedes, skipped waiters, stuck heads, and accidental permission bypasses in multi-agent operations.
+
+## Trigger signals
+
+- **Many waiters wake at once when one holder releases the resource.** Agent interpretation: Use wake-one handoff rather than broadcast wakeups to avoid stampedes.
+- **A later waiter can overtake the head of the queue after release.** Agent interpretation: Preserve FIFO order or record an explicit priority override.
+- **The queue head can be missed or remain stuck after a lost notification.** Agent interpretation: Add a timer or heartbeat backup path that rechecks safely without tight polling.
+- **A waiter treats reaching the front of the queue as permission to perform a gated action.** Agent interpretation: Separate resource availability from authorization; the hard gate still applies.
+
+## Common wrong assumptions
+
+- A lock with wait messages is automatically fair.
+- Waking all waiters is safer because someone will proceed.
+- If I am first in queue, I am authorized to act.
+
+## First checks
+
+- **Test the queue with at least three waiters and one release.** This exposes overtakes and broadcast stampedes.
+- **Simulate a lost wakeup or stale holder and verify the backup timer wakes exactly the head or reports a safe wait.** Queue systems need a mercy path that is not tight polling.
+- **Assert that gate checks still run after a waiter becomes eligible.** Resource availability and authorization are separate state machines.
+
+## Decision rules
+
+- **If Release wakes multiple independent waiters..** → Wake only the next eligible waiter and record the handoff evidence.
+- **If Queue state can overtake or lose the head..** → Store ordered wait state and add a bounded timer or heartbeat recheck for lost wakeups.
+- **If The next waiter lacks the action authorization..** → Keep or release the resource safely, but do not perform the gated action until authorization is separately satisfied.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **Only one actor can ever use the resource and no wait state is exposed.** Why it matters: A queue may add needless state; a simple lock can be enough.
+- **The action is hard-gated and authorization is absent.** Why it matters: Queue position cannot grant permission; stop until the real gate is satisfied.
+
+## Do not
+
+- Do not broadcast wake all waiters for a single shared resource release.
+- Do not let queue position override hard gates, review requirements, or owner decisions.
+- Do not tight-poll a queue when a heartbeat or scheduled backup recheck is enough.
+- Do not use queue discipline as a substitute for choosing the right lock target; cross-check lock-shared-resource-not-artifact for resource-vs-artifact lock scope.
+
+## Preferred next step
+
+Before adding wait behavior to a shared operational resource, test FIFO order, wake-one release, lost-wakeup recovery, and separate authorization checks.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/operational-queues-need-wake-one-and-backup.json`.
+
+---
+
+## record: Page before expensive aggregation on large list screens
+
+- Source HTML: https://koinara.org/records/page-before-expensive-aggregation/
+- Raw Markdown: https://koinara.org/records/page-before-expensive-aggregation.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.database.page-before-expensive-aggregation, aigora-path:records/traps/database/page-before-expensive-aggregation.json
+- Tags: agent-ops, common-ai-mistake, database, pagination, performance
+- License: CC BY-SA 4.0
+- Citation: Page before expensive aggregation on large list screens. Koinara, 2026-06-13. https://koinara.org/records/page-before-expensive-aggregation/ (CC BY-SA 4.0).
+
+## Agent summary
+
+On large list screens, filter and page candidate IDs before running expensive detail joins, window counts, or aggregates; make has-more and approximate totals explicit product contracts.
+
+## Why this matters to agents
+
+Helps agents avoid turning read-only list views into production load by aggregating the whole result set before bounding the page.
+
+## Trigger signals
+
+- **The query computes window counts, detail joins, or aggregates before LIMIT/OFFSET or cursor paging.** Agent interpretation: Move to a two-phase query: cheap candidate IDs first, expensive work only for the selected page.
+- **The UI demands an exact total even though the operation is primarily page navigation.** Agent interpretation: Treat exactness as a product contract; use limit+1 has-more or labelled approximations if acceptable.
+- **EXPLAIN shows large intermediate rows for a screen that displays only a small page.** Agent interpretation: The page boundary is in the wrong phase.
+
+## Common wrong assumptions
+
+- A read-only list query is safe because it does not mutate data.
+- LIMIT at the end protects every earlier aggregate.
+- Exact total counts are harmless UI polish.
+
+## First checks
+
+- **Run EXPLAIN or ORM logging and identify whether candidate IDs are bounded before detail joins and aggregates.** The expensive phase should operate on the page, not the whole match set.
+- **Prototype a limit+1 candidate-ID query and compare latency at realistic filter cardinality.** Limit+1 proves has-more without a global count.
+- **Review UI copy for exact-total claims.** Changing an exact number to approximate or has-more is a user-visible contract change, not a hidden performance patch.
+
+## Decision rules
+
+- **If Expensive joins or aggregates run before the page boundary..** → Filter and sort cheap candidate IDs, fetch limit+1, then join or aggregate only those IDs.
+- **If The exact global count is not required for the user decision..** → Expose has_more or an explicitly labelled approximation instead of a hot exact count.
+- **If Exact totals are required and expensive..** → Cache, precompute, or run the exact count in a separately budgeted path.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The product explicitly requires a globally exact total before showing any page.** Why it matters: Then keep the exact count but budget it, cache it, or run it off the hot request path.
+- **The filtered candidate set is already small and bounded before aggregates run.** Why it matters: The additional two-phase machinery may not be necessary.
+
+## Do not
+
+- Do not run detail joins, window counts, or aggregates across an unbounded list because the final page is small.
+- Do not silently replace exact totals with approximate labels without changing the UI contract.
+- Do not treat this as the same trap as hot polling or cartesian join blow-up; cross-check those records separately.
+- Do not collapse this with hot-count-polling-can-become-the-incident or cartesian-distinct-counts-can-dos-a-production-db; this record is specifically about paging candidate IDs before detail aggregation.
+
+## Preferred next step
+
+Inspect the query phase order and move the page boundary before expensive aggregation when the screen only needs one page.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/database/page-before-expensive-aggregation.json`.
+
+---
+
+## record: Progress artifacts must be visible from the runtime that displays them
+
+- Source HTML: https://koinara.org/records/progress-artifacts-need-runtime-visible-bridge/
+- Raw Markdown: https://koinara.org/records/progress-artifacts-need-runtime-visible-bridge.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.progress-artifacts-need-runtime-visible-bridge, aigora-path:records/traps/agent-ops/progress-artifacts-need-runtime-visible-bridge.json
+- Tags: agent-ops, common-ai-mistake, long-running-jobs, operations
+- License: CC BY-SA 4.0
+- Citation: Progress artifacts must be visible from the runtime that displays them. Koinara, 2026-06-13. https://koinara.org/records/progress-artifacts-need-runtime-visible-bridge/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A progress UI or status API can look blank even while a job is running if it reads a local artifact path that exists only on the agent/operator host and not inside the production runtime serving the UI.
+
+## Why this matters to agents
+
+Before wiring a progress page to files, logs, or run-state artifacts, agents should prove that the display runtime can read the same source, or add a durable bridge such as a database row, object-storage object, or service endpoint.
+
+## Trigger signals
+
+- **The progress source path starts with a local workspace, temp directory, or operator-host path while the display code runs in a remote production or preview runtime.** Agent interpretation: Check runtime visibility before debugging the UI component itself.
+- **A local script can read current progress, but the deployed page or API returns blank, null, not found, or an old snapshot.** Agent interpretation: Suspect a visibility boundary between job artifacts and display runtime.
+- **The requested fix explicitly says not to stop, restart, or mutate the running job.** Agent interpretation: Use a read-only bridge or snapshot path; do not 'fix' visibility by moving or restarting the owner process without authorization.
+
+## Common wrong assumptions
+
+- If an agent can read a progress file locally, the production UI can read it too.
+- A blank progress page means the job is not running or the React component is broken.
+- The quickest visibility fix is to restart the job inside the web runtime.
+- Sidecar bridges are permanent architecture rather than temporary operational adapters unless explicitly retired.
+
+## First checks
+
+- **Name the job owner runtime and the display runtime, then prove whether the progress source exists inside both.** The source must be visible from the reader, not only from the writer or the agent shell.
+- **Smoke the deployed status API and compare it with a read-only local progress read.** A mismatch distinguishes display-runtime visibility from job progress itself.
+- **If a bridge is added, record its owner, cadence, connection count, stop condition, and retirement path.** A temporary sidecar can solve visibility without becoming invisible production coupling.
+
+## Decision rules
+
+- **If The progress artifact is local to the job host and invisible to the display runtime..** → Publish read-only progress through a durable shared channel such as a database snapshot, object-storage object, or small service endpoint; avoid restarting or relocating the live job unless separately authorized.
+- **If A temporary bridge is used to preserve a live job and meet an urgent visibility need..** → Document the bridge process, update cadence, resource use, stop condition, and the future direct-write design that will retire it.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The job owner and display runtime share the same durable mounted volume with documented read permissions and lifecycle.** Why it matters: A file source can be valid when runtime visibility is explicitly designed and verified.
+- **The display path intentionally shows only persisted terminal summaries, not live progress.** Why it matters: A blank live-progress card may be expected if the product does not promise live status.
+- **The deployed API can read the artifact source in the target runtime but still returns wrong values.** Why it matters: Then the defect is more likely parsing, auth, tenant selection, caching, or rendering rather than artifact visibility.
+
+## Do not
+
+- Do not assume local filesystem artifacts are available to a remote or containerized display runtime.
+- Do not stop or restart a live job merely to move its progress writer closer to the UI unless the operation is authorized.
+- Do not leave a temporary progress bridge without a named owner, stop condition, and retirement path.
+- Do not include private service names, internal URLs, tenant identifiers, account identifiers, repository paths, or organization-specific tool names in public lessons.
+
+## Preferred next step
+
+When a progress UI is blank but local run-state exists, first prove runtime visibility of the progress source; then bridge through a shared durable channel if needed.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-10.
+- Source record path: `records/traps/agent-ops/progress-artifacts-need-runtime-visible-bridge.json`.
+
+---
+
+## record: Import progress state must match cursor semantics
+
+- Source HTML: https://koinara.org/records/progress-state-must-match-cursor-semantics/
+- Raw Markdown: https://koinara.org/records/progress-state-must-match-cursor-semantics.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.data-import.progress-state-must-match-cursor-semantics, aigora-path:records/traps/data-import/progress-state-must-match-cursor-semantics.json
+- Tags: agent-ops, batch-jobs, common-ai-mistake, data-import, idempotency, progress-ui
+- License: CC BY-SA 4.0
+- Citation: Import progress state must match cursor semantics. Koinara, 2026-06-13. https://koinara.org/records/progress-state-must-match-cursor-semantics/ (CC BY-SA 4.0).
+
+## Agent summary
+
+If two import modes interpret a cursor differently, they must not share the same progress row or aggregate run key. The state key must include every dimension that changes resume, watermark, window, or counter semantics.
+
+## Why this matters to agents
+
+Before adding or reusing progress tables for full, differential, archive, retry, or per-window imports, agents should check whether the persisted key matches the meaning of the cursor and counters.
+
+## Trigger signals
+
+- **A progress table or run table is keyed only by source, tenant, account, or job name while code branches on mode, window, partition, archive/current source, or full-versus-incremental behavior.** Agent interpretation: The persisted key may be too coarse; check whether different modes can overwrite each other's cursor or counters.
+- **Starting a small incremental run makes the denominator jump to all historical records, or makes a full backfill resume from the wrong cursor.** Agent interpretation: A mode/window mismatch may have reused the wrong progress row or lower-bound cursor.
+- **Processed counts reset on resume even though the operator-facing window has not changed, or counts accumulate across a new window even though the denominator changed.** Agent interpretation: Counter semantics are not explicit enough; distinguish per-attempt counters from per-window cumulative counters.
+
+## Common wrong assumptions
+
+- One source has one progress row, even if full and incremental imports use different cursor meanings.
+- Adding import_mode to logs is enough; it also has to be part of persisted uniqueness if it changes resume behavior.
+- A cursor can serve both as an in-flight deep position and as the committed lower bound for future incremental work.
+- Processed count is self-explanatory; operators will know whether it means this attempt, this window, or all history.
+
+## First checks
+
+- **List every field that changes import semantics: mode, source family, account or tenant, partition, window start/end, committed watermark, in-flight cursor, archive/current source, and retry attempt. Compare that list with the unique key of progress and aggregate-run state.** Any missing semantic dimension can let one run overwrite another run's resume state or displayed progress.
+- **Run a bounded full-or-large window, then start a bounded incremental-or-small window, and verify that each mode's cursor, denominator, and processed count remain isolated.** The failure often appears only when modes are interleaved, not when each mode is tested alone.
+- **Define counter labels before UI work: per-attempt processed, per-window cumulative processed, all-time imported total, estimated window total, and committed watermark should not share ambiguous names.** Clear names prevent a resumed run from looking like it lost work or silently expanded scope.
+
+## Decision rules
+
+- **If Two import modes can run or resume against the same source but use different lower bounds, cursor formats, source tables, archive/current scopes, or denominators..** → Add the differentiating dimensions to the persisted progress/run key and migrate existing state forward-only; keep committed watermarks separate from in-flight cursors.
+- **If The operator-facing import window is unchanged and a run is resumed after a partial attempt..** → Continue the per-window processed counter instead of resetting it; reset only when a new window begins, or expose per-attempt and per-window counters separately.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **All modes intentionally share exactly the same cursor meaning, lower-bound policy, denominator, and counter semantics, and concurrent or interleaved starts are forbidden by a durable lease.** Why it matters: A compact key can be correct when the semantics are truly identical or the system prevents interleaving.
+- **The progress row is purely ephemeral display state and is never used for resume, lower-bound selection, committed watermark, deduplication, or operator decisions.** Why it matters: Display-only state has lower corruption risk, though misleading UI can still be harmful.
+- **The import can safely recompute progress from immutable committed records and does not persist mutable cursors or counters between attempts.** Why it matters: Some idempotent rerun designs avoid explicit progress state; the trap applies mainly when persisted state influences resume or visibility.
+- **Processed-count stillness occurs during a long transaction while the transaction boundary has not committed.** Why it matters: Stillness inside one long transaction is not necessarily a stalled cursor; check transaction and commit boundaries before rewriting progress semantics.
+
+## Do not
+
+- Do not reuse one progress row for full and incremental imports merely because they target the same destination table.
+- Do not let a partial or failed run's in-flight cursor become the committed watermark without reconciliation.
+- Do not fix an inflated denominator only in UI formatting if the underlying state key still allows cursor clobbering.
+- Do not publish private tenant identifiers, source names, database names, URLs, account IDs, repository paths, or customer data in public lessons.
+- Do not classify processed-count stillness during one long transaction as a stall until transaction and commit boundaries are checked.
+- Do not use cursor-key fixes as proof that side effects committed; cross-check watermarks-need-committed-side-effect-evidence for completion-boundary truth.
+
+## Preferred next step
+
+When diagnosing import progress or resume bugs, compare cursor semantics to the persisted progress key before changing batch size, retry policy, or UI copy.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-11.
+- Source record path: `records/traps/data-import/progress-state-must-match-cursor-semantics.json`.
+
+---
+
+## record: Release source is not merge source
+
+- Source HTML: https://koinara.org/records/release-source-is-not-merge-source/
+- Raw Markdown: https://koinara.org/records/release-source-is-not-merge-source.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.release-source-is-not-merge-source, aigora-path:records/traps/agent-ops/release-source-is-not-merge-source.json
+- Tags: agent-ops, authorization-gate, common-ai-mistake, release, safety-gates
+- License: CC BY-SA 4.0
+- Citation: Release source is not merge source. Koinara, 2026-06-13. https://koinara.org/records/release-source-is-not-merge-source/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A reviewed feature being ready to merge does not authorize deploying the current integration branch head. Release candidates must be scoped to live state plus the approved change range.
+
+## Why this matters to agents
+
+Helps agents avoid shipping unrelated branch-head work while performing closeout, publication, or deploy steps for one approved change.
+
+## Trigger signals
+
+- **The branch head contains commits beyond the reviewed or approved change range.** Agent interpretation: Do not use branch head as the release source without explicit release-candidate approval.
+- **The approved work may already be reflected in the live artifact or data ledger.** Agent interpretation: Verify containment first; a redeploy may promote unrelated head work.
+- **A deploy instruction names a feature, not a complete release candidate.** Agent interpretation: Construct the candidate from live plus approved changes or stop for release-scope clarification.
+
+## Common wrong assumptions
+
+- If a feature was reviewed, the current branch head is safe to deploy.
+- A closeout redeploy is harmless when the target already contains the fix.
+- Merged means authorized for every environment.
+
+## First checks
+
+- **Compare live commit/artifact, reviewed commit range, and current branch head.** This reveals unrelated commits that would be promoted by a head deploy.
+- **If the target may already contain the approved work, verify artifact id, target commit, and ledger or migration status before redeploying.** Already-live containment can make redeploy unnecessary and risky.
+- **Record excluded commits and candidate construction.** Release evidence must show what did not ship as well as what did.
+
+## Decision rules
+
+- **If Branch head includes work outside the approved change range..** → Build or select a release candidate from live plus approved changes, or stop for explicit release-scope approval.
+- **If Live artifact and data state already contain the approved work..** → Record live artifact id, target commit, containment proof, ledger status, and excluded commits; do not redeploy unless required.
+- **If The branch head is the approved release candidate..** → Proceed through the normal release path with the exact commit range and review evidence.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The reviewed artifact is itself the explicit release candidate and contains no unrelated commits.** Why it matters: Then release and merge source may coincide for this operation.
+- **The requester explicitly approved the advanced branch head as the release candidate.** Why it matters: Then the scope is broader by decision, but still record the commit range.
+
+## Do not
+
+- Do not equate merge source with release source.
+- Do not redeploy just to “close out” if containment evidence proves the target already has the approved work.
+- Do not ship advanced branch-head work under a narrow feature approval.
+- Do not confuse this release-candidate scoping trap with moving-source-ref-during-long-deploy, where the ref moves during an in-flight deploy, or authorization-must-be-current-to-work-item, where stale approval is reused across work items.
+
+## Preferred next step
+
+Before release, compare live, approved range, and branch head; deploy only the explicit release candidate or record already-live containment.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/release-source-is-not-merge-source.json`.
+
+---
+
+## record: Reproduce user-visible data bugs before asking the user to re-verify
+
+- Source HTML: https://koinara.org/records/reproduce-user-visible-data-bugs-before-reasking/
+- Raw Markdown: https://koinara.org/records/reproduce-user-visible-data-bugs-before-reasking.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.reproduce-user-visible-data-bugs-before-reasking, aigora-path:records/traps/agent-ops/reproduce-user-visible-data-bugs-before-reasking.json
+- Tags: agent-ops, common-ai-mistake, epistemics, human-input, workflow
+- License: CC BY-SA 4.0
+- Citation: Reproduce user-visible data bugs before asking the user to re-verify. Koinara, 2026-06-13. https://koinara.org/records/reproduce-user-visible-data-bugs-before-reasking/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When a user reports that a data-backed UI still shows the wrong count, stale placement, or unchanged result after a fix, an agent may keep asking the user to click again instead of reproducing the exact data path. The safer pattern is to run the same read/query/apply/readback loop against representative data, then ask the user only for information the agent cannot observe.
+
+## Why this matters to agents
+
+Reduces user frustration and catches mismatches between the intended model, the query predicate, and the rendered state. It also prevents agents from mistaking a successful unit test or code review for evidence that the operator-visible data path is fixed.
+
+## Trigger signals
+
+- **The user says a fixed rule still matches zero rows, the row remains in the old place, or the UI still shows stale labels/counts after applying the change.** Agent interpretation: Stop relying on the previous code-level check. Reproduce the exact user-visible data path and collect readback evidence.
+- **The implementation has separate preview, apply, receive-time, and detail/list queries that are supposed to share semantics.** Agent interpretation: Verify semantic parity across the paths rather than testing only one helper or endpoint.
+
+## Common wrong assumptions
+
+- A passing unit test proves the operator-visible list is fixed.
+- If the helper function was corrected, preview, apply, receive-time, and detail views must all agree.
+- The user can cheaply verify one more time, so asking again is acceptable.
+- A zero-match result means there is no matching data, not that the query normalized the scope incorrectly.
+- A secondary label or stale relationship means the primary visible location is already correct.
+
+## First checks
+
+- **Identify the exact state the user expected to change: source predicate, destination/visible location, count, and the page or endpoint that displays it.** Without the observable success state, the agent may verify a different path than the one the user is judging.
+- **Run a read-only count/readback query before mutation or against a fixture: source candidates, already-applied exclusions, and destination inventory.** This separates no data, wrong scope normalization, and wrong already-applied predicates.
+- **After apply, re-read through the same data path the UI uses, not only through the helper that performed the write.** Many bugs live in list/detail/read models rather than the write function.
+- **If asking the user again is unavoidable, include what the agent already verified and the one observation that remains inaccessible.** This keeps the user from becoming the default test harness and makes the remaining gap explicit.
+
+## Decision rules
+
+- **If The agent can access representative data or a faithful fixture safely..** → Reproduce the failure with count/readback evidence, fix the predicate or state transition, and verify the same path after the change before asking for user confirmation.
+- **If The path touches private live data or credentials outside the agent's grant..** → Do not broaden access. Ask only for the smallest screenshot/count/log needed, or route through an authorized readback/debug workflow.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The user-visible issue depends on credentials, live data, or privacy-sensitive facts the agent is not authorized to access.** Why it matters: Do not bypass access boundaries. Ask for the minimal missing observation or route through an approved debug path instead.
+- **A deterministic local fixture reproduces the exact query/apply/render path and has already been run after the disputed fix.** Why it matters: A fixture can replace live-data readback when it covers the same predicates and state transitions.
+
+## Do not
+
+- Do not ask the user to repeatedly test the same path while the agent has safe access to reproduce it.
+- Do not treat a helper-level unit test as proof that the rendered list, detail page, and counts agree.
+- Do not broaden data access or expose private row contents just to obtain readback evidence.
+- Do not publish real message subjects, account names, customer data, private URLs, tracker IDs, or tenant identifiers in public lessons.
+
+## Preferred next step
+
+For user-visible data bugs, write down the observable success state, then run a safe count/apply/readback loop against representative data before returning to the user.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-12.
+- Source record path: `records/traps/agent-ops/reproduce-user-visible-data-bugs-before-reasking.json`.
+
+---
+
+## record: Runtime secret preflight must use the workload identity
+
+- Source HTML: https://koinara.org/records/runtime-secret-preflight-must-use-workload-identity/
+- Raw Markdown: https://koinara.org/records/runtime-secret-preflight-must-use-workload-identity.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.runtime-secret-preflight-must-use-workload-identity, aigora-path:records/traps/agent-ops/runtime-secret-preflight-must-use-workload-identity.json
+- Tags: agent-ops, common-ai-mistake, deployment, external-systems, security, verification
+- License: CC BY-SA 4.0
+- Citation: Runtime secret preflight must use the workload identity. Koinara, 2026-06-13. https://koinara.org/records/runtime-secret-preflight-must-use-workload-identity/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A workload spec naming a secret does not prove the deployed workload identity can fetch it. Preflight secret access as the exact runtime identity before rollout.
+
+## Why this matters to agents
+
+Helps agents catch rollout-only failures where build-time or operator credentials can read a secret but the platform runtime identity cannot.
+
+## Trigger signals
+
+- **The workload spec references a secret but no test uses the runtime identity that will fetch it.** Agent interpretation: Run or simulate secret retrieval as that exact identity before rollout.
+- **Operator or CI credentials can read the secret, but the deployed workload fails at startup.** Agent interpretation: Suspect runtime identity permissions rather than secret existence.
+- **Secret wiring is reviewed only by name, path, or environment variable presence.** Agent interpretation: Name matching is insufficient; verify the identity-resource permission edge.
+
+## Common wrong assumptions
+
+- If the secret name appears in the workload spec, rollout will be able to read it.
+- Operator credentials prove runtime permissions.
+- Secret-not-found and permission-denied are interchangeable deploy failures.
+
+## First checks
+
+- **Identify the exact runtime identity the platform uses to fetch secrets.** It may differ from operator, CI, build, or application identities.
+- **Dry-run or simulate secret retrieval as that runtime identity before rollout.** This catches permission failures before a live deployment attempt.
+- **Record both secret reference and permission edge in the rollout evidence.** Names without identity evidence do not prove deployability.
+
+## Decision rules
+
+- **If The runtime identity cannot be proven to read the referenced secret..** → Do not roll out; repair or request the permission edge through the approved path.
+- **If Operator credentials pass but runtime identity fails..** → Treat this as a runtime permission edge failure, not a missing secret or application bug.
+- **If The preflight passes as the exact workload identity..** → Proceed with normal rollout checks while keeping secret values redacted.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The platform injects the secret at build time using the same identity that was tested.** Why it matters: The runtime-identity mismatch may not apply, but build/runtime exposure still needs review.
+- **The secret is not fetched by the platform and is supplied through a separate verified channel.** Why it matters: Verify that channel instead of this workload-identity edge.
+
+## Do not
+
+- Do not print secret values during preflight.
+- Do not infer runtime secret access from operator or CI access.
+- Do not roll out a workload whose secret permission edge has not been checked when the platform fetches secrets at runtime.
+
+## Preferred next step
+
+Before rollout, identify the platform runtime identity and verify redacted secret access through that identity.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/runtime-secret-preflight-must-use-workload-identity.json`.
+
+---
+
+## record: Schema support for secret-like import fields is not enough; prove write-path encryption and log redaction before enabling ingestion
+
+- Source HTML: https://koinara.org/records/secret-like-fields-require-write-path-redaction/
+- Raw Markdown: https://koinara.org/records/secret-like-fields-require-write-path-redaction.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.data-import.secret-like-fields-require-write-path-redaction, aigora-path:records/traps/data-import/secret-like-fields-require-write-path-redaction.json
+- Tags: common-ai-mistake, data-import, encryption, logging
+- License: CC BY-SA 4.0
+- Citation: Schema support for secret-like import fields is not enough; prove write-path encryption and log redaction before enabling ingestion. Koinara, 2026-06-13. https://koinara.org/records/secret-like-fields-require-write-path-redaction/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When an import feature receives fields that behave like passwords, invite tokens, private customer gates, or other secret-like values, adding a destination column or UI checkbox does not make ingestion safe. Agents should verify the actual write path encrypts or otherwise protects the value and that logs, previews, errors, and redisplay paths do not expose plaintext before enabling real import writes.
+
+## Why this matters to agents
+
+Prevents agents from declaring an import field implemented just because storage shape exists, while missing plaintext logging, preview, or redisplay exposure in the operational write path.
+
+## Trigger signals
+
+- **A migration or model adds a destination for a secret-like field, but the code path that writes imported rows has not been audited for encryption/redaction.** Agent interpretation: Treat storage-shape completion as incomplete until write-path and logging behavior are verified.
+- **The UI can select the field for import while previews, dry-run output, debug logs, failed-row logs, or audit entries may include raw payload values.** Agent interpretation: Search display/log/error paths before enabling writes or showing the field in selectable import controls.
+
+## Common wrong assumptions
+
+- A column named for encrypted storage means the import service already encrypts values before insert or update.
+- Dry-run or preview logs are safe because only administrators can see them.
+- Not redisplaying the field in the normal detail UI is enough even if error logs or failed-row artifacts keep plaintext.
+- Optional field selection is harmless until users import at scale.
+
+## First checks
+
+- **Trace the selected field from payload parsing through validation, preview/dry-run, write, update, error handling, and audit logging.** Secret-like values often leak outside the final database column.
+- **Search for raw payload serialization around the import path and failed-row logging.** Generic debug dumps can bypass field-specific redaction.
+- **Add or run tests that assert encrypted/protected storage and redacted display/log/error output for a sentinel value.** A sentinel makes plaintext leaks easy to detect across artifacts.
+
+## Decision rules
+
+- **If Only schema/UI support exists; write-path encryption or log redaction is unproven..** → Record the field as prepared but not operational, keep real import writes disabled for that field, and create follow-up work for encryption/redaction tests.
+- **If The field is actually imported and can affect customer access, credential-like behavior, or private purchase gates..** → Review write, update, preview, redisplay, audit, and failure paths before production import use.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The field is non-sensitive public catalog data and has no credential, access-control, private-customer, or abuse-enabling meaning.** Why it matters: Ordinary public attributes do not need secret-handling gates, though normal data validation still applies.
+- **The system already has tests proving encryption at rest plus redaction in logs, previews, errors, and redisplay for this exact field family.** Why it matters: Existing field-family coverage can be reused if the new field follows the same path and tests name the new mapping.
+
+## Do not
+
+- Do not mark a secret-like import field complete solely because a database column or mapping row exists.
+- Do not paste sample secret-like values into AI prompts, tickets, or public examples while investigating.
+- Do not rely on administrator-only access as a substitute for redaction in logs and dry-run artifacts.
+- Do not enable bulk import for a secret-like field before idempotent update semantics and plaintext absence are verified.
+
+## Preferred next step
+
+If a secret-like field appears in an import mapping, classify the current state as storage-prepared vs write-path-safe, then verify encryption/redaction with a sentinel test before enabling real import writes.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-09.
+- Source record path: `records/traps/data-import/secret-like-fields-require-write-path-redaction.json`.
+
+---
+
+## record: Split risky release work from routine cleanup
+
+- Source HTML: https://koinara.org/records/split-risky-release-from-routine-cleanup/
+- Raw Markdown: https://koinara.org/records/split-risky-release-from-routine-cleanup.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.split-risky-release-from-routine-cleanup, aigora-path:records/traps/agent-ops/split-risky-release-from-routine-cleanup.json
+- Tags: agent-ops, cleanup, common-ai-mistake, release, safety-gates, workflow
+- License: CC BY-SA 4.0
+- Citation: Split risky release work from routine cleanup. Koinara, 2026-06-13. https://koinara.org/records/split-risky-release-from-routine-cleanup/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When one closeout instruction bundles a high-attention release or gate with routine hygiene, the risky step consumes the evidence budget and cleanup becomes vague or skipped.
+
+## Why this matters to agents
+
+Helps agents preserve both safety and hygiene by separating gated release evidence from routine cleanup evidence.
+
+## Trigger signals
+
+- **One instruction mixes a gated release action with low-risk cleanup hygiene.** Agent interpretation: Split the work into separately verifiable units before starting.
+- **The report contains detailed release evidence but only claims cleanup happened.** Agent interpretation: Cleanup evidence is under-specified and should be checked directly.
+- **A blocked risky step leaves safe cleanup residues untouched.** Agent interpretation: Close the independent cleanup lane rather than letting the gate consume the whole task.
+
+## Common wrong assumptions
+
+- Closeout is one thing, so one evidence line can cover all of it.
+- If the release is blocked, cleanup must be blocked too.
+- Routine cleanup can be inferred from a successful deploy or publish.
+
+## First checks
+
+- **List gated/risky steps and routine cleanup steps separately before execution.** Separate lists preserve attention and verification quality.
+- **Record evidence for cleanup independently, such as empty pending directory, clean git status, or archived draft manifest.** Cleanup completion should not depend on release confidence.
+- **If the risky step blocks, complete safe independent cleanup or record why it is coupled.** This prevents risk gates from creating unrelated residue.
+
+## Decision rules
+
+- **If A release/gated action and routine cleanup are bundled..** → Create separate checklist/evidence rows for the release and cleanup portions.
+- **If The risky action blocks but cleanup is independent..** → Complete or archive the cleanup lane and report the gated action separately.
+- **If Cleanup would mutate the same protected state as the release..** → Do not perform that cleanup until the protected action is authorized.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **Cleanup is inseparable from the gated action and would change the same protected state.** Why it matters: Then cleanup must wait behind the same gate.
+- **The release step is purely local and reversible with no extra attention load.** Why it matters: Simple local tasks may not need formal separation.
+
+## Do not
+
+- Do not let deploy or publication evidence stand in for cleanup evidence.
+- Do not skip safe cleanup solely because a risky sibling step consumed attention.
+- Do not hide coupled cleanup behind a generic “done” statement.
+
+## Preferred next step
+
+Split closeout plans into risky/gated and routine-cleanup evidence tracks, then verify both explicitly.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/split-risky-release-from-routine-cleanup.json`.
+
+---
+
+## record: Smoke tests must use the real user plane
+
+- Source HTML: https://koinara.org/records/smoke-tests-must-use-the-real-user-plane/
+- Raw Markdown: https://koinara.org/records/smoke-tests-must-use-the-real-user-plane.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.smoke-tests-must-use-the-real-user-plane, aigora-path:records/traps/agent-ops/smoke-tests-must-use-the-real-user-plane.json
+- Tags: agent-ops, common-ai-mistake, deployment, external-systems, smoke-testing, verification
+- License: CC BY-SA 4.0
+- Citation: Smoke tests must use the real user plane. Koinara, 2026-06-13. https://koinara.org/records/smoke-tests-must-use-the-real-user-plane/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A smoke probe from the operator host can be a network-topology signal rather than service-health evidence. Keep a smoke path through the same plane real users use.
+
+## Why this matters to agents
+
+Helps agents avoid both false-down and false-up conclusions when private networks, meshes, proxies, or gateways separate operator reachability from user reachability.
+
+## Trigger signals
+
+- **An operator-host probe times out against a private or internal address.** Agent interpretation: Treat it as topology evidence until the real user plane is tested.
+- **A side-channel health check succeeds while user-path requests fail.** Agent interpretation: Do not call the service healthy until the real gateway or user plane passes.
+- **The smoke test bypasses auth, routing, proxy, or gateway layers that real users traverse.** Agent interpretation: Add a redacted real-plane smoke that exercises those layers safely.
+
+## Common wrong assumptions
+
+- Timeout from my shell means the service is down.
+- A private health endpoint passing means users can reach the service.
+- Smoke tests can ignore the gateway because routing was not changed.
+
+## First checks
+
+- **Draw or list the operator plane, service plane, and real user plane for the smoke path.** Reachability depends on topology, not just process health.
+- **Run a redacted smoke through the same gateway or user-facing path real users use.** This catches false-up side-channel health and false-down operator reachability.
+- **Record what the smoke proves and what it bypasses.** Evidence labels prevent topology signals from being mistaken for health truth.
+
+## Decision rules
+
+- **If Operator-plane probe fails but real-plane status is unknown..** → Do not call the service down; test through the real user plane or inspect routing.
+- **If Side-channel health passes but user plane fails..** → Investigate the layers bypassed by the health check.
+- **If Real-plane smoke passes and side-channel health passes..** → Record both component liveness and user-path readiness.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The operator host is intentionally inside the same network and auth plane as users.** Why it matters: Then the probe may be representative, but document why.
+- **The task only needs a component liveness check, not user-visible readiness.** Why it matters: A side-channel health check can be useful if it is not overclaimed.
+
+## Do not
+
+- Do not equate operator-host reachability with user reachability.
+- Do not overclaim side-channel health checks as user-visible readiness.
+- Do not expose secrets, private hosts, or auth tokens in public smoke evidence.
+
+## Preferred next step
+
+Before judging service health, label the probe plane and run the safe smoke through the same plane real users use.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/smoke-tests-must-use-the-real-user-plane.json`.
+
+---
+
+## record: Stale reference sweeps need live-vs-historical triage
+
+- Source HTML: https://koinara.org/records/stale-reference-sweeps-need-live-vs-historical-triage/
+- Raw Markdown: https://koinara.org/records/stale-reference-sweeps-need-live-vs-historical-triage.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.stale-reference-sweeps-need-live-vs-historical-triage, aigora-path:records/traps/agent-ops/stale-reference-sweeps-need-live-vs-historical-triage.json
+- Tags: agent-ops, common-ai-mistake, safe-recovery, verification, workflow
+- License: CC BY-SA 4.0
+- Citation: Stale reference sweeps need live-vs-historical triage. Koinara, 2026-06-13. https://koinara.org/records/stale-reference-sweeps-need-live-vs-historical-triage/ (CC BY-SA 4.0).
+
+## Agent summary
+
+After a docs or knowledge-surface migration, deterministic stale-reference sweeps across live hooks, validators, profiles, prompts, docs, and CI must classify live references separately from historical evidence.
+
+## Why this matters to agents
+
+Helps agents finish migrations without leaving old slugs in active operating surfaces or destroying audit history by overzealous cleanup.
+
+## Trigger signals
+
+- **A migration changes a public or agent-facing slug, phrase, or file path.** Agent interpretation: Run deterministic old-reference searches across active operating surfaces.
+- **Search hits include both live configuration and historical/audit files.** Agent interpretation: Classify each hit before editing; live residue and history have different handling.
+- **The closeout relies on semantic search or page lookup rather than exact old-token sweep.** Agent interpretation: Exact strings can remain in hooks and prompts even when semantic lookup succeeds.
+
+## Common wrong assumptions
+
+- If the new page resolves, all old references are gone.
+- Semantic search is enough to find literal hook or prompt dependencies.
+- Every stale hit should be rewritten, including audit history.
+
+## First checks
+
+- **Search exact old slugs, paths, and trigger phrases with a deterministic text search.** Literal consumers may not be discoverable by semantic search.
+- **Classify hits as live instruction/config, generated output, archive/history, or external/user material.** Each class has a different safe action.
+- **Re-run the exact search after edits and preserve a summary of intentional historical hits.** This proves active residue is gone without erasing provenance.
+
+## Decision rules
+
+- **If A stale token remains in live hooks, validators, agent profiles, prompts, or CI text..** → Replace it with the new canonical reference and rerun the exact sweep.
+- **If A stale token remains only in historical audit material..** → Leave it in place and record that it is historical, not an active consumer.
+- **If A stale token appears in generated output..** → Update the source generator or regenerate rather than hand-editing generated files.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The old token is intentionally retained as historical evidence in an archive or changelog.** Why it matters: Do not rewrite history unless the record is an active instruction surface.
+- **The reference is external or user-authored material outside the migration scope.** Why it matters: Record but do not silently edit third-party or user-controlled text.
+
+## Do not
+
+- Do not rely on semantic search alone for migration closeout.
+- Do not rewrite historical evidence just to make grep empty.
+- Do not leave live prompt, hook, validator, or CI references to retired knowledge surfaces.
+
+## Preferred next step
+
+Run an exact old-token sweep, classify every hit as live or historical, update only active consumers, then rerun the sweep.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/stale-reference-sweeps-need-live-vs-historical-triage.json`.
+
+---
+
+## record: Long-running job supervisors should safe-halt on failure spikes
+
+- Source HTML: https://koinara.org/records/supervisors-should-safe-halt-on-failure-spikes/
+- Raw Markdown: https://koinara.org/records/supervisors-should-safe-halt-on-failure-spikes.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.supervisors-should-safe-halt-on-failure-spikes, aigora-path:records/traps/agent-ops/supervisors-should-safe-halt-on-failure-spikes.json
+- Tags: agent-ops, common-ai-mistake, long-running-jobs, retries, safe-halt, supervisors
+- License: CC BY-SA 4.0
+- Citation: Long-running job supervisors should safe-halt on failure spikes. Koinara, 2026-06-13. https://koinara.org/records/supervisors-should-safe-halt-on-failure-spikes/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A supervisor that restarts every failed long-running job can turn a transient network, provider, or database outage into an infinite retry storm unless it detects rapid failure growth and stops for attention.
+
+## Why this matters to agents
+
+When agents build keepalive loops, they should specify both the restart condition and the stop condition, including evidence that future operators can use to decide whether to resume.
+
+## Trigger signals
+
+- **Many failures share the same transport or connection class within a short window.** Agent interpretation: Prefer safe halt and handoff over blind restart.
+- **The supervisor has a restart loop but no failure threshold, backoff cap, or stop reason artifact.** Agent interpretation: Add a stop condition before relying on unattended execution.
+
+## Common wrong assumptions
+
+- Unattended means always restart.
+- A retry loop is safer than stopping because it needs less human attention.
+- Connection failures are harmless if the write path is idempotent.
+
+## First checks
+
+- **Define maximum consecutive failures, maximum failure rate, backoff behavior, and the artifact written when the supervisor stops.** Future agents need to know whether the stop was intentional protection or a crash.
+- **After a safe halt, inspect the latest failure classes before resuming instead of only checking whether the process is dead.** The process may have stopped because the guard worked as designed.
+
+## Decision rules
+
+- **If Failures spike in a way consistent with transport/provider outage rather than isolated item-level errors..** → Stop the loop, write counts and failure classes, and require a deliberate resume after diagnosis.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The job is read-only, externally idempotent, cheap, and already has exponential backoff plus alerting.** Why it matters: Automatic retries may be acceptable when blast radius and cost are bounded.
+- **A human explicitly authorized an emergency retry loop with a time/cost bound and monitoring owner.** Why it matters: Some operational incidents require aggressive retries, but only with explicit bounds.
+
+## Do not
+
+- Do not implement Restart=always or while-true loops without a failure-spike stop condition for mutable long-running jobs.
+- Do not treat a guarded safe halt as an incident by itself; inspect the stop reason first.
+- Do not publish private service names, tunnel targets, account IDs, URLs, or organization-specific queue names in public lessons.
+- Do not confuse failure-spike safe halts with production-incident-safe-halt-scope-boundary; cross-check that record when the stop reason is an irreversible or approval boundary rather than retry-storm protection.
+
+## Preferred next step
+
+When creating or reviewing a supervisor, require both restart criteria and safe-halt criteria with a durable stop summary.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-10.
+- Source record path: `records/traps/agent-ops/supervisors-should-safe-halt-on-failure-spikes.json`.
+
+---
+
+## record: Prefer structured JSON before DOM rows for SPA extraction
+
+- Source HTML: https://koinara.org/records/structured-json-before-dom-for-spa-extraction/
+- Raw Markdown: https://koinara.org/records/structured-json-before-dom-for-spa-extraction.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.structured-json-before-dom-for-spa-extraction, aigora-path:records/traps/agent-ops/structured-json-before-dom-for-spa-extraction.json
+- Tags: agent-ops, browser-automation, common-ai-mistake, external-systems, retrieval, verification
+- License: CC BY-SA 4.0
+- Citation: Prefer structured JSON before DOM rows for SPA extraction. Koinara, 2026-06-13. https://koinara.org/records/structured-json-before-dom-for-spa-extraction/ (CC BY-SA 4.0).
+
+## Agent summary
+
+After authorized observation of an authenticated SPA, content-filtered same-origin JSON payloads are often a safer extraction source than brittle DOM rows; keep per-item source telemetry and an explicit DOM fallback.
+
+## Why this matters to agents
+
+Helps agents build extraction tools that are stable, observable, and auth-safe without overfitting to transient DOM or opaque endpoint names.
+
+## Trigger signals
+
+- **DOM selectors can find visible rows but miss stable identifiers, hidden fields, or pagination state.** Agent interpretation: Inspect captured same-origin JSON payload shapes before committing to DOM scraping.
+- **Endpoint names are opaque, unstable, or shared by multiple payload types.** Agent interpretation: Filter by content shape and required fields, not just URL substrings.
+- **Extracted items lack source-field or missing-reason telemetry.** Agent interpretation: Add per-item telemetry so extraction drift becomes visible.
+
+## Common wrong assumptions
+
+- The visible DOM is always the safest extraction source.
+- Endpoint URL names are reliable enough filters for SPA payloads.
+- Missing identifiers can be silently skipped if most rows extract.
+
+## First checks
+
+- **Capture authorized same-origin JSON payloads and identify content-shape predicates for the needed records.** Content shape is often more stable than endpoint names or DOM layout.
+- **Add parser tests for primary payload, fallback payload, missing identifier, and DOM fallback cases.** Tests keep extraction failures observable as the SPA evolves.
+- **Emit per-item source-field and missing-reason telemetry.** Telemetry distinguishes no data from extraction drift.
+
+## Decision rules
+
+- **If Authorized structured payloads contain the needed identifiers and fields..** → Use content-shape predicates to parse JSON before falling back to DOM rows.
+- **If Structured payloads are absent or outside the authorized session..** → Use the DOM path and record the absence reason rather than bypassing authentication.
+- **If Telemetry shows missing identifiers or fallback spikes..** → Inspect payload shape and DOM changes before trusting partial results.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **Using network payloads would require bypassing authentication or accessing data outside the authorized UI session.** Why it matters: Do not broaden access; stay within the authorized observation boundary.
+- **The DOM is the contractual source and JSON payloads are intentionally incomplete or unstable.** Why it matters: Then DOM extraction with stronger assertions may be the safer contract.
+
+## Do not
+
+- Do not bypass authentication or broaden data access to obtain JSON.
+- Do not filter only by opaque endpoint names when content shape is available.
+- Do not silently drop items with missing identifiers.
+- Do not apply extraction guidance to browser mutations; cross-check admin-form-writers-need-warmup-and-readback when the task writes remote admin state.
+
+## Preferred next step
+
+In an authorized SPA session, inspect same-origin JSON payload shapes, add parser/fallback tests, and emit per-item source telemetry.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/structured-json-before-dom-for-spa-extraction.json`.
+
+---
+
+## record: Terminal-state recovery flags must cover downstream mutations
+
+- Source HTML: https://koinara.org/records/terminal-state-recovery-flags-must-cover-downstream-mutations/
+- Raw Markdown: https://koinara.org/records/terminal-state-recovery-flags-must-cover-downstream-mutations.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.terminal-state-recovery-flags-must-cover-downstream-mutations, aigora-path:records/traps/agent-ops/terminal-state-recovery-flags-must-cover-downstream-mutations.json
+- Tags: agent-ops, common-ai-mistake, safe-recovery, safety-gates, workflow
+- License: CC BY-SA 4.0
+- Citation: Terminal-state recovery flags must cover downstream mutations. Koinara, 2026-06-13. https://koinara.org/records/terminal-state-recovery-flags-must-cover-downstream-mutations/ (CC BY-SA 4.0).
+
+## Agent summary
+
+A recovery flag that bypasses only the first terminal-state guard can still fail or mutate later layers unexpectedly. Recovery semantics must cover every downstream mutation path intentionally.
+
+## Why this matters to agents
+
+Helps agents design repair modes that are auditable, side-effect-bounded, and not merely a narrow parser bypass.
+
+## Trigger signals
+
+- **A flag name says allow or recover, but only the first validation branch checks it.** Agent interpretation: Audit every later mutation path before trusting the recovery mode.
+- **The tool performs expensive setup before discovering the terminal-state repair is not actually allowed.** Agent interpretation: Move terminal validation ahead of setup or split preflight from repair.
+- **A repair command can silently reopen, reactivate, or rewrite a terminal record.** Agent interpretation: Require an explicit repair-only action and evidence, not a normal active-state transition.
+
+## Common wrong assumptions
+
+- One allow flag at the parser layer changes the meaning of the whole workflow.
+- Raw mutation is acceptable when the safe wrapper cannot repair terminal state.
+- If the first guard passes, later setup and mutation cannot violate terminal semantics.
+
+## First checks
+
+- **Inject a terminal record and run the recovery path in dry-run or test mode.** The test proves whether downstream code still assumes active state.
+- **Assert that no active-state transition APIs are called during repair.** Recovery should repair the intended artifact, not silently reopen it.
+- **Place terminal-state validation before expensive or irreversible setup.** Rejected recovery should fail before costly side effects.
+
+## Decision rules
+
+- **If A recovery flag affects only an early guard..** → Make every downstream mutation either repair-aware or explicitly refused before setup.
+- **If A terminal record needs narrow artifact repair..** → Provide a scoped repair command with evidence rather than normalizing direct data edits.
+- **If The requested recovery would reopen or alter terminal truth..** → Stop and route through the appropriate gate for state-changing recovery.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The recovery mode is side-effect-free and only reports the repair plan.** Why it matters: A diagnostic preflight may safely inspect terminal records without full mutation semantics.
+- **All downstream mutations are explicitly covered by tests for terminal input.** Why it matters: Then the flag may already have the intended end-to-end semantics.
+
+## Do not
+
+- Do not let allow flags become partial parser bypasses.
+- Do not perform expensive setup before deciding whether terminal recovery is allowed.
+- Do not normalize raw mutation because the wrapper lacks a repair mode.
+
+## Preferred next step
+
+Test recovery against terminal fixtures and verify every downstream mutation path is intentionally repair-aware or refused.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/terminal-state-recovery-flags-must-cover-downstream-mutations.json`.
+
+---
+
+## record: Timeout fixes must be applied at the effective layer
+
+- Source HTML: https://koinara.org/records/timeout-config-must-hit-effective-layer/
+- Raw Markdown: https://koinara.org/records/timeout-config-must-hit-effective-layer.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.data-import.timeout-config-must-hit-effective-layer, aigora-path:records/traps/data-import/timeout-config-must-hit-effective-layer.json
+- Tags: agent-ops, common-ai-mistake, data-import, database, timeouts, verification
+- License: CC BY-SA 4.0
+- Citation: Timeout fixes must be applied at the effective layer. Koinara, 2026-06-13. https://koinara.org/records/timeout-config-must-hit-effective-layer/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Changing a timeout option in the nearest request call may not affect the actual deadline. Agents should identify the layer that enforces the timeout and verify with a smoke that exceeds the old limit.
+
+## Why this matters to agents
+
+Prevents agents from repeatedly patching timeout literals that look plausible but are ignored by the driver, pool, proxy, or platform actually enforcing the deadline.
+
+## Trigger signals
+
+- **Failures still happen at the same fixed duration after a timeout option was changed nearby.** Agent interpretation: The changed option is probably not the enforcing layer.
+- **The client has multiple timeout scopes such as request, pool, connection, statement, socket, proxy, or load balancer.** Agent interpretation: Map the timeout hierarchy before changing code.
+
+## Common wrong assumptions
+
+- The timeout option closest to the query is always the one being enforced.
+- A code diff that increases a timeout proves the runtime deadline changed.
+- A successful fast query validates a timeout fix.
+
+## First checks
+
+- **Create a timeout map naming every layer that can cancel the call and its current configured deadline.** The actual deadline is the earliest active cancellation source.
+- **Run a bounded smoke that is expected to take longer than the old deadline and shorter than the new one, then record measured duration and success/failure.** Only a >old-timeout smoke proves the effective deadline moved.
+
+## Decision rules
+
+- **If A timeout remains fixed after local option changes or the client exposes pool/global timeout settings..** → Change the enforcing layer, keep the operation bounded, and verify with a timed smoke that crosses the former deadline.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The failure duration changes exactly as expected after the local option change and is covered by a regression test or timed smoke.** Why it matters: The effective layer may already have been identified.
+- **The slow operation should be optimized or indexed rather than allowed to run longer.** Why it matters: Timeout extension can hide an algorithmic or data-model problem.
+
+## Do not
+
+- Do not claim a timeout fix from a fast-path smoke that completes below the old deadline.
+- Do not increase timeouts to mask an unbounded query, missing index, or runaway batch without a separate design check.
+- Do not publish private driver configs, hostnames, tenant identifiers, SQL text containing business data, or internal paths in public lessons.
+
+## Preferred next step
+
+When a timeout patch seems ignored, map cancellation layers and verify the selected layer with a timed smoke exceeding the former limit.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-10.
+- Source record path: `records/traps/data-import/timeout-config-must-hit-effective-layer.json`.
+
+---
+
+## record: Uncertain spam signals should not hide customer mail
+
+- Source HTML: https://koinara.org/records/uncertain-spam-signals-should-not-hide-customer-mail/
+- Raw Markdown: https://koinara.org/records/uncertain-spam-signals-should-not-hide-customer-mail.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.email.uncertain-spam-signals-should-not-hide-customer-mail, aigora-path:records/traps/email/uncertain-spam-signals-should-not-hide-customer-mail.json
+- Tags: authorization-gate, common-ai-mistake, email, external-systems, safety-gates, workflow
+- License: CC BY-SA 4.0
+- Citation: Uncertain spam signals should not hide customer mail. Koinara, 2026-06-13. https://koinara.org/records/uncertain-spam-signals-should-not-hide-customer-mail/ (CC BY-SA 4.0).
+
+## Agent summary
+
+When agents add spam protection to a customer-facing mailbox, they may treat authentication failures, sender reputation hints, or broad content keywords as enough evidence to auto-quarantine messages. For unknown external senders, those signals are uncertain; hiding mail can lose legitimate customer contact. Keep uncertain detections visible as labels, shadow scores, or audit events until a stricter business policy and verification gate exists.
+
+## Why this matters to agents
+
+Prevents agents from converting detection logic into message-hiding behavior before proving that the signal is definitive enough for the mailbox's customer-communication risk.
+
+## Trigger signals
+
+- **A new spam feature can move, hide, quarantine, or delete messages from unknown external senders based on authentication failure or missing authentication alone.** Agent interpretation: Treat this as a customer-mail visibility gate, not just a classifier implementation detail.
+- **A database setting or admin mode says quarantine, but code and API gates do not independently hold or reject quarantine for uncertain signals.** Agent interpretation: Storage shape must not be enough to activate message-hiding behavior.
+- **Trusted-domain or own-domain configuration is editable or data-driven and could silently widen self-spoof quarantine beyond the explicitly launched domain set.** Agent interpretation: Prove a launch allowlist or equivalent policy boundary prevents accidental scope expansion.
+
+## Common wrong assumptions
+
+- Authentication failure from an external domain always means the message is spam.
+- If a setting row says quarantine, the feature is safe to activate without code-level launch holds.
+- Broad content words in subject or body are enough to move customer mail out of the inbox.
+- Adding a spam folder is reversible enough that no owner or business policy gate is needed.
+- A trusted-domain table can double as the production allowlist for self-spoof quarantine without a separate launch boundary.
+
+## First checks
+
+- **Enumerate every code path that can move, hide, quarantine, suppress, retain, or delete mail, including rule execution, API settings, scheduled jobs, and manual actions.** Spam classifiers often have multiple effect paths; a safe label-only path can be bypassed by a settings or worker path.
+- **Add negative fixtures for unknown external senders with failed, missing, or misaligned authentication and spammy-looking content.** These fixtures should remain visible in the inbox or normal mail list unless a reviewed policy says otherwise.
+- **Add positive fixtures only for definitive cases, such as own-domain self-spoof constrained by an explicit allowlist, and exact-sender manual blocks.** Positive tests should prove the narrow live behavior without broadening uncertain external-domain quarantine.
+- **Test that database settings, admin API updates, and rule-engine execution all reject or hold general quarantine while policy is pending.** A database mode can become an accidental feature flag if enforcement exists in only one layer.
+
+## Decision rules
+
+- **If A signal is uncertain and the sender may be a legitimate external customer..** → Keep the message visible and record the assessment as a label, score, audit event, or shadow decision instead of moving or hiding it.
+- **If A setting, API, or rule action would enable general quarantine, retention, or deletion before policy approval..** → Stop before activation and ask for the exact sender class, mailbox scope, retention/delete semantics, recovery path, and monitoring requirement.
+- **If The case is definitive own-domain self-spoof and an explicit launch allowlist plus failed/missing authentication are both proven by tests..** → Allow the narrow quarantine path while keeping external-domain and non-allowlisted-domain cases label-only or shadow.
+- **If The behavior is a user-initiated exact-sender block or manual spam action..** → Confirm the action is exact-sender scoped, auditable, and reversible through the product's normal user/admin controls before relying on it as a live path.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The action only adds a visible label, score, audit entry, or shadow-mode assessment and does not move, hide, suppress, retain, or delete the message.** Why it matters: Detection-only work can usually proceed with ordinary validation because customer visibility is preserved.
+- **The message is a definitive own-domain self-spoof under a reviewed allowlist and failed/missing authentication condition, or the exact sender was manually blocked by an authorized user action.** Why it matters: Some narrow cases can be strong enough for quarantine when tests prove the boundary and no broader customer-mail rule is activated.
+- **A reviewed policy explicitly authorizes the exact sender class, signal class, mailbox, retention behavior, and user-visible recovery path for quarantine or deletion.** Why it matters: The trap targets accidental or premature quarantine, not execution of a precise approved policy.
+
+## Do not
+
+- Do not auto-quarantine unknown external-domain mail solely because SPF, DKIM, or DMARC failed or is missing.
+- Do not turn a database quarantine mode into live behavior unless API and rule execution layers enforce the same policy boundary.
+- Do not let trusted-domain rows silently expand own-domain self-spoof quarantine beyond an explicit launch allowlist.
+- Do not infer deletion, retention, or permanent suppression semantics from a quarantine feature request.
+- Do not hide customer-visible mail with broad keyword classifiers unless the exact policy and recovery path have been reviewed.
+- Do not use this signal-confidence record to decide retention or provider deletion semantics; cross-check mailbox-folder-move-is-not-retention-or-provider-delete for count-evidence effect separation.
+
+## Preferred next step
+
+Before enabling any mail-hiding action, classify each signal as definitive or uncertain, prove uncertain cases remain visible, and gate quarantine/deletion semantics through the exact reviewed policy.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: high.
+- Human gate required in the source record: true.
+- Last checked: 2026-06-10.
+- Source record path: `records/traps/email/uncertain-spam-signals-should-not-hide-customer-mail.json`.
+
+---
+
+## record: Webhook acknowledgements and auth identity must follow the provider contract literally
+
+- Source HTML: https://koinara.org/records/webhook-ack-layer-and-auth-identity/
+- Raw Markdown: https://koinara.org/records/webhook-ack-layer-and-auth-identity.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.agentops.webhook-ack-layer-and-auth-identity, aigora-path:records/traps/agent-ops/webhook-ack-layer-and-auth-identity.json
+- Tags: agent-ops, authorization, common-ai-mistake, external-systems, web-security, webhook
+- License: CC BY-SA 4.0
+- Citation: Webhook acknowledgements and auth identity must follow the provider contract literally. Koinara, 2026-06-13. https://koinara.org/records/webhook-ack-layer-and-auth-identity/ (CC BY-SA 4.0).
+
+## Agent summary
+
+Webhook receivers can fail by treating transport success, structured provider result codes, persistence timing, and authentication identity as one layer. Model each contract layer explicitly.
+
+## Why this matters to agents
+
+Helps agents avoid hiding actionable provider result codes, acknowledging before durable persistence, or trusting display identifiers as authentication truth.
+
+## Trigger signals
+
+- **The provider documentation distinguishes HTTP acknowledgement from an application-level result code.** Agent interpretation: Return the transport status the provider expects and put actionable receiver-known errors in the structured body.
+- **The handler uses a public display identifier, URL slug, or request label as authentication truth.** Agent interpretation: Fail closed until the provider contract says that identifier is security-relevant and verifies it cryptographically or through a trusted channel.
+- **The handler returns success to the provider before the local side effect is durably persisted.** Agent interpretation: Move acknowledgement after durable persistence or make retry/reconciliation semantics explicit.
+
+## Common wrong assumptions
+
+- HTTP 200 always means the webhook operation succeeded semantically.
+- A 4xx response is the clearest way to communicate every receiver-known error.
+- A public account or object identifier in the payload is enough to authenticate the sender.
+
+## First checks
+
+- **Read the provider contract for transport acknowledgement, structured result body, retry behavior, and auth identity separately.** Webhook contracts often split these layers in non-obvious ways.
+- **Log safe diagnostics such as hash prefix and payload length rather than raw secret or payload values.** Diagnostics should prove parsing/auth paths without leaking credentials or private content.
+- **Test the known-error path and the durable-persist-before-ack path.** Both paths often pass happy-path smoke while still failing real provider retries.
+
+## Decision rules
+
+- **If The provider expects HTTP 200 with a structured result code for receiver-known errors..** → Return the documented transport acknowledgement and encode the actionable error in the structured response body.
+- **If Auth truth is ambiguous or based only on public identifiers..** → Reject or quarantine the request until the authenticated identity source is verified against the contract.
+- **If The external sender may retry based on acknowledgement timing..** → Persist the local side effect before acknowledging, or document a retry-safe reconciliation path.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The provider explicitly requires non-2xx transport failures for the exact condition.** Why it matters: Then the structured-body pattern may be wrong; follow the documented retry contract.
+- **The identifier is a signed claim or verified subject in the provider contract.** Why it matters: Then it can contribute to auth, but only after signature and freshness checks.
+
+## Do not
+
+- Do not collapse HTTP status, application result code, persistence, and authentication identity into one boolean success flag.
+- Do not expose raw secrets or payloads in diagnostics.
+- Do not accept a public display identifier as authorization proof by default.
+
+## Preferred next step
+
+Map the webhook contract into transport, result-body, auth-identity, and persistence-timing layers before editing the handler.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/agent-ops/webhook-ack-layer-and-auth-identity.json`.
+
+---
+
+## record: Import watermarks need committed side-effect evidence
+
+- Source HTML: https://koinara.org/records/watermarks-need-committed-side-effect-evidence/
+- Raw Markdown: https://koinara.org/records/watermarks-need-committed-side-effect-evidence.md
+- Date: Jun 13, 2026
+- Status: public-safe-reviewed
+- Review: public-safe
+- Origin: internal
+- Sources: aigora-record:trap.data-import.watermarks-need-committed-side-effect-evidence, aigora-path:records/traps/data-import/watermarks-need-committed-side-effect-evidence.json
+- Tags: batch-jobs, common-ai-mistake, data-import, idempotency, safe-recovery, verification
+- License: CC BY-SA 4.0
+- Citation: Import watermarks need committed side-effect evidence. Koinara, 2026-06-13. https://koinara.org/records/watermarks-need-committed-side-effect-evidence/ (CC BY-SA 4.0).
+
+## Agent summary
+
+An import watermark or success marker should advance only from committed side effects. Audit rows and progress evidence must not become resume truth until the durable write they describe has actually succeeded.
+
+## Why this matters to agents
+
+Helps agents distinguish in-flight progress, audit visibility, committed watermarks, and external acknowledgements when repairing imports or retries.
+
+## Trigger signals
+
+- **A watermark advances before the destination mutation commits.** Agent interpretation: Treat the watermark as unsafe; separate in-flight cursor from committed lower bound.
+- **Evidence rows are written before the side effect they claim to prove.** Agent interpretation: Make those rows attempt/audit state only, not resume state.
+- **A whole batch fails with the same downstream exception class after source reads succeed.** Agent interpretation: Investigate the local side-effect path before assuming an upstream outage.
+
+## Common wrong assumptions
+
+- If source reads succeeded, the import can advance the watermark.
+- Audit rows are harmless even when resume logic later reads them as truth.
+- A uniform exception across the batch must mean the upstream system is down.
+
+## First checks
+
+- **Trace the order of source read, destination write, audit/progress write, watermark advance, and external acknowledgement.** The committed side effect must be the boundary for success.
+- **Probe a failed run and verify whether its rows can influence future resume lower bounds.** Failed attempts should be visible but not promoted automatically.
+- **Classify exception uniformity before retrying.** Uniform local exceptions usually require code/config repair, not upstream backoff.
+
+## Decision rules
+
+- **If A watermark, lower bound, or success marker advances before durable destination commit..** → Move the state transition after the committed side effect and keep in-flight cursors separate.
+- **If Failed attempt evidence exists but is not safe for resume..** → Keep it visible for audit while excluding it from resume selection unless a reviewed repair promotes it.
+- **If Uniform downstream exceptions appear after successful source reads..** → Inspect local destination schema, permissions, serialization, and transaction boundaries before broad upstream retries.
+
+## Negative signals
+
+These signs suggest the record may not be the right fit:
+
+- **The destination operation is atomic with the watermark update in one durable transaction.** Why it matters: The completion boundary may already be correct, though external acknowledgements still need review.
+- **The progress evidence is explicitly labelled attempt-only and never read by resume logic.** Why it matters: Attempt logs can be useful without becoming committed state.
+
+## Do not
+
+- Do not let failed-run cursors become committed watermarks by accident.
+- Do not acknowledge external notifications before the local persistence contract is satisfied; see webhook-ack-layer-and-auth-identity.
+- Do not hide partial attempts; make them audit-visible but not authoritative.
+- Do not use committed side-effect evidence as a substitute for persisted cursor-key design; cross-check progress-state-must-match-cursor-semantics when modes/windows can overwrite progress state.
+
+## Preferred next step
+
+Trace the import state transitions and ensure only committed destination effects can advance resume or watermark truth.
+
+## Review and freshness
+
+- Aigora status: reviewed.
+- Koinara publication state: public-safe-reviewed.
+- Risk level: medium.
+- Human gate required in the source record: false.
+- Last checked: 2026-06-13.
+- Source record path: `records/traps/data-import/watermarks-need-committed-side-effect-evidence.json`.
+
+---
+
 ## record: Cleanup must not delete artifacts from an actively served workspace
 
 - Source HTML: https://koinara.org/records/active-serving-workspace-cleanup/
@@ -77,83 +2668,6 @@ Classify the path, prove no runtime depends on it, and smoke assets plus the pri
 - Human gate required in the source record: true.
 - Last checked: 2026-06-07.
 - Source record path: `records/traps/agent-ops/active-serving-workspace-cleanup.json`.
-
----
-
-## record: Agent hosts need bounded polling by default
-
-- Source HTML: https://koinara.org/records/agent-hosts-need-bounded-polling/
-- Raw Markdown: https://koinara.org/records/agent-hosts-need-bounded-polling.md
-- Date: Jun 07, 2026
-- Status: public-safe-reviewed
-- Review: public-safe
-- Origin: internal
-- Sources: aigora-record:trap.agentops.agent-hosts-need-bounded-polling, aigora-path:records/traps/agent-ops/agent-hosts-need-bounded-polling.json
-- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake, multi-agent, concurrency
-- License: CC BY-SA 4.0
-- Citation: Agent hosts need bounded polling by default. Koinara, 2026-06-07. https://koinara.org/records/agent-hosts-need-bounded-polling/ (CC BY-SA 4.0).
-
-## Agent summary
-
-A relay client that assumes every AI host can run an indefinite foreground long-poll can hang, starve a command-bounded session, or produce no actionable output.
-
-## Why this matters to agents
-
-Helps agents package long-running receive/listen behavior for different execution hosts by making timeout, backgrounding, cancellation, and progress semantics explicit.
-
-## Trigger signals
-
-- **A long-poll command works in an interactive shell but blocks or times out inside another AI coding environment.** Agent interpretation: The host execution model is part of the client contract.
-- **The client documentation names only an indefinite listen command and no finite receive, timeout, cancellation, or background mode.** Agent interpretation: Default to bounded commands so the host can return useful output.
-- **Other actors cannot tell whether the listener is idle, hung, or still within safe read-only scope.** Agent interpretation: Emit safe progress or terminal state, and cross-link long-running probe guidance.
-
-## Common wrong assumptions
-
-- If a command works in one shell, it will work in every agent host.
-- Polling is transport behavior and does not need prompt/host documentation.
-- No output means nothing happened, not that the host is stuck.
-
-## First checks
-
-- **Provide a finite receive/poll command with timeout as the documented default.** Command-bounded hosts need a path that returns useful output.
-- **Document and test backgrounding, cancellation, and progress output for any indefinite mode.** Long-running commands need lifecycle semantics to be safe for handoff.
-- **Run polling smoke tests in each supported agent host, not only an interactive shell.** The failure is often host-specific.
-
-## Decision rules
-
-- **If The supported host is command-bounded or non-interactive.** → Use finite polling with a timeout and explicit empty result, then document indefinite listening as an advanced mode.
-- **If A long-running receive command cannot emit safe progress or be cancelled.** → Do not run it as an agent default; redesign lifecycle or use a supervised background mechanism.
-- **If The work is long-running but can emit aggregate progress safely.** → Follow the related long-running-probe progress pattern for cadence and redaction.
-
-## Negative signals
-
-These signs suggest the record may not be the right fit:
-
-- **The command is intentionally interactive, manually supervised, and documented as not suitable for automation.** Why it matters: This record targets reusable agent-host clients, not an operator watching a terminal.
-- **The host provides a durable background job manager with explicit cancellation and the client integrates with it.** Why it matters: Indefinite work can be acceptable when lifecycle is visible and controllable.
-
-## Do not
-
-- Do not make indefinite foreground polling the only documented receive path.
-- Do not assume an AI coding session can safely host a forever-running client.
-- Do not hide timeout/cancellation assumptions in human-only prose.
-
-## Preferred next step
-
-Offer bounded polling first; only use indefinite listen mode when timeout, progress, backgrounding, and cancellation are documented and host-tested.
-
-## Related records
-
-- `long-running-probe-progress-emit-safety-primitive`
-
-## Review and freshness
-
-- Aigora status: reviewed.
-- Koinara publication state: public-safe-reviewed.
-- Risk level: medium.
-- Human gate required in the source record: true.
-- Last checked: 2026-06-07.
-- Source record path: `records/traps/agent-ops/agent-hosts-need-bounded-polling.json`.
 
 ---
 
@@ -1326,77 +3840,6 @@ Locate the approved date-display boundary, move the logic there, and rerun the g
 
 ---
 
-## record: Moved UI tests need absence and presence assertions
-
-- Source HTML: https://koinara.org/records/moved-ui-tests-need-absence-and-presence/
-- Raw Markdown: https://koinara.org/records/moved-ui-tests-need-absence-and-presence.md
-- Date: Jun 01, 2026
-- Status: public-safe-reviewed
-- Review: public-safe
-- Origin: internal
-- Sources: aigora-record:trap.agentops.moved-ui-tests-need-absence-and-presence
-- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake
-- License: CC BY-SA 4.0
-- Citation: Moved UI tests need absence and presence assertions. Koinara, 2026-06-01. https://koinara.org/records/moved-ui-tests-need-absence-and-presence/ (CC BY-SA 4.0).
-
-## Agent summary
-
-When a UI item moves from one navigation or menu surface to another, a destination-only test can miss duplicates left behind. Prove both presence in the new place and absence from the old one.
-
-## Why this matters to agents
-
-Helps agents avoid partial UI move verification where a component appears in the new location but stale source-surface rendering or expectations remain.
-
-## Trigger signals
-
-- **A test or snapshot only asserts the item appears in its new surface.** Agent interpretation: Add a source-surface absence assertion before calling the move complete.
-- **CI fails in a related menu/sidebar/nav test that was not edited.** Agent interpretation: Treat it as evidence that the move spans multiple surfaces.
-
-## Common wrong assumptions
-
-- If the new location test passes, the old location cannot still show the item.
-- Only the component touched in the diff needs tests.
-- Snapshot failures in old surfaces are unrelated cleanup.
-
-## First checks
-
-- **Identify every UI surface that can render the moved item.** Moves often cross component boundaries; the source and destination both need evidence.
-- **Run or add paired assertions for source absence and destination presence.** This catches both missing moves and accidental duplicates.
-- **Review queries or snapshots for stale labels and grouping assumptions.** Old test expectations can preserve the pre-move model even when the UI changed intentionally.
-
-## Decision rules
-
-- **If The item should move, not duplicate.** → Update tests so the destination contains the item and the source no longer does.
-- **If The item should intentionally appear in both places.** → Make both presence assertions explicit and name the product reason for duplication.
-
-## Negative signals
-
-These signs suggest the record may not be the right fit:
-
-- **The old surface is deleted entirely and no other component can render it.** Why it matters: Absence may be covered by removal, but still check imports/routes for stale render paths.
-- **The move is intentionally a duplication or cross-list alias.** Why it matters: Then tests should state both expected locations explicitly.
-
-## Do not
-
-- Do not verify a move with destination-only assertions.
-- Do not delete old tests without checking whether they encode a real source-surface absence requirement.
-- Do not treat unedited related component failures as unrelated by default.
-
-## Preferred next step
-
-Run the source and destination surface tests together and assert both absence and presence for the moved item.
-
-## Review and freshness
-
-- Aigora status: reviewed.
-- Koinara publication state: public-safe-reviewed.
-- Risk level: low.
-- Human gate required in the source record: false.
-- Last checked: 2026-06-01.
-- Source record path: `records/traps/agent-ops/moved-ui-tests-need-absence-and-presence.json`.
-
----
-
 ## record: A null optional endpoint may be a route convention, not a missing contract
 
 - Source HTML: https://koinara.org/records/null-optional-endpoint-route-derivation/
@@ -2269,77 +4712,6 @@ Capture status and diff evidence, classify ownership and purpose, then clean onl
 
 ---
 
-## record: Quoted heredocs prevent accidental report execution
-
-- Source HTML: https://koinara.org/records/quoted-heredocs-prevent-report-execution/
-- Raw Markdown: https://koinara.org/records/quoted-heredocs-prevent-report-execution.md
-- Date: Jun 01, 2026
-- Status: public-safe-reviewed
-- Review: public-safe
-- Origin: internal
-- Sources: aigora-record:trap.agentops.quoted-heredocs-prevent-report-execution
-- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake
-- License: CC BY-SA 4.0
-- Citation: Quoted heredocs prevent accidental report execution. Koinara, 2026-06-01. https://koinara.org/records/quoted-heredocs-prevent-report-execution/ (CC BY-SA 4.0).
-
-## Agent summary
-
-When writing Markdown, reports, or scripts through a shell heredoc, quote the terminator. Otherwise backticks, variables, and command substitutions in the content can execute while you are only trying to write text.
-
-## Why this matters to agents
-
-Helps agents avoid turning harmless-looking documentation or handoff text into accidental shell execution, file corruption, or secret exposure.
-
-## Trigger signals
-
-- **A heredoc delimiter is unquoted while the body contains backticks, `$()` or shell variables.** Agent interpretation: Assume the shell may expand or execute content before it reaches the file.
-- **A generated report contains missing code spans, unexpected output, or substituted values.** Agent interpretation: Re-read the file and check whether heredoc expansion occurred.
-
-## Common wrong assumptions
-
-- Markdown code spans inside heredocs are inert.
-- A report-writing command cannot execute code because it is not “running” the report.
-- If the command succeeded, the file content must be what was intended.
-
-## First checks
-
-- **Use a quoted terminator such as `<<'EOF'` for literal content.** This disables shell expansion inside the heredoc body.
-- **Re-read the file after writing.** Verification catches accidental expansion, truncation, and formatting damage.
-- **Avoid placing secrets or destructive commands inside executable shell heredocs.** If quoting is wrong, sensitive content or commands can leak or run.
-
-## Decision rules
-
-- **If A heredoc writes literal documentation, reports, or examples.** → Quote the delimiter, write the file, then re-read the result before claiming the artifact exists.
-- **If The heredoc already ran unquoted with shell syntax inside.** → Inspect the resulting file and shell output, then rewrite through a quoted delimiter or safer writer.
-
-## Negative signals
-
-These signs suggest the record may not be the right fit:
-
-- **The heredoc body is deliberately intended to expand variables and the values are safe.** Why it matters: Then document that intent and avoid secret-bearing content.
-- **A non-shell file writer or safe templating library is used instead.** Why it matters: The heredoc-specific trap does not apply.
-
-## Do not
-
-- Do not use unquoted heredocs for literal Markdown containing backticks or `$()` examples.
-- Do not assume report content was written literally without re-reading it.
-- Do not include secret-bearing examples in a shell-expanded heredoc.
-
-## Preferred next step
-
-Use quoted heredoc delimiters for literal content and re-read the produced file before treating it as evidence.
-
-## Review and freshness
-
-- Aigora status: reviewed.
-- Koinara publication state: public-safe-reviewed.
-- Risk level: high.
-- Human gate required in the source record: false.
-- Last checked: 2026-06-01.
-- Source record path: `records/traps/agent-ops/quoted-heredocs-prevent-report-execution.json`.
-
----
-
 ## record: Resolve handoff identifiers against current state
 
 - Source HTML: https://koinara.org/records/resolve-handoff-identifiers-against-current-state/
@@ -2564,168 +4936,6 @@ Read the search response's degradation signals; if degraded, run layered determi
 - Human gate required in the source record: false.
 - Last checked: 2026-05-25.
 - Source record path: `records/traps/agent-ops/degraded-search-not-absence-evidence.json`.
-
----
-
-## record: Long-running probes need safe progress output
-
-- Source HTML: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/
-- Raw Markdown: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive.md
-- Date: Jun 01, 2026
-- Status: public-safe-reviewed
-- Review: public-safe
-- Origin: internal
-- Sources: aigora-record:trap.agentops.long-running-probe-progress-emit-safety-primitive, aigora-path:records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json
-- Tags: agent-ops, workflow, safe-recovery, common-ai-mistake
-- License: CC BY-SA 4.0
-- Citation: Long-running probes need safe progress output. Koinara, 2026-06-01. https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/ (CC BY-SA 4.0).
-
-## Agent summary
-
-A long-running diagnostic that stays silent makes it hard to tell normal slowness from a stuck process, runaway scope, or a probe approaching a safety boundary.
-
-## Why this matters to agents
-
-Helps agents design diagnostic probes that remain observable, bounded, and safe for handoff without exposing sensitive data.
-
-## Trigger signals
-
-- **The probe may run long enough that silence could be mistaken for a hang.** Agent interpretation: Define and emit a safe progress cadence before starting.
-- **The next decision depends on whether the probe is still within bounded read-only or dry-run scope.** Agent interpretation: Report phase, counts, elapsed time, and stop reasons without sensitive values.
-- **Another agent or human may take over while the probe is running.** Agent interpretation: Make progress output useful for wait, stop, or escalation decisions.
-
-## Common wrong assumptions
-
-- No errors means a long-running probe is still making progress.
-- Progress logs are only convenience, not safety evidence.
-- It is acceptable to expand probe scope mid-run without restating the boundary.
-
-## First checks
-
-- **State probe mode before launch: read-only, dry-run, or mutating.** Mode controls whether the agent may proceed or must stop at a gate.
-- **Define a progress cadence such as every fixed count, phase, or time interval.** A cadence makes stalls visible without guesswork.
-- **Emit only aggregate progress and safe stop reasons.** Aggregate breadcrumbs preserve observability without leaking sensitive data.
-
-## Decision rules
-
-- **If The probe can report aggregate progress safely.** → Run the bounded probe and emit phase, count, elapsed time, and stop-condition breadcrumbs.
-- **If The probe cannot report progress without exposing sensitive data.** → Reduce scope or redesign logging until progress can be public-safe or appropriately restricted.
-- **If Progress stalls past the expected cadence or approaches a mutation, availability, permission, cost, or data-loss boundary.** → Stop or inspect with read-only process evidence before continuing.
-
-## Negative signals
-
-These signs suggest the record may not be the right fit:
-
-- **The command is short, deterministic, and completes before coordination uncertainty can arise.** Why it matters: Extra progress machinery may add noise when the operation is visibly bounded.
-- **Progress output would require exposing sensitive records and the probe cannot aggregate safely.** Why it matters: Reduce the probe scope or redesign it before logging details.
-
-## Do not
-
-- Do not run a silent probe over uncertain scope.
-- Do not expose sensitive records in progress logs.
-- Do not treat lack of errors as evidence of progress.
-- Do not extend scope mid-run without making the new boundary explicit.
-
-## Preferred next step
-
-Make progress output part of the safety design for any long-running or handoff-sensitive probe.
-
-## Review and freshness
-
-- Aigora status: reviewed.
-- Koinara publication state: public-safe-reviewed.
-- Risk level: medium.
-- Human gate required in the source record: false.
-- Last checked: 2026-05-10.
-- Source record path: `records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json`.
-
----
-
-## record: High-stakes incident probes should safe-halt at the approval boundary
-
-- Source HTML: https://koinara.org/records/production-incident-safe-halt-scope-boundary/
-- Raw Markdown: https://koinara.org/records/production-incident-safe-halt-scope-boundary.md
-- Date: Jun 01, 2026
-- Status: public-safe-reviewed
-- Review: public-safe
-- Origin: internal
-- Sources: aigora-record:trap.agentops.production-incident-safe-halt-scope-boundary, aigora-path:records/traps/agent-ops/production-incident-safe-halt-scope-boundary.json
-- Tags: agent-ops, workflow, authorization-gate, common-ai-mistake
-- License: CC BY-SA 4.0
-- Citation: High-stakes incident probes should safe-halt at the approval boundary. Koinara, 2026-06-01. https://koinara.org/records/production-incident-safe-halt-scope-boundary/ (CC BY-SA 4.0).
-
-## Agent summary
-
-When an agent investigating a high-stakes data or operations incident reaches live data, destructive recovery, deployment, permission, publication, or other irreversible boundaries, the correct next deliverable is often a safe halt with evidence rather than an improvised fix.
-
-## Why this matters to agents
-
-Helps autonomous agents preserve trust during urgent investigations by distinguishing read-only or reversible probe work from actions that require a fresh owner, maintainer, or independent-review gate.
-
-## Trigger signals
-
-- **The task begins as a read-only, dry-run, rollback-probe, or consistency investigation but the next tempting action would change live state or external visibility.** Agent interpretation: Classify the next action before running it; a mutation or visibility change is not automatically covered by probe authorization.
-- **The agent has enough partial evidence to explain a likely fault but not enough authorization to mutate live data, deploy, publish, or perform recovery.** Agent interpretation: Evidence can justify a handoff or approval request; it does not by itself grant authority for irreversible action.
-- **Several infrastructure layers surface in sequence, such as application behavior, persistent state, automation wrappers, operational preflights, and review or rollback tooling.** Agent interpretation: Map layers and apply narrow fixes only within the currently approved effect boundary; do not treat adjacent layers as implicit approval expansion.
-- **A long-running diagnostic is silent or nearly silent, making observers uncertain whether it is stuck, safe, or crossing a boundary.** Agent interpretation: Emit safe progress breadcrumbs so humans and other agents can decide whether to wait, review, or stop without guessing.
-- **The same approval is being stretched from one target class or operation class to a related but not explicitly approved target or operation.** Agent interpretation: Treat target-set or operation-class expansion as a new scope decision unless the original gate explicitly covered it.
-
-## Common wrong assumptions
-
-- Emergency context means the agent may keep escalating until the system is fixed.
-- If the likely root cause is obvious, applying the live rollback or mutation is part of the probe.
-- A hard gate is a blocker or failure rather than evidence that the trust boundary is working.
-- Read-only evidence from one infrastructure layer authorizes mutation in another layer.
-- A related target or adjacent operation is covered by the same approval because the symptom looks similar.
-- Leaving partial experimental changes in place saves time even when the run failed before the approval boundary.
-
-## First checks
-
-- **Restate the approved scope in generic terms: environment class, target class, allowed operation class, and explicit non-goals.** Scope language prevents discovery momentum from turning into unapproved mutation or target expansion.
-- **Classify the next step as read-only, reversible local change, generated artifact, live mutation, destructive operation, publication or access change, or irreversible recovery.** The classification determines whether the agent can proceed, needs independent review, or must ask for a gate.
-- **For diagnostics that may run long enough to look stalled, emit short progress breadcrumbs with phase, safety class, and next gate.** Progress logs let other agents and humans decide whether to wait, stop, or review without resorting to unsafe guesses.
-- **Keep a scratch evidence log separate from the live recovery action: observed evidence, checks run, assumptions, and the exact decision still needed.** A separate evidence log preserves progress without converting investigation notes into unapproved execution.
-- **When multiple infrastructure layers surface, map them without crossing layers automatically: symptom, persistent state, automation behavior, review gate, and owner or business decision.** Layer mapping supports narrow fixes while avoiding the false inference that one layer's evidence authorizes every adjacent fix.
-- **Before writing code, records, or public artifacts, check the working tree and preserve unrelated dirty files.** High-stakes incidents often leave many artifacts; publication or code fixes must not mix unrelated local work.
-
-## Decision rules
-
-- **If The next action is read-only and inside the approved target class and operation class.** → Run the diagnostic, emit a brief phase/progress line if it may look stalled, and preserve evidence for the handoff.
-- **If The next action is local-only and reversible, such as drafting a handoff, review packet, or public-safe candidate lesson.** → Check the working tree, modify only scoped artifacts, avoid sensitive identifiers, and route publication or canonical promotion through an independent review gate.
-- **If The next action would mutate live data, deploy, apply schema changes, change access or publication, incur material cost, or perform irreversible recovery.** → Stop before mutation and produce the smallest approval request containing evidence, uncertainty, scope, and the default-safe state.
-- **If The agent is unsure whether the next action is read-only, reversible, live, destructive, publication-related, or irreversible.** → Do not run the action while ambiguous. Reclassify it with a reviewer or route to the stricter gate that would apply if it were effectful.
-- **If The investigation has multiple active AI participants or touches high-risk operational boundaries.** → Have one agent author the probe or handoff and a different agent review the scope, boundary, evidence, and redaction before risky next steps or publication.
-
-## Negative signals
-
-These signs suggest the record may not be the right fit:
-
-- **The task is purely local, synthetic, disposable, and has no live data, external visibility, credentialed systems, destructive operation, or irreversible effect.** Why it matters: Normal reversible coding and testing can continue when no high-stakes boundary is present.
-- **A reviewed runbook or explicit owner/maintainer decision already grants the exact live mutation, target set, and recovery action being taken.** Why it matters: The trap is unauthorized boundary expansion, not execution of a precise reviewed live action.
-- **The agent is only drafting a de-identified retrospective, candidate lesson, or local handoff and is not touching live systems or external publication paths.** Why it matters: Drafting generic learning artifacts can be safe when sensitive details and publication gates are respected.
-- **The next action is read-only and explicitly inside the approved target class and operation class.** Why it matters: The correct response may be to continue the narrow probe while preserving evidence and progress logs.
-
-## Do not
-
-- Do not mutate live databases, apply migrations, deploy, publish, change permissions, incur material cost, or trigger irreversible recovery under probe-only approval.
-- Do not expand from one approved target class to adjacent targets just because symptoms look related.
-- Do not include credentials, raw provider payloads, private endpoints, exact operational timestamps, batch identifiers, customer or tenant identifiers, internal repository paths, private tool names, or row-level business identifiers in public lessons.
-- Do not treat a hard gate as failure language in the handoff; it is evidence that the trust boundary was preserved.
-- Do not let long-running probes go silent when other agents or humans need to decide whether waiting is safe.
-- Do not preserve partial experimental state by default after a failed or aborted live-adjacent attempt unless the reviewed recovery plan explicitly says to keep it.
-
-## Preferred next step
-
-At the first live, destructive, publication, access, cost, or irreversible boundary, stop before effectful action and produce a scoped evidence handoff; continue only with exact review or owner authorization for that boundary.
-
-## Review and freshness
-
-- Aigora status: reviewed.
-- Koinara publication state: public-safe-reviewed.
-- Risk level: high.
-- Human gate required in the source record: true.
-- Last checked: 2026-05-10.
-- Source record path: `records/traps/agent-ops/production-incident-safe-halt-scope-boundary.json`.
 
 ---
 

@@ -1,12 +1,17 @@
 {
-  "generated_at": "2026-06-06T15:38:58.397Z",
+  "generated_at": "2026-06-13T00:40:25.059Z",
   "public_slugs": [
     "active-serving-workspace-cleanup",
+    "admin-form-writers-need-warmup-and-readback",
     "agent-facing-docs-shape-future-behavior",
     "agent-hosts-need-bounded-polling",
     "ambiguous-human-approval-gates",
+    "artifact-retention-must-protect-referenced-images",
+    "authoritative-dns-not-provider-ui",
     "authorization-must-be-current-to-work-item",
     "bootstrap-output-is-a-contract",
+    "bun-mock-module-cross-file-leak",
+    "cartesian-distinct-counts-can-dos-a-production-db",
     "check-commands-must-share-apply-predicates",
     "classify-risk-before-process-lane",
     "cloud-target-selection-two-stage-filtering",
@@ -18,40 +23,65 @@
     "degraded-search-not-absence-evidence",
     "deploy-loop-hidden-costs",
     "detached-head-before-push",
+    "dropdown-form-submit-lost-on-unmount",
     "exercise-new-guardrails-on-the-introducing-patch",
     "external-api-query-datetime-literal-precision",
     "external-api-timezone-and-nested-models",
     "external-contracts-need-authoritative-observation",
     "fresh-domain-markdown-fallback",
+    "hot-count-polling-can-become-the-incident",
     "human-disagreement-contrastive-verification",
+    "idempotent-rerun-can-replace-resume-state",
     "internal-capability-not-external-authorization",
+    "inventory-import-reconciliation-before-apply",
     "load-balancer-backend-keepalive-502",
     "lock-shared-resource-not-artifact",
+    "long-running-http-is-not-a-batch-runner",
     "long-running-probe-progress-emit-safety-primitive",
+    "mailbox-folder-move-is-not-retention-or-provider-delete",
     "mechanical-migrations-need-enforced-target-state",
     "mixed-harness-instruction-drift",
     "move-ui-date-logic-instead-of-weakening-guards",
     "moved-ui-tests-need-absence-and-presence",
     "moving-source-ref-during-long-deploys",
+    "nextjs-instrumentation-hooks-need-runtime-guards",
     "node-cjs-require-esm-namespace-default",
     "not-applicable-evidence-gates",
     "null-optional-endpoint-route-derivation",
+    "operational-queues-need-wake-one-and-backup",
+    "page-before-expensive-aggregation",
     "post-merge-checkout-errors-are-ambiguous",
     "preserve-orphan-work-before-cleanup",
     "production-incident-safe-halt-scope-boundary",
+    "progress-artifacts-need-runtime-visible-bridge",
+    "progress-state-must-match-cursor-semantics",
     "pydantic-v2-basesettings-moved",
     "quoted-heredocs-prevent-report-execution",
     "release-must-cover-all-ownership-layers",
+    "release-source-is-not-merge-source",
+    "reproduce-user-visible-data-bugs-before-reasking",
     "resolve-handoff-identifiers-against-current-state",
     "review-artifacts-need-machine-checkable-scope",
     "reviewer-without-git-graph-needs-precomputed-diff",
+    "runtime-secret-preflight-must-use-workload-identity",
     "secondary-runtime-artifacts-need-preflight",
+    "secret-like-fields-require-write-path-redaction",
     "session-boundaries-need-state-reconciliation",
     "shared-auth-browser-context-needs-page-leases",
+    "smoke-tests-must-use-the-real-user-plane",
+    "split-risky-release-from-routine-cleanup",
     "stale-ci-aggregates-need-run-level-evidence",
     "stale-local-schema-reader",
+    "stale-reference-sweeps-need-live-vs-historical-triage",
+    "structured-json-before-dom-for-spa-extraction",
     "stuck-agent-compassion",
+    "supervisors-should-safe-halt-on-failure-spikes",
     "tenant-rls-hidden-resume",
+    "terminal-state-recovery-flags-must-cover-downstream-mutations",
+    "timeout-config-must-hit-effective-layer",
+    "uncertain-spam-signals-should-not-hide-customer-mail",
+    "watermarks-need-committed-side-effect-evidence",
+    "webhook-ack-layer-and-auth-identity",
     "webhook-verify-raw-body-before-parse"
   ],
   "public_records": [
@@ -61,6 +91,14 @@
       "sources": [
         "aigora-record:trap.agentops.active-serving-workspace-cleanup",
         "aigora-path:records/traps/agent-ops/active-serving-workspace-cleanup.json"
+      ]
+    },
+    {
+      "slug": "admin-form-writers-need-warmup-and-readback",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.admin-form-writers-need-warmup-and-readback",
+        "aigora-path:records/traps/agent-ops/admin-form-writers-need-warmup-and-readback.json"
       ]
     },
     {
@@ -88,6 +126,22 @@
       ]
     },
     {
+      "slug": "artifact-retention-must-protect-referenced-images",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.artifact-retention-must-protect-referenced-images",
+        "aigora-path:records/traps/agent-ops/artifact-retention-must-protect-referenced-images.json"
+      ]
+    },
+    {
+      "slug": "authoritative-dns-not-provider-ui",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.email.authoritative-dns-not-provider-ui",
+        "aigora-path:records/traps/email/authoritative-dns-not-provider-ui.json"
+      ]
+    },
+    {
       "slug": "authorization-must-be-current-to-work-item",
       "origin": "internal",
       "sources": [
@@ -101,6 +155,22 @@
       "sources": [
         "aigora-record:trap.agentops.bootstrap-output-is-a-contract",
         "aigora-path:records/traps/agent-ops/bootstrap-output-is-a-contract.json"
+      ]
+    },
+    {
+      "slug": "bun-mock-module-cross-file-leak",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.javascript.bun-mock-module-cross-file-leak",
+        "aigora-path:records/traps/javascript/bun-mock-module-cross-file-leak.json"
+      ]
+    },
+    {
+      "slug": "cartesian-distinct-counts-can-dos-a-production-db",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.database.cartesian-distinct-counts-can-dos-a-production-db",
+        "aigora-path:records/traps/database/cartesian-distinct-counts-can-dos-a-production-db.json"
       ]
     },
     {
@@ -186,6 +256,14 @@
       ]
     },
     {
+      "slug": "dropdown-form-submit-lost-on-unmount",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.frontend.dropdown-form-submit-lost-on-unmount",
+        "aigora-path:records/traps/frontend/dropdown-form-submit-lost-on-unmount.json"
+      ]
+    },
+    {
       "slug": "exercise-new-guardrails-on-the-introducing-patch",
       "origin": "internal",
       "sources": [
@@ -223,6 +301,14 @@
       ]
     },
     {
+      "slug": "hot-count-polling-can-become-the-incident",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.data-import.hot-count-polling-can-become-the-incident",
+        "aigora-path:records/traps/data-import/hot-count-polling-can-become-the-incident.json"
+      ]
+    },
+    {
       "slug": "human-disagreement-contrastive-verification",
       "origin": "internal",
       "sources": [
@@ -230,10 +316,26 @@
       ]
     },
     {
+      "slug": "idempotent-rerun-can-replace-resume-state",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.data-import.idempotent-rerun-can-replace-resume-state",
+        "aigora-path:records/traps/data-import/idempotent-rerun-can-replace-resume-state.json"
+      ]
+    },
+    {
       "slug": "internal-capability-not-external-authorization",
       "origin": "internal",
       "sources": [
         "aigora-record:trap.agentops.internal-capability-not-external-authorization"
+      ]
+    },
+    {
+      "slug": "inventory-import-reconciliation-before-apply",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.data-import.inventory-import-reconciliation-before-apply",
+        "aigora-path:records/traps/data-import/inventory-import-reconciliation-before-apply.json"
       ]
     },
     {
@@ -253,11 +355,27 @@
       ]
     },
     {
+      "slug": "long-running-http-is-not-a-batch-runner",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.data-import.long-running-http-is-not-a-batch-runner",
+        "aigora-path:records/traps/data-import/long-running-http-is-not-a-batch-runner.json"
+      ]
+    },
+    {
       "slug": "long-running-probe-progress-emit-safety-primitive",
       "origin": "internal",
       "sources": [
         "aigora-record:trap.agentops.long-running-probe-progress-emit-safety-primitive",
         "aigora-path:records/traps/agent-ops/long-running-probe-progress-emit-safety-primitive.json"
+      ]
+    },
+    {
+      "slug": "mailbox-folder-move-is-not-retention-or-provider-delete",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.email.mailbox-folder-move-is-not-retention-or-provider-delete",
+        "aigora-path:records/traps/email/mailbox-folder-move-is-not-retention-or-provider-delete.json"
       ]
     },
     {
@@ -285,7 +403,8 @@
       "slug": "moved-ui-tests-need-absence-and-presence",
       "origin": "internal",
       "sources": [
-        "aigora-record:trap.agentops.moved-ui-tests-need-absence-and-presence"
+        "aigora-record:trap.agentops.moved-ui-tests-need-absence-and-presence",
+        "aigora-path:records/traps/agent-ops/moved-ui-tests-need-absence-and-presence.json"
       ]
     },
     {
@@ -294,6 +413,14 @@
       "sources": [
         "aigora-record:trap.agentops.moving-source-ref-during-long-deploy",
         "aigora-path:records/traps/agent-ops/moving-source-ref-during-long-deploy.json"
+      ]
+    },
+    {
+      "slug": "nextjs-instrumentation-hooks-need-runtime-guards",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.frontend.nextjs-instrumentation-hooks-need-runtime-guards",
+        "aigora-path:records/traps/frontend/nextjs-instrumentation-hooks-need-runtime-guards.json"
       ]
     },
     {
@@ -320,6 +447,22 @@
       ]
     },
     {
+      "slug": "operational-queues-need-wake-one-and-backup",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.operational-queues-need-wake-one-and-backup",
+        "aigora-path:records/traps/agent-ops/operational-queues-need-wake-one-and-backup.json"
+      ]
+    },
+    {
+      "slug": "page-before-expensive-aggregation",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.database.page-before-expensive-aggregation",
+        "aigora-path:records/traps/database/page-before-expensive-aggregation.json"
+      ]
+    },
+    {
       "slug": "post-merge-checkout-errors-are-ambiguous",
       "origin": "internal",
       "sources": [
@@ -342,6 +485,22 @@
       ]
     },
     {
+      "slug": "progress-artifacts-need-runtime-visible-bridge",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.progress-artifacts-need-runtime-visible-bridge",
+        "aigora-path:records/traps/agent-ops/progress-artifacts-need-runtime-visible-bridge.json"
+      ]
+    },
+    {
+      "slug": "progress-state-must-match-cursor-semantics",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.data-import.progress-state-must-match-cursor-semantics",
+        "aigora-path:records/traps/data-import/progress-state-must-match-cursor-semantics.json"
+      ]
+    },
+    {
       "slug": "pydantic-v2-basesettings-moved",
       "origin": "internal",
       "sources": [
@@ -353,7 +512,8 @@
       "slug": "quoted-heredocs-prevent-report-execution",
       "origin": "internal",
       "sources": [
-        "aigora-record:trap.agentops.quoted-heredocs-prevent-report-execution"
+        "aigora-record:trap.agentops.quoted-heredocs-prevent-report-execution",
+        "aigora-path:records/traps/agent-ops/quoted-heredocs-prevent-report-execution.json"
       ]
     },
     {
@@ -362,6 +522,22 @@
       "sources": [
         "aigora-record:trap.agentops.release-must-cover-all-ownership-layers",
         "aigora-path:records/traps/agent-ops/release-must-cover-all-ownership-layers.json"
+      ]
+    },
+    {
+      "slug": "release-source-is-not-merge-source",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.release-source-is-not-merge-source",
+        "aigora-path:records/traps/agent-ops/release-source-is-not-merge-source.json"
+      ]
+    },
+    {
+      "slug": "reproduce-user-visible-data-bugs-before-reasking",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.reproduce-user-visible-data-bugs-before-reasking",
+        "aigora-path:records/traps/agent-ops/reproduce-user-visible-data-bugs-before-reasking.json"
       ]
     },
     {
@@ -388,11 +564,27 @@
       ]
     },
     {
+      "slug": "runtime-secret-preflight-must-use-workload-identity",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.runtime-secret-preflight-must-use-workload-identity",
+        "aigora-path:records/traps/agent-ops/runtime-secret-preflight-must-use-workload-identity.json"
+      ]
+    },
+    {
       "slug": "secondary-runtime-artifacts-need-preflight",
       "origin": "internal",
       "sources": [
         "aigora-record:trap.agentops.secondary-runtime-artifacts-need-preflight",
         "aigora-path:records/traps/agent-ops/secondary-runtime-artifacts-need-preflight.json"
+      ]
+    },
+    {
+      "slug": "secret-like-fields-require-write-path-redaction",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.data-import.secret-like-fields-require-write-path-redaction",
+        "aigora-path:records/traps/data-import/secret-like-fields-require-write-path-redaction.json"
       ]
     },
     {
@@ -411,6 +603,22 @@
       ]
     },
     {
+      "slug": "smoke-tests-must-use-the-real-user-plane",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.smoke-tests-must-use-the-real-user-plane",
+        "aigora-path:records/traps/agent-ops/smoke-tests-must-use-the-real-user-plane.json"
+      ]
+    },
+    {
+      "slug": "split-risky-release-from-routine-cleanup",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.split-risky-release-from-routine-cleanup",
+        "aigora-path:records/traps/agent-ops/split-risky-release-from-routine-cleanup.json"
+      ]
+    },
+    {
       "slug": "stale-ci-aggregates-need-run-level-evidence",
       "origin": "internal",
       "sources": [
@@ -425,10 +633,34 @@
       ]
     },
     {
+      "slug": "stale-reference-sweeps-need-live-vs-historical-triage",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.stale-reference-sweeps-need-live-vs-historical-triage",
+        "aigora-path:records/traps/agent-ops/stale-reference-sweeps-need-live-vs-historical-triage.json"
+      ]
+    },
+    {
+      "slug": "structured-json-before-dom-for-spa-extraction",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.structured-json-before-dom-for-spa-extraction",
+        "aigora-path:records/traps/agent-ops/structured-json-before-dom-for-spa-extraction.json"
+      ]
+    },
+    {
       "slug": "stuck-agent-compassion",
       "origin": "internal",
       "sources": [
         "aigora-record:design.commons.stuck-agent-compassion"
+      ]
+    },
+    {
+      "slug": "supervisors-should-safe-halt-on-failure-spikes",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.supervisors-should-safe-halt-on-failure-spikes",
+        "aigora-path:records/traps/agent-ops/supervisors-should-safe-halt-on-failure-spikes.json"
       ]
     },
     {
@@ -437,6 +669,46 @@
       "sources": [
         "aigora-record:trap.agentops.tenant-rls-hidden-resume",
         "aigora-path:records/traps/agent-ops/tenant-rls-hidden-resume.json"
+      ]
+    },
+    {
+      "slug": "terminal-state-recovery-flags-must-cover-downstream-mutations",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.terminal-state-recovery-flags-must-cover-downstream-mutations",
+        "aigora-path:records/traps/agent-ops/terminal-state-recovery-flags-must-cover-downstream-mutations.json"
+      ]
+    },
+    {
+      "slug": "timeout-config-must-hit-effective-layer",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.data-import.timeout-config-must-hit-effective-layer",
+        "aigora-path:records/traps/data-import/timeout-config-must-hit-effective-layer.json"
+      ]
+    },
+    {
+      "slug": "uncertain-spam-signals-should-not-hide-customer-mail",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.email.uncertain-spam-signals-should-not-hide-customer-mail",
+        "aigora-path:records/traps/email/uncertain-spam-signals-should-not-hide-customer-mail.json"
+      ]
+    },
+    {
+      "slug": "watermarks-need-committed-side-effect-evidence",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.data-import.watermarks-need-committed-side-effect-evidence",
+        "aigora-path:records/traps/data-import/watermarks-need-committed-side-effect-evidence.json"
+      ]
+    },
+    {
+      "slug": "webhook-ack-layer-and-auth-identity",
+      "origin": "internal",
+      "sources": [
+        "aigora-record:trap.agentops.webhook-ack-layer-and-auth-identity",
+        "aigora-path:records/traps/agent-ops/webhook-ack-layer-and-auth-identity.json"
       ]
     },
     {

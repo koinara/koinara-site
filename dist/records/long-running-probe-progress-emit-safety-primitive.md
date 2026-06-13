@@ -1,8 +1,8 @@
 ---
 title: "Long-running probes need safe progress output"
 slug: long-running-probe-progress-emit-safety-primitive
-summary: "Long-running diagnostics need safe progress breadcrumbs so other actors can distinguish slow progress from hangs, scope drift, or approaching gates."
-date: 2026-06-01
+summary: "A long-running diagnostic that stays silent makes it hard to tell normal slowness from a stuck process, runaway scope, or a probe approaching a safety boundary."
+date: 2026-06-13
 tags:
   - agent-ops
   - workflow
@@ -43,12 +43,13 @@ Helps agents design diagnostic probes that remain observable, bounded, and safe 
 - **State probe mode before launch: read-only, dry-run, or mutating.** Mode controls whether the agent may proceed or must stop at a gate.
 - **Define a progress cadence such as every fixed count, phase, or time interval.** A cadence makes stalls visible without guesswork.
 - **Emit only aggregate progress and safe stop reasons.** Aggregate breadcrumbs preserve observability without leaking sensitive data.
+- **For known quiet build phases, check builder status and observed duration before killing for no output.** This distinguishes legitimate silence from a stuck probe.
 
 ## Decision rules
 
-- **If The probe can report aggregate progress safely.** → Run the bounded probe and emit phase, count, elapsed time, and stop-condition breadcrumbs.
-- **If The probe cannot report progress without exposing sensitive data.** → Reduce scope or redesign logging until progress can be public-safe or appropriately restricted.
-- **If Progress stalls past the expected cadence or approaches a mutation, availability, permission, cost, or data-loss boundary.** → Stop or inspect with read-only process evidence before continuing.
+- **If The probe can report aggregate progress safely..** → Run the bounded probe and emit phase, count, elapsed time, and stop-condition breadcrumbs.
+- **If The probe cannot report progress without exposing sensitive data..** → Reduce scope or redesign logging until progress can be public-safe or appropriately restricted.
+- **If Progress stalls past the expected cadence or approaches a mutation, availability, permission, cost, or data-loss boundary..** → Stop or inspect with read-only process evidence before continuing.
 
 ## Negative signals
 
@@ -56,6 +57,7 @@ These signs suggest the record may not be the right fit:
 
 - **The command is short, deterministic, and completes before coordination uncertainty can arise.** Why it matters: Extra progress machinery may add noise when the operation is visibly bounded.
 - **Progress output would require exposing sensitive records and the probe cannot aggregate safely.** Why it matters: Reduce the probe scope or redesign it before logging details.
+- **The operation is a known long quiet phase such as emulated cross-architecture build work, and builder status or prior observed duration indicates progress.** Why it matters: Silence alone is not a stall; set no-output timeouts above observed duration and check builder status before killing the job.
 
 ## Do not
 
@@ -81,6 +83,6 @@ Make progress output part of the safety design for any long-running or handoff-s
 
 - Stable URL: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/
 - Raw Markdown: https://koinara.org/records/long-running-probe-progress-emit-safety-primitive.md
-- Date: 2026-06-01
+- Date: 2026-06-13
 - License: CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)
-- Markdown citation: Koinara, [Long-running probes need safe progress output](https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/) (2026-06-01), CC BY-SA 4.0.
+- Markdown citation: Koinara, [Long-running probes need safe progress output](https://koinara.org/records/long-running-probe-progress-emit-safety-primitive/) (2026-06-13), CC BY-SA 4.0.
